@@ -1,5 +1,6 @@
 package com.github.csandiego.timesup.room
 
+import androidx.paging.DataSource
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
@@ -16,4 +17,7 @@ interface PresetDao {
 
     @Insert
     suspend fun insertAll(presets: List<Preset>)
+
+    @Query("SELECT * FROM Preset ORDER BY name ASC")
+    fun getAllByNameAscendingAsDataSourceFactory(): DataSource.Factory<Int, Preset>
 }

@@ -17,4 +17,7 @@ class DefaultPresetRepository(
             dao.insert(preset)
         }
     }
+
+    override fun getAllByNameAscendingAsDataSourceFactory() =
+        dao.getAllByNameAscendingAsDataSourceFactory()
 }
