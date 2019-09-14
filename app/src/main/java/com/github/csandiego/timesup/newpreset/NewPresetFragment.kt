@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
+import com.github.csandiego.timesup.R
 import com.github.csandiego.timesup.databinding.FragmentNewPresetBinding
 
 class NewPresetFragment(
@@ -24,6 +26,10 @@ class NewPresetFragment(
     ): View? {
         val binding = FragmentNewPresetBinding.inflate(inflater, container, false).apply {
             viewModel = this@NewPresetFragment.viewModel
+            buttonSave.setOnClickListener {
+                this@NewPresetFragment.viewModel.create()
+                it.findNavController().popBackStack(R.id.presetsFragment, false)
+            }
             lifecycleOwner = viewLifecycleOwner
         }
         return binding.root

@@ -6,9 +6,16 @@ import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.csandiego.timesup.R
 import com.github.csandiego.timesup.data.Preset
@@ -23,6 +30,8 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.verify
 
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
@@ -55,7 +64,7 @@ class PresetsFragmentTest {
             }
         }
         repository = DefaultPresetRepository(dao, TestCoroutineScope())
-        scenario = launchFragmentInContainer {
+        scenario = launchFragmentInContainer(themeResId = R.style.AppTheme) {
             PresetsFragment {
                 object : ViewModelProvider.Factory {
                     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -77,5 +86,22 @@ class PresetsFragmentTest {
             assertThat(it.view?.findViewById<RecyclerView>(R.id.recyclerView)?.adapter?.itemCount)
                 .isEqualTo(presets.size)
         }
+    }
+
+    @Test
+    fun whenLoadedThenFabNewDisplayed() {
+        onView(withId(R.id.fabNew)).check(matches(isDisplayed()))
+    }
+
+    @Test
+    fun whenFabNewClickedThenNavigateToNewPresetFragment() {
+        val navController = mock(NavController::class.java)
+        scenario.onFragment {
+            Navigation.setViewNavController(it.requireView(), navController)
+        }
+        onView(withId(R.id.fabNew)).perform(click())
+        verify(navController).navigate(
+            PresetsFragmentDirections.actionPresetsFragmentToNewPresetFragment()
+        )
     }
 }

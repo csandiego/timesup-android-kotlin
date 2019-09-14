@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    tools:context=".newpreset.NewPresetFragment">
     <data>
         <variable
             name="viewModel"
@@ -87,7 +88,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:text="Button"
-            android:onClick="@{() -> viewModel.create()}"
             android:visibility="@{viewModel.showSaveButton ? View.VISIBLE : View.GONE }"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

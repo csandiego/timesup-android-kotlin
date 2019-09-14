@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    app:startDestination="@id/presetsFragment">
+
+    <fragment
+        android:id="@+id/presetsFragment"
+        android:name="com.github.csandiego.timesup.presets.PresetsFragment"
+        android:label="fragment_presets"
+        tools:layout="@layout/fragment_presets" >
+        <action
+            android:id="@+id/action_presetsFragment_to_newPresetFragment"
+            app:destination="@id/newPresetFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/newPresetFragment"
+        android:name="com.github.csandiego.timesup.newpreset.NewPresetFragment"
+        android:label="fragment_new_preset"
+        tools:layout="@layout/fragment_new_preset" />
+</navigation>

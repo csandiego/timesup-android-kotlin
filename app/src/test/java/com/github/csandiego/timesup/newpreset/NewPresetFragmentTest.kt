@@ -6,6 +6,8 @@ import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
@@ -26,6 +28,8 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.verify
 
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
@@ -47,7 +51,7 @@ class NewPresetFragmentTest {
             .allowMainThreadQueries()
             .build()
         repository = DefaultPresetRepository(database.presetDao(), TestCoroutineScope())
-        scenario = launchFragmentInContainer {
+        scenario = launchFragmentInContainer(themeResId = R.style.AppTheme) {
             NewPresetFragment {
                 object : ViewModelProvider.Factory {
                     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -109,6 +113,10 @@ class NewPresetFragmentTest {
 
     @Test
     fun givenSaveButtonShownWhenCreateThenUpdateRepository() {
+        val navController = mock(NavController::class.java)
+        scenario.onFragment {
+            Navigation.setViewNavController(it.requireView(), navController)
+        }
         onView(withId(R.id.editTextName)).perform(typeText(preset.name))
         onView(withId(R.id.editTextHours)).perform(replaceText(preset.hours.toString()))
         onView(withId(R.id.editTextMinutes)).perform(replaceText(preset.minutes.toString()))
@@ -117,5 +125,19 @@ class NewPresetFragmentTest {
         runBlockingTest {
             assertThat(repository.get(preset.id)).isEqualTo(preset)
         }
+    }
+
+    @Test
+    fun givenSaveButtonShownWhenCreateThenPopBackStack() {
+        val navController = mock(NavController::class.java)
+        scenario.onFragment {
+            Navigation.setViewNavController(it.requireView(), navController)
+        }
+        onView(withId(R.id.editTextName)).perform(typeText(preset.name))
+        onView(withId(R.id.editTextHours)).perform(replaceText(preset.hours.toString()))
+        onView(withId(R.id.editTextMinutes)).perform(replaceText(preset.minutes.toString()))
+        onView(withId(R.id.editTextSeconds)).perform(replaceText(preset.seconds.toString()))
+        onView(withId(R.id.buttonSave)).perform(click())
+        verify(navController).popBackStack(R.id.presetsFragment, false)
     }
 }
