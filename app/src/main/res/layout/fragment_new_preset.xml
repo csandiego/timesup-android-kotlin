@@ -1,97 +1,159 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:android="http://schemas.android.com/apk/res/android"
     tools:context=".newpreset.NewPresetFragment">
+
     <data>
         <variable
             name="viewModel"
             type="com.github.csandiego.timesup.newpreset.NewPresetViewModel" />
-        <import type="com.github.csandiego.timesup.util.BindingUtil"/>
-        <import type="android.view.View"/>
+
+        <import type="com.github.csandiego.timesup.util.BindingUtil" />
+
+        <import type="android.view.View" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <EditText
-            android:id="@+id/editTextName"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:layout_marginEnd="32dp"
-            android:layout_marginBottom="32dp"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:text="@={viewModel.name}"
-            android:textAlignment="center"
-            app:layout_constraintBottom_toTopOf="@+id/editTextMinutes"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:text="@tools:sample/lorem[3]" />
+        <com.google.android.material.appbar.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <EditText
-            android:id="@+id/editTextHours"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:layout_marginEnd="16dp"
-            android:ems="10"
-            android:inputType="numberDecimal"
-            android:textAlignment="center"
-            android:text="@={BindingUtil.intToString(viewModel.hours)}"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/editTextMinutes"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="12" />
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:navigationContentDescription="@string/toolbar_up_description"
+                app:navigationIcon="@drawable/ic_arrow_back"
+                app:title="@string/app_name" />
+        </com.google.android.material.appbar.AppBarLayout>
 
-        <EditText
-            android:id="@+id/editTextMinutes"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:ems="10"
-            android:inputType="numberDecimal"
-            android:textAlignment="center"
-            android:text="@={BindingUtil.intToString(viewModel.minutes)}"
-            app:layout_constraintBottom_toBottomOf="@+id/editTextHours"
-            app:layout_constraintEnd_toStartOf="@+id/editTextSeconds"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/editTextHours"
-            app:layout_constraintTop_toTopOf="@+id/editTextHours"
-            tools:text="34" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <EditText
-            android:id="@+id/editTextSeconds"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="32dp"
-            android:ems="10"
-            android:inputType="numberDecimal"
-            android:textAlignment="center"
-            android:text="@={BindingUtil.intToString(viewModel.seconds)}"
-            app:layout_constraintBottom_toBottomOf="@+id/editTextMinutes"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/editTextMinutes"
-            app:layout_constraintTop_toTopOf="@+id/editTextMinutes"
-            tools:text="56" />
+            <Button
+                android:id="@+id/buttonSave"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:text="@string/button_preset_save"
+                android:visibility="@{viewModel.showSaveButton ? View.VISIBLE : View.GONE }"
+                app:layout_constraintEnd_toEndOf="@+id/textInputLayout3"
+                app:layout_constraintStart_toStartOf="@+id/textInputLayout"
+                app:layout_constraintTop_toBottomOf="@+id/textInputLayout2" />
 
-        <Button
-            android:id="@+id/buttonSave"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:text="Button"
-            android:visibility="@{viewModel.showSaveButton ? View.VISIBLE : View.GONE }"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editTextMinutes" />
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/materialTextView"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextHours"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/edit_text_preset_hours_hint"
+                    android:inputType="numberDecimal"
+                    android:maxLength="2"
+                    android:textAppearance="?attr/textAppearanceHeadline2"
+                    android:text="@={BindingUtil.intToString(viewModel.hours)}"
+                    tools:text="12" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/materialTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=":"
+                android:textAppearance="?attr/textAppearanceHeadline2"
+                app:layout_constraintBaseline_toBaselineOf="@+id/textInputLayout"
+                app:layout_constraintEnd_toStartOf="@+id/textInputLayout2"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/textInputLayout" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayout2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBaseline_toBaselineOf="@+id/materialTextView"
+                app:layout_constraintEnd_toStartOf="@+id/materialTextView2"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/materialTextView">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextMinutes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/edit_text_preset_minutes_hint"
+                    android:inputType="numberDecimal"
+                    android:maxLength="2"
+                    android:textAppearance="?attr/textAppearanceHeadline2"
+                    android:text="@={BindingUtil.intToString(viewModel.minutes)}"
+                    tools:text="12" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/materialTextView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=":"
+                android:textAppearance="?attr/textAppearanceHeadline2"
+                app:layout_constraintBaseline_toBaselineOf="@+id/textInputLayout2"
+                app:layout_constraintEnd_toStartOf="@+id/textInputLayout3"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/textInputLayout2" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayout3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintBaseline_toBaselineOf="@+id/materialTextView2"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/materialTextView2">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextSeconds"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/edit_text_preset_seconds_hints"
+                    android:inputType="numberDecimal"
+                    android:maxLength="2"
+                    android:textAppearance="?attr/textAppearanceHeadline2"
+                    android:text="@={BindingUtil.intToString(viewModel.seconds)}"
+                    tools:text="12" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="32dp"
+                app:layout_constraintBottom_toTopOf="@+id/textInputLayout2"
+                app:layout_constraintEnd_toEndOf="@+id/textInputLayout3"
+                app:layout_constraintStart_toStartOf="@+id/textInputLayout">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/edit_text_preset_name_hint"
+                    android:inputType="textCapSentences"
+                    android:text="@={viewModel.name}"
+                    tools:text="@tools:sample/lorem[3]"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

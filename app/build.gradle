@@ -58,6 +58,7 @@ dependencies {
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.1.0'
     implementation 'androidx.navigation:navigation-ui-ktx:2.1.0'
+    implementation 'com.google.android.material:material:1.1.0-alpha10'
 
     debugImplementation 'androidx.test:runner:1.2.0'
     debugImplementation 'androidx.test.ext:junit:1.1.1'

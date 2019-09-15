@@ -64,7 +64,7 @@ class PresetsFragmentTest {
             }
         }
         repository = DefaultPresetRepository(dao, TestCoroutineScope())
-        scenario = launchFragmentInContainer(themeResId = R.style.AppTheme) {
+        scenario = launchFragmentInContainer(themeResId = R.style.Theme_TimesUp) {
             PresetsFragment {
                 object : ViewModelProvider.Factory {
                     override fun <T : ViewModel> create(modelClass: Class<T>): T {

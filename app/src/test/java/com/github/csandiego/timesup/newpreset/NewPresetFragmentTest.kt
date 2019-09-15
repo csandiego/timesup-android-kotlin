@@ -51,7 +51,7 @@ class NewPresetFragmentTest {
             .allowMainThreadQueries()
             .build()
         repository = DefaultPresetRepository(database.presetDao(), TestCoroutineScope())
-        scenario = launchFragmentInContainer(themeResId = R.style.AppTheme) {
+        scenario = launchFragmentInContainer(themeResId = R.style.Theme_TimesUp) {
             NewPresetFragment {
                 object : ViewModelProvider.Factory {
                     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -65,6 +65,16 @@ class NewPresetFragmentTest {
     @After
     fun tearDown() {
         database.close()
+    }
+
+    @Test
+    fun whenUpPressedThenNavigateUp() {
+        val navController = mock(NavController::class.java)
+        scenario.onFragment {
+            Navigation.setViewNavController(it.requireView(), navController)
+        }
+        onView(withContentDescription(R.string.toolbar_up_description)).perform(click())
+        verify(navController).navigateUp()
     }
 
     @Test

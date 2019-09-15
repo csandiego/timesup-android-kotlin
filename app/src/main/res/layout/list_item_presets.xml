@@ -6,33 +6,39 @@
             name="preset"
             type="com.github.csandiego.timesup.data.Preset" />
     </data>
-    <androidx.cardview.widget.CardView
+
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp">
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="8dp"
+            android:orientation="vertical">
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/textViewName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@{preset.name}"
-                tools:text="@tools:sample/lorem[5]"/>
+                android:textAppearance="?attr/textAppearanceHeadline5"
+                tools:text="@tools:sample/lorem[3]" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/textViewDuration"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@{String.valueOf(preset.hours) + `h ` + String.valueOf(preset.minutes) + `m ` + String.valueOf(preset.seconds) + `s`}"
+                android:text="@{String.format(`%02d:%02d:%02d`, preset.hours, preset.minutes, preset.seconds)}"
                 android:textAlignment="textEnd"
-                tools:text="1h 2m 3s"/>
+                android:textAppearance="?attr/textAppearanceHeadline6"
+                tools:text="12:34:56" />
+
         </LinearLayout>
-    </androidx.cardview.widget.CardView>
+    </com.google.android.material.card.MaterialCardView>
 </layout>
