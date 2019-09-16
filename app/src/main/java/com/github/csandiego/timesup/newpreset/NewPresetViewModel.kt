@@ -19,19 +19,33 @@ class NewPresetViewModel(
     )
 
     private val preset = Preset()
-    val name = MutableLiveData(preset.name).apply { observeForever { preset.name = it } }
-    val hours = MutableLiveData(preset.hours).apply { observeForever { preset.hours = it } }
-    val minutes = MutableLiveData(preset.minutes).apply { observeForever { preset.minutes = it } }
-    val seconds = MutableLiveData(preset.seconds).apply { observeForever { preset.seconds = it } }
+    var name: String
+        get() = preset.name
+        set(value) {
+            preset.name = value
+            validate()
+        }
+    var hours: Int
+        get() = preset.hours
+        set(value) {
+            preset.hours = value
+            validate()
+        }
+    var minutes: Int
+        get() = preset.minutes
+        set(value) {
+            preset.minutes = value
+            validate()
+        }
+    var seconds: Int
+        get() = preset.seconds
+        set(value) {
+            preset.seconds = value
+            validate()
+        }
+
     private val isValid = MutableLiveData(false)
     val showSaveButton: LiveData<Boolean> = isValid
-
-    init {
-        name.observeForever { validate() }
-        hours.observeForever { validate() }
-        minutes.observeForever { validate() }
-        seconds.observeForever { validate() }
-    }
 
     private fun validate() {
         val valid = preset.run {

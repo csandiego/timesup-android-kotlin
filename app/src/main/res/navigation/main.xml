@@ -14,9 +14,8 @@
             android:id="@+id/action_presetsFragment_to_newPresetFragment"
             app:destination="@id/newPresetFragment" />
     </fragment>
-    <fragment
+    <dialog
         android:id="@+id/newPresetFragment"
         android:name="com.github.csandiego.timesup.newpreset.NewPresetFragment"
-        android:label="fragment_new_preset"
-        tools:layout="@layout/fragment_new_preset" />
+        android:label="NewPresetFragment" />
 </navigation>

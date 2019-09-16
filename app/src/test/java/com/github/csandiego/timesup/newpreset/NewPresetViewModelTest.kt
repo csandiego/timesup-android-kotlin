@@ -64,7 +64,7 @@ class NewPresetViewModelTest {
         with (viewModel) {
             showSaveButton.observeForever(observer)
             calls = observer.calls
-            name.value = preset.name
+            name = preset.name
             assertThat(showSaveButton.value).isFalse()
         }
         assertThat(observer.calls).isEqualTo(calls)
@@ -82,7 +82,7 @@ class NewPresetViewModelTest {
         with (viewModel) {
             showSaveButton.observeForever(observer)
             calls = observer.calls
-            hours.value = preset.hours
+            hours = preset.hours
             assertThat(showSaveButton.value).isFalse()
         }
         assertThat(observer.calls).isEqualTo(calls)
@@ -91,10 +91,10 @@ class NewPresetViewModelTest {
     @Test
     fun whenNameAndDurationEnteredThenShowSaveButton() {
         with (viewModel) {
-            name.value = preset.name
-            hours.value = preset.hours
-            minutes.value = preset.minutes
-            seconds.value = preset.seconds
+            name = preset.name
+            hours = preset.hours
+            minutes = preset.minutes
+            seconds = preset.seconds
             assertThat(showSaveButton.value).isTrue()
         }
     }
@@ -110,10 +110,10 @@ class NewPresetViewModelTest {
     @Test
     fun givenSaveButtonShownWhenCreateThenUpdateRepository() {
         with (viewModel) {
-            name.value = preset.name
-            hours.value = preset.hours
-            minutes.value = preset.minutes
-            seconds.value = preset.seconds
+            name = preset.name
+            hours = preset.hours
+            minutes = preset.minutes
+            seconds = preset.seconds
             create()
         }
         runBlockingTest {

@@ -1,9 +1,7 @@
 <resources>
     <string name="app_name">TimesUp</string>
     <string name="toolbar_up_description">Navigate up</string>
-    <string name="button_preset_save">Save</string>
-    <string name="edit_text_preset_name_hint">Name</string>
-    <string name="edit_text_preset_hours_hint">Hours</string>
-    <string name="edit_text_preset_minutes_hint">Minutes</string>
-    <string name="edit_text_preset_seconds_hints">Seconds</string>
+    <string name="newpreset_title">New Preset</string>
+    <string name="button_create">Save</string>
+    <string name="edit_text_preset_name_hint">Name (e.g. Brew Coffee, Soft-boiled Eggs, etc.)</string>
 </resources>
