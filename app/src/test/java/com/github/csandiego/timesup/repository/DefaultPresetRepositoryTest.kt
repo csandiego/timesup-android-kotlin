@@ -86,4 +86,18 @@ class DefaultPresetRepositoryTest {
             observeForever {}
         }.value).containsExactlyElementsIn(presets.sortedBy { it.name })
     }
+
+    @Test
+    fun givenValidPresetIdWhenGetAsLiveDataThenLiveDataContainsPreset() {
+        assertThat(repository.getAsLiveData(presets[0].id).apply {
+            observeForever {}
+        }.value).isEqualTo(presets[0])
+    }
+
+    @Test
+    fun givenInvalidPresetIdWhenGetAsLiveDataThenLiveDataContainsNull() {
+        assertThat(repository.getAsLiveData(0).apply {
+            observeForever {}
+        }.value).isNull()
+    }
 }

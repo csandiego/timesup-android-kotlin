@@ -1,5 +1,6 @@
 package com.github.csandiego.timesup.room
 
+import androidx.lifecycle.LiveData
 import androidx.paging.DataSource
 import androidx.room.Dao
 import androidx.room.Insert
@@ -20,4 +21,7 @@ interface PresetDao {
 
     @Query("SELECT * FROM Preset ORDER BY name ASC")
     fun getAllByNameAscendingAsDataSourceFactory(): DataSource.Factory<Int, Preset>
+
+    @Query("SELECT * FROM Preset WHERE id = :presetId")
+    fun getAsLiveData(presetId: Long): LiveData<Preset?>
 }
