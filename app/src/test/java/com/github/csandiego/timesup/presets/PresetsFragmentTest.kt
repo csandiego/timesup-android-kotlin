@@ -46,7 +46,6 @@ class PresetsFragmentTest {
 
     private lateinit var database: TimesUpDatabase
     private lateinit var repository: DefaultPresetRepository
-    private lateinit var viewModel: PresetsViewModel
     private lateinit var scenario: FragmentScenario<PresetsFragment>
 
     @get:Rule
@@ -64,10 +63,11 @@ class PresetsFragmentTest {
             }
         }
         repository = DefaultPresetRepository(dao, TestCoroutineScope())
-        viewModel = PresetsViewModel(application, repository)
+        val viewModel = PresetsViewModel(application, repository)
         scenario = launchFragmentInContainer(themeResId = R.style.Theme_TimesUp) {
             PresetsFragment {
                 object : ViewModelProvider.Factory {
+                    @Suppress("UNCHECKED_CAST")
                     override fun <T : ViewModel> create(modelClass: Class<T>): T {
                         return viewModel as T
                     }
