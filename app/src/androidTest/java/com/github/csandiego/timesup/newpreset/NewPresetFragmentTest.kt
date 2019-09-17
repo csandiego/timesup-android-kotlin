@@ -1,6 +1,7 @@
 package com.github.csandiego.timesup.newpreset
 
 import android.app.Application
+import android.widget.Button
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragment
@@ -9,8 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.typeText
+import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -18,13 +18,11 @@ import com.github.csandiego.timesup.R
 import com.github.csandiego.timesup.data.Preset
 import com.github.csandiego.timesup.repository.DefaultPresetRepository
 import com.github.csandiego.timesup.room.TimesUpDatabase
-import com.google.android.material.button.MaterialButton
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineScope
 import kotlinx.coroutines.test.runBlockingTest
-import org.hamcrest.Matchers.allOf
-import org.hamcrest.Matchers.not
+import org.hamcrest.Matchers.*
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -56,6 +54,7 @@ class NewPresetFragmentTest {
         scenario = launchFragment(themeResId = R.style.Theme_TimesUp) {
             NewPresetFragment {
                 object : ViewModelProvider.Factory {
+                    @Suppress("UNCHECKED_CAST")
                     override fun <T : ViewModel> create(modelClass: Class<T>): T {
                         return viewModel as T
                     }
@@ -70,10 +69,42 @@ class NewPresetFragmentTest {
     }
 
     @Test
+    fun whenNameAndDurationEnteredThenBindIntoViewModel() {
+        onView(withId(R.id.editTextName)).perform(typeText(preset.name), closeSoftKeyboard())
+        onView(withId(R.id.numberPickerHours)).perform(longClick())
+        onView(
+            allOf(
+                withParent(withId(R.id.numberPickerHours)),
+                withClassName(endsWith("CustomEditText"))
+            )
+        ).perform(replaceText(preset.hours.toString()), closeSoftKeyboard())
+        onView(withId(R.id.numberPickerMinutes)).perform(longClick())
+        onView(
+            allOf(
+                withParent(withId(R.id.numberPickerMinutes)),
+                withClassName(endsWith("CustomEditText"))
+            )
+        ).perform(replaceText(preset.minutes.toString()), closeSoftKeyboard())
+        onView(withId(R.id.numberPickerSeconds)).perform(longClick())
+        onView(
+            allOf(
+                withParent(withId(R.id.numberPickerSeconds)),
+                withClassName(endsWith("CustomEditText"))
+            )
+        ).perform(replaceText(preset.seconds.toString()), closeSoftKeyboard())
+        with(viewModel) {
+            assertThat(name).isEqualTo(preset.name)
+            assertThat(hours).isEqualTo(preset.hours)
+            assertThat(minutes).isEqualTo(preset.minutes)
+            assertThat(seconds).isEqualTo(preset.seconds)
+        }
+    }
+
+    @Test
     fun whenNameEmptyAndDurationEmptyThenPositiveButtonDisabled() {
         onView(
             allOf(
-                isAssignableFrom(MaterialButton::class.java),
+                isAssignableFrom(Button::class.java),
                 withText(R.string.button_create)
             )
         ).check(matches(not(isEnabled())))
@@ -81,10 +112,10 @@ class NewPresetFragmentTest {
 
     @Test
     fun whenNameNotEmptyAndDurationEmptyThenPositiveButtonDisabled() {
-        onView(withId(R.id.editTextName)).perform(typeText(preset.name))
+        onView(withId(R.id.editTextName)).perform(typeText(preset.name), closeSoftKeyboard())
         onView(
             allOf(
-                isAssignableFrom(MaterialButton::class.java),
+                isAssignableFrom(Button::class.java),
                 withText(R.string.button_create)
             )
         ).check(matches(not(isEnabled())))
@@ -92,16 +123,30 @@ class NewPresetFragmentTest {
 
     @Test
     fun whenNameEmptyAndDurationNotEmptyThenPositiveButtonDisabled() {
-        scenario.onFragment {
-            with(viewModel) {
-                hours = preset.hours
-                minutes = preset.minutes
-                seconds = preset.seconds
-            }
-        }
+        onView(withId(R.id.numberPickerHours)).perform(longClick())
         onView(
             allOf(
-                isAssignableFrom(MaterialButton::class.java),
+                withParent(withId(R.id.numberPickerHours)),
+                withClassName(endsWith("CustomEditText"))
+            )
+        ).perform(replaceText(preset.hours.toString()), closeSoftKeyboard())
+        onView(withId(R.id.numberPickerMinutes)).perform(longClick())
+        onView(
+            allOf(
+                withParent(withId(R.id.numberPickerMinutes)),
+                withClassName(endsWith("CustomEditText"))
+            )
+        ).perform(replaceText(preset.minutes.toString()), closeSoftKeyboard())
+        onView(withId(R.id.numberPickerSeconds)).perform(longClick())
+        onView(
+            allOf(
+                withParent(withId(R.id.numberPickerSeconds)),
+                withClassName(endsWith("CustomEditText"))
+            )
+        ).perform(replaceText(preset.seconds.toString()), closeSoftKeyboard())
+        onView(
+            allOf(
+                isAssignableFrom(Button::class.java),
                 withText(R.string.button_create)
             )
         ).check(matches(not(isEnabled())))
@@ -109,17 +154,31 @@ class NewPresetFragmentTest {
 
     @Test
     fun whenNameNotEmptyAndDurationNotEmptyThenPositiveButtonEnabled() {
-        onView(withId(R.id.editTextName)).perform(typeText(preset.name))
-        scenario.onFragment {
-            with(viewModel) {
-                hours = preset.hours
-                minutes = preset.minutes
-                seconds = preset.seconds
-            }
-        }
+        onView(withId(R.id.editTextName)).perform(typeText(preset.name), closeSoftKeyboard())
+        onView(withId(R.id.numberPickerHours)).perform(longClick())
         onView(
             allOf(
-                isAssignableFrom(MaterialButton::class.java),
+                withParent(withId(R.id.numberPickerHours)),
+                withClassName(endsWith("CustomEditText"))
+            )
+        ).perform(replaceText(preset.hours.toString()), closeSoftKeyboard())
+        onView(withId(R.id.numberPickerMinutes)).perform(longClick())
+        onView(
+            allOf(
+                withParent(withId(R.id.numberPickerMinutes)),
+                withClassName(endsWith("CustomEditText"))
+            )
+        ).perform(replaceText(preset.minutes.toString()), closeSoftKeyboard())
+        onView(withId(R.id.numberPickerSeconds)).perform(longClick())
+        onView(
+            allOf(
+                withParent(withId(R.id.numberPickerSeconds)),
+                withClassName(endsWith("CustomEditText"))
+            )
+        ).perform(replaceText(preset.seconds.toString()), closeSoftKeyboard())
+        onView(
+            allOf(
+                isAssignableFrom(Button::class.java),
                 withText(R.string.button_create)
             )
         ).check(matches(isEnabled()))
@@ -127,17 +186,31 @@ class NewPresetFragmentTest {
 
     @Test
     fun givenPositiveButtonEnabledWhenCreateThenUpdateRepository() {
-        onView(withId(R.id.editTextName)).perform(typeText(preset.name))
-        scenario.onFragment {
-            with(viewModel) {
-                hours = preset.hours
-                minutes = preset.minutes
-                seconds = preset.seconds
-            }
-        }
+        onView(withId(R.id.editTextName)).perform(typeText(preset.name), closeSoftKeyboard())
+        onView(withId(R.id.numberPickerHours)).perform(longClick())
         onView(
             allOf(
-                isAssignableFrom(MaterialButton::class.java),
+                withParent(withId(R.id.numberPickerHours)),
+                withClassName(endsWith("CustomEditText"))
+            )
+        ).perform(replaceText(preset.hours.toString()), closeSoftKeyboard())
+        onView(withId(R.id.numberPickerMinutes)).perform(longClick())
+        onView(
+            allOf(
+                withParent(withId(R.id.numberPickerMinutes)),
+                withClassName(endsWith("CustomEditText"))
+            )
+        ).perform(replaceText(preset.minutes.toString()), closeSoftKeyboard())
+        onView(withId(R.id.numberPickerSeconds)).perform(longClick())
+        onView(
+            allOf(
+                withParent(withId(R.id.numberPickerSeconds)),
+                withClassName(endsWith("CustomEditText"))
+            )
+        ).perform(replaceText(preset.seconds.toString()), closeSoftKeyboard())
+        onView(
+            allOf(
+                isAssignableFrom(Button::class.java),
                 withText(R.string.button_create)
             )
         ).perform(click())
@@ -146,4 +219,3 @@ class NewPresetFragmentTest {
         }
     }
 }
-
