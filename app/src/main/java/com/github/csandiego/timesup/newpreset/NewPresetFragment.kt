@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
 import com.github.csandiego.timesup.R
 import com.github.csandiego.timesup.databinding.FragmentNewPresetBinding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class NewPresetFragment(
     viewModelFactoryProducer: (() -> ViewModelProvider.Factory)?
@@ -46,7 +47,7 @@ class NewPresetFragment(
                 }
             }
         }
-        return AlertDialog.Builder(context)
+        return MaterialAlertDialogBuilder(context)
             .setTitle(R.string.newpreset_title)
             .setView(binding.root)
             .setPositiveButton(R.string.button_create) { _, _ -> viewModel.create() }
