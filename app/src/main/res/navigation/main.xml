@@ -13,21 +13,9 @@
         <action
             android:id="@+id/action_presetsFragment_to_newPresetFragment"
             app:destination="@id/newPresetFragment" />
-        <action
-            android:id="@+id/action_presetsFragment_to_launcherFragment"
-            app:destination="@id/launcherFragment" />
     </fragment>
     <dialog
         android:id="@+id/newPresetFragment"
         android:name="com.github.csandiego.timesup.newpreset.NewPresetFragment"
         android:label="NewPresetFragment" />
-    <fragment
-        android:id="@+id/launcherFragment"
-        android:name="com.github.csandiego.timesup.launcher.LauncherFragment"
-        android:label="fragment_launcher"
-        tools:layout="@layout/fragment_launcher" >
-        <argument
-            android:name="presetId"
-            app:argType="long" />
-    </fragment>
 </navigation>
