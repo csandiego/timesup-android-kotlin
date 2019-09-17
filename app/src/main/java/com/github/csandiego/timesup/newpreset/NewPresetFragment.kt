@@ -25,21 +25,21 @@ class NewPresetFragment(
         val context = requireContext()
         val binding = FragmentNewPresetBinding.inflate(LayoutInflater.from(context)).apply {
             viewModel = this@NewPresetFragment.viewModel
-            with (numPickerHours) {
+            with (numberPickerHours) {
                 minValue = 0
                 maxValue = 23
                 setFormatter {
                     String.format("%02d", it)
                 }
             }
-            with (numPickerMinutes) {
+            with (numberPickerMinutes) {
                 minValue = 0
                 maxValue = 59
                 setFormatter {
                     String.format("%02d", it)
                 }
             }
-            with (numPickerSeconds) {
+            with (numberPickerSeconds) {
                 minValue = 0
                 maxValue = 59
                 setFormatter {

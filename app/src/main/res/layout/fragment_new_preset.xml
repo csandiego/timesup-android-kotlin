@@ -30,14 +30,14 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/textEditName"
+                android:id="@+id/editTextName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@={viewModel.name}" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <NumberPicker
-            android:id="@+id/numPickerHours"
+            android:id="@+id/numberPickerHours"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:value="@={viewModel.hours}"
@@ -53,14 +53,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text=":"
-            app:layout_constraintBottom_toBottomOf="@+id/numPickerMinutes"
-            app:layout_constraintEnd_toStartOf="@+id/numPickerMinutes"
+            app:layout_constraintBottom_toBottomOf="@+id/numberPickerMinutes"
+            app:layout_constraintEnd_toStartOf="@+id/numberPickerMinutes"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/numPickerHours"
-            app:layout_constraintTop_toTopOf="@+id/numPickerMinutes" />
+            app:layout_constraintStart_toEndOf="@+id/numberPickerHours"
+            app:layout_constraintTop_toTopOf="@+id/numberPickerMinutes" />
 
         <NumberPicker
-            android:id="@+id/numPickerMinutes"
+            android:id="@+id/numberPickerMinutes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:value="@={viewModel.minutes}"
@@ -75,14 +75,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text=":"
-            app:layout_constraintBottom_toBottomOf="@+id/numPickerSeconds"
-            app:layout_constraintEnd_toStartOf="@+id/numPickerSeconds"
+            app:layout_constraintBottom_toBottomOf="@+id/numberPickerSeconds"
+            app:layout_constraintEnd_toStartOf="@+id/numberPickerSeconds"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/numPickerMinutes"
-            app:layout_constraintTop_toTopOf="@+id/numPickerSeconds" />
+            app:layout_constraintStart_toEndOf="@+id/numberPickerMinutes"
+            app:layout_constraintTop_toTopOf="@+id/numberPickerSeconds" />
 
         <NumberPicker
-            android:id="@+id/numPickerSeconds"
+            android:id="@+id/numberPickerSeconds"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
