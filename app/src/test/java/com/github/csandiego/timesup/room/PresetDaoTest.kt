@@ -2,7 +2,6 @@ package com.github.csandiego.timesup.room
 
 import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.paging.toLiveData
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -67,8 +66,8 @@ class PresetDaoTest {
     }
 
     @Test
-    fun whenGetAllByNameAscendingAsDataSourceFactoryThenPagedListSortedByNameAscending() {
-        assertThat(dao.getAllByNameAscendingAsDataSourceFactory().toLiveData(10).apply {
+    fun whenGetAllByNameAscendingAsLiveDataThenLiveDataSortedByNameAscending() {
+        assertThat(dao.getAllByNameAscendingAsLiveData().apply {
             observeForever {}
         }.value).containsExactlyElementsIn(presets.sortedBy { it.name })
     }

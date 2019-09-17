@@ -17,7 +17,7 @@ class PresetsFragment(
 
     constructor() : this(null)
 
-    val viewModel by viewModels<PresetsViewModel>(factoryProducer = viewModelFactoryProducer)
+    private val viewModel by viewModels<PresetsViewModel>(factoryProducer = viewModelFactoryProducer)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val adapter = PresetsAdapter()

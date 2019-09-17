@@ -2,7 +2,6 @@ package com.github.csandiego.timesup.repository
 
 import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.paging.toLiveData
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -79,14 +78,6 @@ class DefaultPresetRepositoryTest {
         }
     }
 
-
-    @Test
-    fun whenGetAllByNameAscendingAsDataSourceFactoryThenPagedListSortedByNameAscending() {
-        assertThat(repository.getAllByNameAscendingAsDataSourceFactory().toLiveData(10).apply {
-            observeForever {}
-        }.value).containsExactlyElementsIn(presets.sortedBy { it.name })
-    }
-
     @Test
     fun givenValidPresetIdWhenGetAsLiveDataThenLiveDataContainsPreset() {
         assertThat(repository.getAsLiveData(presets[0].id).apply {
@@ -99,5 +90,12 @@ class DefaultPresetRepositoryTest {
         assertThat(repository.getAsLiveData(0).apply {
             observeForever {}
         }.value).isNull()
+    }
+
+    @Test
+    fun whenGetAllByNameAscendingAsLiveDataThenLiveDataSortedByNameAscending() {
+        assertThat(repository.getAllByNameAscendingAsLiveData().apply {
+            observeForever {}
+        }.value).containsExactlyElementsIn(presets.sortedBy { it.name })
     }
 }

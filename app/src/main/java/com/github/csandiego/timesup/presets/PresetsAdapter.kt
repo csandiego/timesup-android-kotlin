@@ -2,12 +2,12 @@ package com.github.csandiego.timesup.presets
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import com.github.csandiego.timesup.data.Preset
 import com.github.csandiego.timesup.databinding.ListItemPresetsBinding
 
-class PresetsAdapter : PagedListAdapter<Preset, PresetsViewHolder>(ItemCallback()) {
+class PresetsAdapter : ListAdapter<Preset, PresetsViewHolder>(ItemCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = PresetsViewHolder(
         ListItemPresetsBinding.inflate(LayoutInflater.from(parent.context), parent, false)

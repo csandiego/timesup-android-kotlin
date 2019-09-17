@@ -41,8 +41,7 @@ class DefaultPresetRepository(
         }
     }
 
-    override fun getAllByNameAscendingAsDataSourceFactory() =
-        dao.getAllByNameAscendingAsDataSourceFactory()
-
     override fun getAsLiveData(presetId: Long) = dao.getAsLiveData(presetId)
+
+    override fun getAllByNameAscendingAsLiveData() = dao.getAllByNameAscendingAsLiveData()
 }

@@ -7,7 +7,8 @@ import com.github.csandiego.timesup.databinding.ListItemPresetsBinding
 class PresetsViewHolder(private val binding: ListItemPresetsBinding) :
     RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(preset: Preset?) {
+    fun bind(preset: Preset) {
         binding.preset = preset
+        binding.root.tag = "list_item_preset_${preset.id}"
     }
 }

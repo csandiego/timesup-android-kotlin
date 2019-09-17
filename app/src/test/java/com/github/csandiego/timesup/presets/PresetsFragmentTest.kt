@@ -8,23 +8,22 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
-import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.csandiego.timesup.R
 import com.github.csandiego.timesup.data.Preset
 import com.github.csandiego.timesup.repository.DefaultPresetRepository
 import com.github.csandiego.timesup.room.TimesUpDatabase
-import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineScope
 import kotlinx.coroutines.test.runBlockingTest
+import org.hamcrest.Matchers.equalTo
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -47,6 +46,7 @@ class PresetsFragmentTest {
 
     private lateinit var database: TimesUpDatabase
     private lateinit var repository: DefaultPresetRepository
+    private lateinit var viewModel: PresetsViewModel
     private lateinit var scenario: FragmentScenario<PresetsFragment>
 
     @get:Rule
@@ -64,11 +64,12 @@ class PresetsFragmentTest {
             }
         }
         repository = DefaultPresetRepository(dao, TestCoroutineScope())
+        viewModel = PresetsViewModel(application, repository)
         scenario = launchFragmentInContainer(themeResId = R.style.Theme_TimesUp) {
             PresetsFragment {
                 object : ViewModelProvider.Factory {
                     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                        return PresetsViewModel(application, repository) as T
+                        return viewModel as T
                     }
                 }
             }
@@ -81,10 +82,12 @@ class PresetsFragmentTest {
     }
 
     @Test
-    fun whenLoadedThenRecyclerViewContainsPresets() {
-        scenario.onFragment {
-            assertThat(it.view?.findViewById<RecyclerView>(R.id.recyclerView)?.adapter?.itemCount)
-                .isEqualTo(presets.size)
+    fun whenLoadedThenRecyclerViewItemSortedByNameAscending() {
+        presets.sortedBy { it.name }.forEachIndexed { index, preset ->
+            onView(withId(R.id.recyclerView))
+                .perform(scrollToPosition<PresetsViewHolder>(index))
+            onView(withTagValue(equalTo("list_item_preset_${preset.id}")))
+                .check(matches(isDisplayed()))
         }
     }
 
