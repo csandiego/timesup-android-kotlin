@@ -23,6 +23,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:itemCount="12"
         tools:listitem="@layout/list_item_presets" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
