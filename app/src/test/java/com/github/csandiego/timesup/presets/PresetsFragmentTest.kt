@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
@@ -20,9 +21,11 @@ import com.github.csandiego.timesup.R
 import com.github.csandiego.timesup.data.Preset
 import com.github.csandiego.timesup.repository.DefaultPresetRepository
 import com.github.csandiego.timesup.room.TimesUpDatabase
+import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineScope
 import kotlinx.coroutines.test.runBlockingTest
+import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.equalTo
 import org.junit.After
 import org.junit.Before
@@ -84,10 +87,38 @@ class PresetsFragmentTest {
     @Test
     fun whenLoadedThenRecyclerViewItemSortedByNameAscending() {
         presets.sortedBy { it.name }.forEachIndexed { index, preset ->
+            val tag = "list_item_preset_${preset.id}"
             onView(withId(R.id.recyclerView))
                 .perform(scrollToPosition<PresetsViewHolder>(index))
-            onView(withTagValue(equalTo("list_item_preset_${preset.id}")))
-                .check(matches(isDisplayed()))
+            scenario.onFragment {
+                assertThat(
+                    it.view?.findViewById<RecyclerView>(R.id.recyclerView)
+                        ?.findViewHolderForAdapterPosition(index)?.itemView?.tag
+                ).isEqualTo(tag)
+            }
+            onView(
+                allOf(
+                    withParent(withTagValue(equalTo(tag))),
+                    withId(R.id.textViewName)
+                )
+            ).check(matches(withText(preset.name)))
+            onView(
+                allOf(
+                    withParent(withTagValue(equalTo(tag))),
+                    withId(R.id.textViewDuration)
+                )
+            ).check(
+                matches(
+                    withText(
+                        String.format(
+                            "%02d:%02d:%02d",
+                            preset.hours,
+                            preset.minutes,
+                            preset.seconds
+                        )
+                    )
+                )
+            )
         }
     }
 
