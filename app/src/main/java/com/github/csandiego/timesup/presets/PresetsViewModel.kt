@@ -16,4 +16,10 @@ class PresetsViewModel(
     )
 
     val presets = repository.getAllByNameAscendingAsLiveData()
+
+    fun delete(position: Int) {
+        presets.value?.let {
+            repository.delete(it[position])
+        }
+    }
 }

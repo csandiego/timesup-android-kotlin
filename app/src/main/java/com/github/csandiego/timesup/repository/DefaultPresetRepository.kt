@@ -44,4 +44,10 @@ class DefaultPresetRepository(
     override fun getAsLiveData(presetId: Long) = dao.getAsLiveData(presetId)
 
     override fun getAllByNameAscendingAsLiveData() = dao.getAllByNameAscendingAsLiveData()
+
+    override fun delete(preset: Preset) {
+        coroutineScope.launch {
+            dao.delete(preset)
+        }
+    }
 }

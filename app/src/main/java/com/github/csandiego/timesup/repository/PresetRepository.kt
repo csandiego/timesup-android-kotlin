@@ -12,4 +12,6 @@ interface PresetRepository {
     fun getAsLiveData(presetId: Long): LiveData<Preset?>
 
     fun getAllByNameAscendingAsLiveData(): LiveData<List<Preset>>
+
+    fun delete(preset: Preset)
 }

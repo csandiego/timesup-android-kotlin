@@ -29,6 +29,7 @@ class PresetsViewModelTest {
         Preset(4, "1 hour", 1, 0, 0),
         Preset(5, "1.5 hours", 1, 30, 0)
     )
+    private val sortedPresets = presets.sortedBy { it.name }
 
     private lateinit var database: TimesUpDatabase
     private lateinit var repository: DefaultPresetRepository
@@ -60,6 +61,17 @@ class PresetsViewModelTest {
     @Test
     fun whenLoadedThenPresetsSortedByNameAscending() {
         assertThat(viewModel.presets.apply { observeForever {} }.value)
-            .containsExactlyElementsIn(presets.sortedBy { it.name })
+            .containsExactlyElementsIn(sortedPresets)
+    }
+
+    @Test
+    fun givenPositionWhenDeleteThenUpdateRepository() {
+        with (viewModel) {
+            presets.observeForever {}
+            delete(0)
+        }
+        runBlockingTest {
+            assertThat(repository.get(sortedPresets[0].id)).isNull()
+        }
     }
 }

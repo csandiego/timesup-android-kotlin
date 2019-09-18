@@ -9,7 +9,9 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.github.csandiego.timesup.R
 import com.github.csandiego.timesup.data.Preset
 import kotlinx.android.synthetic.main.fragment_presets.*
@@ -27,6 +29,7 @@ class PresetsFragment(
         with (recyclerView) {
             this.adapter = adapter
             layoutManager = LinearLayoutManager(context)
+            ItemTouchHelper(createItemTouchHelperCallback()).attachToRecyclerView(this)
         }
         fabNew.setOnClickListener {
             findNavController().navigate(
@@ -54,5 +57,20 @@ class PresetsFragment(
 
     override fun onPresetClick(preset: Preset) {
         startTimer(preset)
+    }
+
+    private fun createItemTouchHelperCallback() = object : ItemTouchHelper.SimpleCallback(
+        0,
+        ItemTouchHelper.START or ItemTouchHelper.END
+    ) {
+        override fun onMove(
+            recyclerView: RecyclerView,
+            viewHolder: RecyclerView.ViewHolder,
+            target: RecyclerView.ViewHolder
+        ) = false
+
+        override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+            viewModel.delete(viewHolder.adapterPosition)
+        }
     }
 }

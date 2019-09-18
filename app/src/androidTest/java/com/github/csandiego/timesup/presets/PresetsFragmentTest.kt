@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition
@@ -166,5 +166,29 @@ class PresetsFragmentTest {
                 hasExtra(AlarmClock.EXTRA_SKIP_UI, false)
             )
         )
+    }
+
+    @Test
+    fun whenPresetSwipeLeftThenDelete() {
+        onView(withId(R.id.recyclerView))
+            .perform(
+                scrollToPosition<PresetsViewHolder>(0),
+                actionOnItemAtPosition<PresetsViewHolder>(0, swipeLeft())
+            )
+        runBlockingTest {
+            assertThat(repository.get(sortedPresets[0].id)).isNull()
+        }
+    }
+
+    @Test
+    fun whenPresetSwipeRightThenDelete() {
+        onView(withId(R.id.recyclerView))
+            .perform(
+                scrollToPosition<PresetsViewHolder>(0),
+                actionOnItemAtPosition<PresetsViewHolder>(0, swipeRight())
+            )
+        runBlockingTest {
+            assertThat(repository.get(sortedPresets[0].id)).isNull()
+        }
     }
 }

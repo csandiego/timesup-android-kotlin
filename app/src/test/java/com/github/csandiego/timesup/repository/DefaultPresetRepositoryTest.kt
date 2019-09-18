@@ -98,4 +98,12 @@ class DefaultPresetRepositoryTest {
             observeForever {}
         }.value).containsExactlyElementsIn(presets.sortedBy { it.name })
     }
+
+    @Test
+    fun givenExistingPresetWhenDeleteThenUpdateDao() {
+        repository.delete(presets[0])
+        runBlockingTest {
+            assertThat(dao.get(presets[0].id)).isNull()
+        }
+    }
 }
