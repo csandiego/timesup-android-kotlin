@@ -161,6 +161,7 @@ class PresetsFragmentTest {
         intended(
             allOf(
                 hasAction(AlarmClock.ACTION_SET_TIMER),
+                hasExtra(AlarmClock.EXTRA_MESSAGE, sortedPresets[0].name),
                 hasExtra(AlarmClock.EXTRA_LENGTH, s),
                 hasExtra(AlarmClock.EXTRA_SKIP_UI, false)
             )

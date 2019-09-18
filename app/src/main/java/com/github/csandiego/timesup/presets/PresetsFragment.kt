@@ -43,6 +43,7 @@ class PresetsFragment(
             hours * 60 * 60 + minutes * 60 + seconds
         }
         val intent = Intent(AlarmClock.ACTION_SET_TIMER).apply {
+            putExtra(AlarmClock.EXTRA_MESSAGE, preset.name)
             putExtra(AlarmClock.EXTRA_LENGTH, s)
             putExtra(AlarmClock.EXTRA_SKIP_UI, false)
         }
