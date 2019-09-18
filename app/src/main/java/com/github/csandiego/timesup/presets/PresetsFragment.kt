@@ -44,7 +44,7 @@ class PresetsFragment(
         }
         val intent = Intent(AlarmClock.ACTION_SET_TIMER).apply {
             putExtra(AlarmClock.EXTRA_LENGTH, s)
-            putExtra(AlarmClock.EXTRA_SKIP_UI, true)
+            putExtra(AlarmClock.EXTRA_SKIP_UI, false)
         }
         if (intent.resolveActivity(requireActivity().packageManager) != null) {
             startActivity(intent)

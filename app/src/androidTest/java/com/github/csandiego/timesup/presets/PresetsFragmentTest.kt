@@ -162,7 +162,7 @@ class PresetsFragmentTest {
             allOf(
                 hasAction(AlarmClock.ACTION_SET_TIMER),
                 hasExtra(AlarmClock.EXTRA_LENGTH, s),
-                hasExtra(AlarmClock.EXTRA_SKIP_UI, true)
+                hasExtra(AlarmClock.EXTRA_SKIP_UI, false)
             )
         )
     }
