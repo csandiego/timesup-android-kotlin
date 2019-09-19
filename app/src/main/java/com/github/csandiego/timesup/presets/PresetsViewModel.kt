@@ -2,6 +2,7 @@ package com.github.csandiego.timesup.presets
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import com.github.csandiego.timesup.data.Preset
 import com.github.csandiego.timesup.repository.DefaultPresetRepository
 import com.github.csandiego.timesup.repository.PresetRepository
 
@@ -17,9 +18,7 @@ class PresetsViewModel(
 
     val presets = repository.getAllByNameAscendingAsLiveData()
 
-    fun delete(position: Int) {
-        presets.value?.let {
-            repository.delete(it[position])
-        }
+    fun delete(preset: Preset) {
+        repository.delete(preset)
     }
 }

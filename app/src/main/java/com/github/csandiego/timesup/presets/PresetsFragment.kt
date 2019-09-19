@@ -70,7 +70,9 @@ class PresetsFragment(
         ) = false
 
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-            viewModel.delete(viewHolder.adapterPosition)
+            (viewHolder as PresetsViewHolder).binding.preset?.let {
+                viewModel.delete(it)
+            }
         }
     }
 }

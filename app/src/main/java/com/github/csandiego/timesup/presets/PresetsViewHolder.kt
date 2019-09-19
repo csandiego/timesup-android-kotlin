@@ -5,15 +5,19 @@ import com.github.csandiego.timesup.data.Preset
 import com.github.csandiego.timesup.databinding.ListItemPresetsBinding
 
 class PresetsViewHolder(
-    private val binding: ListItemPresetsBinding,
+    val binding: ListItemPresetsBinding,
     private val callback: PresetsItemCallback
 ) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(preset: Preset) {
-        binding.preset = preset
-        binding.root.tag = "list_item_preset_${preset.id}"
-        binding.root.setOnClickListener {
-            callback.onPresetClick(preset)
+        with (binding) {
+            this.preset = preset
+            with (root) {
+                tag = preset.hashCode()
+                setOnClickListener {
+                    callback.onPresetClick(preset)
+                }
+            }
         }
     }
 }

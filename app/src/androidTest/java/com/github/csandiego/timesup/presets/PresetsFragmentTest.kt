@@ -94,26 +94,31 @@ class PresetsFragmentTest {
     }
 
     @Test
-    fun whenLoadedThenRecyclerViewItemSortedByNameAscending() {
-        sortedPresets.forEachIndexed { index, preset ->
-            val tag = "list_item_preset_${preset.id}"
-            onView(withId(R.id.recyclerView))
-                .perform(scrollToPosition<PresetsViewHolder>(index))
-            scenario.onFragment {
+    fun whenLoadedThenRecyclerViewSortedByNameAscending() {
+        scenario.onFragment {
+            sortedPresets.forEachIndexed { index, preset ->
                 assertThat(
                     it.view?.findViewById<RecyclerView>(R.id.recyclerView)
                         ?.findViewHolderForAdapterPosition(index)?.itemView?.tag
-                ).isEqualTo(tag)
+                ).isEqualTo(preset.hashCode())
             }
+        }
+    }
+
+    @Test
+    fun whenLoadedThenRecyclerViewDisplaysNameAndDuration() {
+        sortedPresets.forEachIndexed { index, preset ->
+            onView(withId(R.id.recyclerView))
+                .perform(scrollToPosition<PresetsViewHolder>(index))
             onView(
                 allOf(
-                    withParent(withTagValue(equalTo(tag))),
+                    withParent(withTagValue(equalTo(preset.hashCode()))),
                     withId(R.id.textViewName)
                 )
             ).check(matches(withText(preset.name)))
             onView(
                 allOf(
-                    withParent(withTagValue(equalTo(tag))),
+                    withParent(withTagValue(equalTo(preset.hashCode()))),
                     withId(R.id.textViewDuration)
                 )
             ).check(
