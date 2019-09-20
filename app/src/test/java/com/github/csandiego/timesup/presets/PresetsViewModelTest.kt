@@ -74,4 +74,30 @@ class PresetsViewModelTest {
             assertThat(repository.get(sortedPresets[0].id)).isNull()
         }
     }
+
+    @Test
+    fun `given unselected preset when toggleSelect then selection contains preset`() {
+        with (viewModel) {
+            toggleSelect(sortedPresets[0])
+            assertThat(selection.apply { observeForever {} }.value).contains(sortedPresets[0])
+        }
+    }
+
+    @Test
+    fun `given selected preset when toggleSelect then selection does not contain preset`() {
+        with (viewModel) {
+            toggleSelect(sortedPresets[0])
+            toggleSelect(sortedPresets[0])
+            assertThat(selection.apply { observeForever {} }.value).isEmpty()
+        }
+    }
+
+    @Test
+    fun `given selected items when clearSelection then selection is empty`() {
+        with (viewModel) {
+            toggleSelect(sortedPresets[0])
+            clearSelection()
+            assertThat(selection.apply { observeForever {} }.value).isEmpty()
+        }
+    }
 }

@@ -14,6 +14,7 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
+import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition
@@ -25,14 +26,14 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.csandiego.timesup.R
 import com.github.csandiego.timesup.data.Preset
+import com.github.csandiego.timesup.espresso.ViewMatchers.isActivated
 import com.github.csandiego.timesup.repository.DefaultPresetRepository
 import com.github.csandiego.timesup.room.TimesUpDatabase
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineScope
 import kotlinx.coroutines.test.runBlockingTest
-import org.hamcrest.Matchers.allOf
-import org.hamcrest.Matchers.equalTo
+import org.hamcrest.Matchers.*
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -55,7 +56,6 @@ class PresetsFragmentTest {
     private val sortedPresets = presets.sortedBy { it.name }
 
     private lateinit var database: TimesUpDatabase
-    private lateinit var repository: DefaultPresetRepository
     private lateinit var scenario: FragmentScenario<PresetsFragment>
 
     @get:Rule
@@ -73,7 +73,7 @@ class PresetsFragmentTest {
                 insertAll(presets)
             }
         }
-        repository = DefaultPresetRepository(dao, TestCoroutineScope())
+        val repository = DefaultPresetRepository(dao, TestCoroutineScope())
         val viewModel = PresetsViewModel(application, repository)
         scenario = launchFragmentInContainer(themeResId = R.style.Theme_TimesUp) {
             PresetsFragment {
@@ -154,7 +154,7 @@ class PresetsFragmentTest {
     }
 
     @Test
-    fun whenPresetClickedThenSendIntent() {
+    fun givenEmptySelectionWhenPresetClickedThenSendIntent() {
         onView(withId(R.id.recyclerView))
             .perform(
                 scrollToPosition<PresetsViewHolder>(0),
@@ -180,9 +180,8 @@ class PresetsFragmentTest {
                 scrollToPosition<PresetsViewHolder>(0),
                 actionOnItemAtPosition<PresetsViewHolder>(0, swipeLeft())
             )
-        runBlockingTest {
-            assertThat(repository.get(sortedPresets[0].id)).isNull()
-        }
+        onView(withTagValue(equalTo(sortedPresets[0].hashCode())))
+            .check(doesNotExist())
     }
 
     @Test
@@ -192,8 +191,80 @@ class PresetsFragmentTest {
                 scrollToPosition<PresetsViewHolder>(0),
                 actionOnItemAtPosition<PresetsViewHolder>(0, swipeRight())
             )
-        runBlockingTest {
-            assertThat(repository.get(sortedPresets[0].id)).isNull()
+        onView(withTagValue(equalTo(sortedPresets[0].hashCode())))
+            .check(doesNotExist())
+    }
+
+    @Test
+    fun givenEmptySelectionWhenPresetLongClickedThenAddToSelection() {
+        onView(withId(R.id.recyclerView))
+            .perform(
+                scrollToPosition<PresetsViewHolder>(0),
+                actionOnItemAtPosition<PresetsViewHolder>(0, longClick())
+            )
+        onView(withTagValue(equalTo(sortedPresets[0].hashCode())))
+            .check(matches(isActivated()))
+    }
+
+    @Test
+    fun givenSelectionWhenUnselectedPresetClickedThenAddToSelection() {
+        onView(withId(R.id.recyclerView))
+            .perform(
+                scrollToPosition<PresetsViewHolder>(0),
+                actionOnItemAtPosition<PresetsViewHolder>(0, longClick()),
+                actionOnItemAtPosition<PresetsViewHolder>(1, click())
+            )
+        repeat(2) {
+            onView(withTagValue(equalTo(sortedPresets[it].hashCode())))
+                .check(matches(isActivated()))
         }
+    }
+
+    @Test
+    fun givenSelectionWhenSelectedPresetClickedThenRemoveFromSelection() {
+        onView(withId(R.id.recyclerView))
+            .perform(
+                scrollToPosition<PresetsViewHolder>(0),
+                actionOnItemAtPosition<PresetsViewHolder>(0, longClick()),
+                actionOnItemAtPosition<PresetsViewHolder>(0, click())
+            )
+        onView(withTagValue(equalTo(sortedPresets[0].hashCode())))
+            .check(matches(not(isActivated())))
+    }
+
+    @Test
+    fun givenEmptySelectionWhenPresetLongClickedThenDisplayActionMode() {
+        onView(withId(R.id.recyclerView))
+            .perform(
+                scrollToPosition<PresetsViewHolder>(0),
+                actionOnItemAtPosition<PresetsViewHolder>(0, longClick())
+            )
+        onView(withResourceName("action_mode_bar"))
+            .check(matches(isDisplayed()))
+    }
+
+    @Test
+    fun givenSelectionWhenSelectedPresetClickedThenHideActionMode() {
+        onView(withId(R.id.recyclerView))
+            .perform(
+                scrollToPosition<PresetsViewHolder>(0),
+                actionOnItemAtPosition<PresetsViewHolder>(0, longClick()),
+                actionOnItemAtPosition<PresetsViewHolder>(0, click())
+            )
+        onView(withResourceName("action_mode_bar"))
+            .check(matches(not(isDisplayed())))
+    }
+
+    @Test
+    fun givenSelectionWhenActionModeCloseThenClearSelection() {
+        onView(withId(R.id.recyclerView))
+            .perform(
+                scrollToPosition<PresetsViewHolder>(0),
+                actionOnItemAtPosition<PresetsViewHolder>(0, longClick())
+            )
+        onView(withResourceName("action_mode_close_button"))
+            .perform(click())
+        onView(withTagValue(equalTo(sortedPresets[0].hashCode())))
+            .check(matches(not(isActivated())))
     }
 }

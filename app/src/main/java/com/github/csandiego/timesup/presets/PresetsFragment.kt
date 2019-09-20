@@ -3,6 +3,9 @@ package com.github.csandiego.timesup.presets
 import android.content.Intent
 import android.os.Bundle
 import android.provider.AlarmClock
+import android.view.ActionMode
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -18,14 +21,15 @@ import kotlinx.android.synthetic.main.fragment_presets.*
 
 class PresetsFragment(
     viewModelFactoryProducer: (() -> ViewModelProvider.Factory)?
-) : Fragment(R.layout.fragment_presets), PresetsItemCallback {
+) : Fragment(R.layout.fragment_presets), ActionMode.Callback, PresetsItemCallback {
 
     constructor() : this(null)
 
     private val viewModel by viewModels<PresetsViewModel>(factoryProducer = viewModelFactoryProducer)
+    private var actionMode: ActionMode? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val adapter = PresetsAdapter(this)
+        val adapter = PresetsAdapter(this, viewModel, viewLifecycleOwner)
         with (recyclerView) {
             this.adapter = adapter
             layoutManager = LinearLayoutManager(context)
@@ -36,8 +40,17 @@ class PresetsFragment(
                 PresetsFragmentDirections.actionPresetsFragmentToNewPresetFragment()
             )
         }
-        viewModel.presets.observe(viewLifecycleOwner) {
-            adapter.submitList(it)
+        with (viewModel) {
+            presets.observe(viewLifecycleOwner) {
+                adapter.submitList(it)
+            }
+            selection.observe(viewLifecycleOwner) {
+                if (it.isEmpty()) {
+                    actionMode?.finish()
+                } else {
+                    actionMode = requireActionMode()
+                }
+            }
         }
     }
 
@@ -56,7 +69,40 @@ class PresetsFragment(
     }
 
     override fun onPresetClick(preset: Preset) {
-        startTimer(preset)
+        val selection = viewModel.selection.value
+        if (selection == null || selection.isEmpty()) {
+            startTimer(preset)
+        } else {
+            viewModel.toggleSelect(preset)
+        }
+    }
+
+    override fun onPresetLongClick(preset: Preset): Boolean {
+        val selection = viewModel.selection.value
+        if (selection == null || selection.isEmpty()) {
+            viewModel.toggleSelect(preset)
+            return true
+        }
+        return false
+    }
+
+    private fun requireActionMode() = actionMode ?: requireActivity().startActionMode(this)
+
+    override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
+        return true
+    }
+
+    override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
+        return true
+    }
+
+    override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
+        return true
+    }
+
+    override fun onDestroyActionMode(mode: ActionMode) {
+        actionMode = null
+        viewModel.clearSelection()
     }
 
     private fun createItemTouchHelperCallback() = object : ItemTouchHelper.SimpleCallback(

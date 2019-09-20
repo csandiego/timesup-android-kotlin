@@ -7,6 +7,7 @@
     <style name="Base.Theme.TimesUp" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="appBarLayoutStyle">@style/Widget.MaterialComponents.AppBarLayout.Surface</item>
         <item name="textInputStyle">@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox</item>
+        <item name="windowActionModeOverlay">true</item>
     </style>
 
 </resources>
