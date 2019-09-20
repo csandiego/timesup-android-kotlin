@@ -15,31 +15,31 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class NewPresetFragment(
     viewModelFactoryProducer: (() -> ViewModelProvider.Factory)?
-) : DialogFragment(), DialogInterface.OnShowListener {
+) : DialogFragment() {
 
     constructor() : this(null)
 
-    val viewModel by viewModels<NewPresetViewModel>(factoryProducer = viewModelFactoryProducer)
+    private val viewModel by viewModels<NewPresetViewModel>(factoryProducer = viewModelFactoryProducer)
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val context = requireContext()
         val binding = FragmentNewPresetBinding.inflate(LayoutInflater.from(context)).apply {
             viewModel = this@NewPresetFragment.viewModel
-            with (numberPickerHours) {
+            with(numberPickerHours) {
                 minValue = 0
                 maxValue = 23
                 setFormatter {
                     String.format("%02d", it)
                 }
             }
-            with (numberPickerMinutes) {
+            with(numberPickerMinutes) {
                 minValue = 0
                 maxValue = 59
                 setFormatter {
                     String.format("%02d", it)
                 }
             }
-            with (numberPickerSeconds) {
+            with(numberPickerSeconds) {
                 minValue = 0
                 maxValue = 59
                 setFormatter {
@@ -53,13 +53,12 @@ class NewPresetFragment(
             .setPositiveButton(R.string.button_create) { _, _ -> viewModel.create() }
             .create()
             .apply {
-                setOnShowListener(this@NewPresetFragment)
+                setOnShowListener { dialog ->
+                    viewModel.showSaveButton.observe(this@NewPresetFragment) {
+                        (dialog as? AlertDialog)?.getButton(DialogInterface.BUTTON_POSITIVE)
+                            ?.isEnabled = it
+                    }
+                }
             }
-    }
-
-    override fun onShow(dialog: DialogInterface?) {
-        viewModel.showSaveButton.observe(this) {
-            (dialog as? AlertDialog)?.getButton(DialogInterface.BUTTON_POSITIVE)?.isEnabled = it
-        }
     }
 }
