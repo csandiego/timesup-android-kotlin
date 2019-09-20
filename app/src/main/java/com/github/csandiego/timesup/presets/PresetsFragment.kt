@@ -3,25 +3,21 @@ package com.github.csandiego.timesup.presets
 import android.content.Intent
 import android.os.Bundle
 import android.provider.AlarmClock
-import android.view.ActionMode
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
+import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.*
 import com.github.csandiego.timesup.R
 import com.github.csandiego.timesup.data.Preset
+import com.github.csandiego.timesup.databinding.ListItemPresetsBinding
 import kotlinx.android.synthetic.main.fragment_presets.*
 
 class PresetsFragment(
     viewModelFactoryProducer: (() -> ViewModelProvider.Factory)?
-) : Fragment(R.layout.fragment_presets), ActionMode.Callback, PresetsItemCallback {
+) : Fragment(R.layout.fragment_presets) {
 
     constructor() : this(null)
 
@@ -29,8 +25,8 @@ class PresetsFragment(
     private var actionMode: ActionMode? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val adapter = PresetsAdapter(this, viewModel, viewLifecycleOwner)
-        with (recyclerView) {
+        val adapter = createRecyclerViewAdapter()
+        with(recyclerView) {
             this.adapter = adapter
             layoutManager = LinearLayoutManager(context)
             ItemTouchHelper(createItemTouchHelperCallback()).attachToRecyclerView(this)
@@ -40,7 +36,7 @@ class PresetsFragment(
                 PresetsFragmentDirections.actionPresetsFragmentToNewPresetFragment()
             )
         }
-        with (viewModel) {
+        with(viewModel) {
             presets.observe(viewLifecycleOwner) {
                 adapter.submitList(it)
             }
@@ -48,7 +44,8 @@ class PresetsFragment(
                 if (it.isEmpty()) {
                     actionMode?.finish()
                 } else {
-                    actionMode = requireActionMode()
+                    actionMode =
+                        actionMode ?: requireActivity().startActionMode(createActionModeCallback())
                 }
             }
         }
@@ -68,47 +65,31 @@ class PresetsFragment(
         }
     }
 
-    override fun onPresetClick(preset: Preset) {
-        val selection = viewModel.selection.value
-        if (selection == null || selection.isEmpty()) {
-            startTimer(preset)
-        } else {
-            viewModel.toggleSelect(preset)
-        }
-    }
+    private fun createActionModeCallback() = object : ActionMode.Callback {
 
-    override fun onPresetLongClick(preset: Preset): Boolean {
-        val selection = viewModel.selection.value
-        if (selection == null || selection.isEmpty()) {
-            viewModel.toggleSelect(preset)
+        override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
             return true
         }
-        return false
-    }
 
-    private fun requireActionMode() = actionMode ?: requireActivity().startActionMode(this)
+        override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
+            return true
+        }
 
-    override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
-        return true
-    }
+        override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
+            return true
+        }
 
-    override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
-        return true
-    }
-
-    override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
-        return true
-    }
-
-    override fun onDestroyActionMode(mode: ActionMode) {
-        actionMode = null
-        viewModel.clearSelection()
+        override fun onDestroyActionMode(mode: ActionMode) {
+            actionMode = null
+            viewModel.clearSelection()
+        }
     }
 
     private fun createItemTouchHelperCallback() = object : ItemTouchHelper.SimpleCallback(
         0,
         ItemTouchHelper.START or ItemTouchHelper.END
     ) {
+
         override fun onMove(
             recyclerView: RecyclerView,
             viewHolder: RecyclerView.ViewHolder,
@@ -116,8 +97,71 @@ class PresetsFragment(
         ) = false
 
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-            (viewHolder as PresetsViewHolder).binding.preset?.let {
-                viewModel.delete(it)
+            with(viewModel) {
+                presets.value?.get(viewHolder.adapterPosition)?.let {
+                    delete(it)
+                }
+            }
+        }
+    }
+
+    private fun createDiffUtilItemCallback() = object : DiffUtil.ItemCallback<Preset>() {
+
+        override fun areItemsTheSame(oldItem: Preset, newItem: Preset) = oldItem.id == newItem.id
+
+        override fun areContentsTheSame(oldItem: Preset, newItem: Preset) = oldItem == newItem
+    }
+
+    private fun createRecyclerViewAdapter() =
+        object : ListAdapter<Preset, ViewHolder>(createDiffUtilItemCallback()) {
+
+            override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(
+                ListItemPresetsBinding.inflate(
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false
+                ).apply {
+                    root.setOnLongClickListener {
+                        preset?.let {
+                            val selection = viewModel.selection.value
+                            if (selection == null || selection.isEmpty()) {
+                                viewModel.toggleSelect(it)
+                                true
+                            } else {
+                                false
+                            }
+                        } ?: false
+                    }
+                    root.setOnClickListener {
+                        preset?.let {
+                            val selection = viewModel.selection.value
+                            if (selection == null || selection.isEmpty()) {
+                                startTimer(it)
+                            } else {
+                                viewModel.toggleSelect(it)
+                            }
+                        }
+                    }
+                    viewModel.selection.observe(viewLifecycleOwner) { selection ->
+                        preset?.let {
+                            root.isActivated = selection.contains(it)
+                        }
+                    }
+                }
+            )
+
+            override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+                holder.bind(getItem(position))
+            }
+        }
+
+    private class ViewHolder(private val binding: ListItemPresetsBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+
+        fun bind(preset: Preset) {
+            with(binding) {
+                this.preset = preset
+                root.tag = preset.hashCode()
             }
         }
     }

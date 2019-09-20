@@ -109,7 +109,7 @@ class PresetsFragmentTest {
     fun whenLoadedThenRecyclerViewDisplaysNameAndDuration() {
         sortedPresets.forEachIndexed { index, preset ->
             onView(withId(R.id.recyclerView))
-                .perform(scrollToPosition<PresetsViewHolder>(index))
+                .perform(scrollToPosition<RecyclerView.ViewHolder>(index))
             onView(
                 allOf(
                     withParent(withTagValue(equalTo(preset.hashCode()))),
@@ -157,8 +157,8 @@ class PresetsFragmentTest {
     fun givenEmptySelectionWhenPresetClickedThenSendIntent() {
         onView(withId(R.id.recyclerView))
             .perform(
-                scrollToPosition<PresetsViewHolder>(0),
-                actionOnItemAtPosition<PresetsViewHolder>(0, click())
+                scrollToPosition<RecyclerView.ViewHolder>(0),
+                actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click())
             )
         val s = sortedPresets[0].run {
             hours * 60 * 60 + minutes * 60 + seconds
@@ -177,8 +177,8 @@ class PresetsFragmentTest {
     fun whenPresetSwipeLeftThenDelete() {
         onView(withId(R.id.recyclerView))
             .perform(
-                scrollToPosition<PresetsViewHolder>(0),
-                actionOnItemAtPosition<PresetsViewHolder>(0, swipeLeft())
+                scrollToPosition<RecyclerView.ViewHolder>(0),
+                actionOnItemAtPosition<RecyclerView.ViewHolder>(0, swipeLeft())
             )
         onView(withTagValue(equalTo(sortedPresets[0].hashCode())))
             .check(doesNotExist())
@@ -188,8 +188,8 @@ class PresetsFragmentTest {
     fun whenPresetSwipeRightThenDelete() {
         onView(withId(R.id.recyclerView))
             .perform(
-                scrollToPosition<PresetsViewHolder>(0),
-                actionOnItemAtPosition<PresetsViewHolder>(0, swipeRight())
+                scrollToPosition<RecyclerView.ViewHolder>(0),
+                actionOnItemAtPosition<RecyclerView.ViewHolder>(0, swipeRight())
             )
         onView(withTagValue(equalTo(sortedPresets[0].hashCode())))
             .check(doesNotExist())
@@ -199,8 +199,8 @@ class PresetsFragmentTest {
     fun givenEmptySelectionWhenPresetLongClickedThenAddToSelection() {
         onView(withId(R.id.recyclerView))
             .perform(
-                scrollToPosition<PresetsViewHolder>(0),
-                actionOnItemAtPosition<PresetsViewHolder>(0, longClick())
+                scrollToPosition<RecyclerView.ViewHolder>(0),
+                actionOnItemAtPosition<RecyclerView.ViewHolder>(0, longClick())
             )
         onView(withTagValue(equalTo(sortedPresets[0].hashCode())))
             .check(matches(isActivated()))
@@ -210,9 +210,9 @@ class PresetsFragmentTest {
     fun givenSelectionWhenUnselectedPresetClickedThenAddToSelection() {
         onView(withId(R.id.recyclerView))
             .perform(
-                scrollToPosition<PresetsViewHolder>(0),
-                actionOnItemAtPosition<PresetsViewHolder>(0, longClick()),
-                actionOnItemAtPosition<PresetsViewHolder>(1, click())
+                scrollToPosition<RecyclerView.ViewHolder>(0),
+                actionOnItemAtPosition<RecyclerView.ViewHolder>(0, longClick()),
+                actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click())
             )
         repeat(2) {
             onView(withTagValue(equalTo(sortedPresets[it].hashCode())))
@@ -224,9 +224,9 @@ class PresetsFragmentTest {
     fun givenSelectionWhenSelectedPresetClickedThenRemoveFromSelection() {
         onView(withId(R.id.recyclerView))
             .perform(
-                scrollToPosition<PresetsViewHolder>(0),
-                actionOnItemAtPosition<PresetsViewHolder>(0, longClick()),
-                actionOnItemAtPosition<PresetsViewHolder>(0, click())
+                scrollToPosition<RecyclerView.ViewHolder>(0),
+                actionOnItemAtPosition<RecyclerView.ViewHolder>(0, longClick()),
+                actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click())
             )
         onView(withTagValue(equalTo(sortedPresets[0].hashCode())))
             .check(matches(not(isActivated())))
@@ -236,8 +236,8 @@ class PresetsFragmentTest {
     fun givenEmptySelectionWhenPresetLongClickedThenDisplayActionMode() {
         onView(withId(R.id.recyclerView))
             .perform(
-                scrollToPosition<PresetsViewHolder>(0),
-                actionOnItemAtPosition<PresetsViewHolder>(0, longClick())
+                scrollToPosition<RecyclerView.ViewHolder>(0),
+                actionOnItemAtPosition<RecyclerView.ViewHolder>(0, longClick())
             )
         onView(withResourceName("action_mode_bar"))
             .check(matches(isDisplayed()))
@@ -247,9 +247,9 @@ class PresetsFragmentTest {
     fun givenSelectionWhenSelectedPresetClickedThenHideActionMode() {
         onView(withId(R.id.recyclerView))
             .perform(
-                scrollToPosition<PresetsViewHolder>(0),
-                actionOnItemAtPosition<PresetsViewHolder>(0, longClick()),
-                actionOnItemAtPosition<PresetsViewHolder>(0, click())
+                scrollToPosition<RecyclerView.ViewHolder>(0),
+                actionOnItemAtPosition<RecyclerView.ViewHolder>(0, longClick()),
+                actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click())
             )
         onView(withResourceName("action_mode_bar"))
             .check(matches(not(isDisplayed())))
@@ -259,8 +259,8 @@ class PresetsFragmentTest {
     fun givenSelectionWhenActionModeCloseThenClearSelection() {
         onView(withId(R.id.recyclerView))
             .perform(
-                scrollToPosition<PresetsViewHolder>(0),
-                actionOnItemAtPosition<PresetsViewHolder>(0, longClick())
+                scrollToPosition<RecyclerView.ViewHolder>(0),
+                actionOnItemAtPosition<RecyclerView.ViewHolder>(0, longClick())
             )
         onView(withResourceName("action_mode_close_button"))
             .perform(click())
