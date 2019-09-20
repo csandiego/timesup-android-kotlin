@@ -66,7 +66,7 @@ class PresetsViewModelTest {
 
     @Test
     fun givenPositionWhenDeleteThenUpdateRepository() {
-        with (viewModel) {
+        with(viewModel) {
             presets.observeForever {}
             delete(sortedPresets[0])
         }
@@ -77,7 +77,7 @@ class PresetsViewModelTest {
 
     @Test
     fun `given unselected preset when toggleSelect then selection contains preset`() {
-        with (viewModel) {
+        with(viewModel) {
             toggleSelect(sortedPresets[0])
             assertThat(selection.apply { observeForever {} }.value).contains(sortedPresets[0])
         }
@@ -85,7 +85,7 @@ class PresetsViewModelTest {
 
     @Test
     fun `given selected preset when toggleSelect then selection does not contain preset`() {
-        with (viewModel) {
+        with(viewModel) {
             toggleSelect(sortedPresets[0])
             toggleSelect(sortedPresets[0])
             assertThat(selection.apply { observeForever {} }.value).isEmpty()
@@ -94,10 +94,36 @@ class PresetsViewModelTest {
 
     @Test
     fun `given selected items when clearSelection then selection is empty`() {
-        with (viewModel) {
+        with(viewModel) {
             toggleSelect(sortedPresets[0])
             clearSelection()
             assertThat(selection.apply { observeForever {} }.value).isEmpty()
+        }
+    }
+
+    @Test
+    fun `given selection when deleteSelected then update repository`() {
+        with(viewModel) {
+            repeat(2) {
+                toggleSelect(sortedPresets[it])
+            }
+            deleteSelected()
+        }
+        runBlockingTest {
+            repeat(2) {
+                assertThat(repository.get(sortedPresets[it].id)).isNull()
+            }
+        }
+    }
+
+    @Test
+    fun `given selection when deleteSelected then clear selection`() {
+        with(viewModel) {
+            repeat(2) {
+                toggleSelect(sortedPresets[it])
+            }
+            deleteSelected()
+            assertThat(selection.value).isEmpty()
         }
     }
 }

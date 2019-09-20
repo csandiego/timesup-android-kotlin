@@ -50,4 +50,10 @@ class DefaultPresetRepository(
             dao.delete(preset)
         }
     }
+
+    override fun deleteAll(presets: List<Preset>) {
+        coroutineScope.launch {
+            dao.deleteAll(presets)
+        }
+    }
 }

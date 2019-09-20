@@ -27,4 +27,7 @@ interface PresetDao {
 
     @Delete
     suspend fun delete(preset: Preset)
+
+    @Delete
+    suspend fun deleteAll(presets: List<Preset>)
 }

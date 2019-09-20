@@ -46,6 +46,9 @@ class PresetsFragment(
                 } else {
                     actionMode =
                         actionMode ?: requireActivity().startActionMode(createActionModeCallback())
+                    actionMode?.menu?.findItem(R.id.menu_edit)?.run {
+                        isVisible = it.size == 1
+                    }
                 }
             }
         }
@@ -67,17 +70,20 @@ class PresetsFragment(
 
     private fun createActionModeCallback() = object : ActionMode.Callback {
 
-        override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
-            return true
+        override fun onActionItemClicked(mode: ActionMode, item: MenuItem) = when (item.itemId) {
+            R.id.menu_delete -> {
+                viewModel.deleteSelected()
+                true
+            }
+            else -> false
         }
 
         override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
+            mode.menuInflater.inflate(R.menu.preset_list_action_menu, menu)
             return true
         }
 
-        override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
-            return true
-        }
+        override fun onPrepareActionMode(mode: ActionMode, menu: Menu) = false
 
         override fun onDestroyActionMode(mode: ActionMode) {
             actionMode = null

@@ -44,4 +44,15 @@ class PresetsViewModel(
             }
         }
     }
+
+    fun deleteSelected() {
+        val selection = _selection.value
+
+        if (selection == null || selection.isEmpty()) {
+            return
+        }
+
+        _selection.value = emptySet()
+        repository.deleteAll(selection.toList())
+    }
 }

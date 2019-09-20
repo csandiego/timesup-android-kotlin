@@ -106,4 +106,14 @@ class DefaultPresetRepositoryTest {
             assertThat(dao.get(presets[0].id)).isNull()
         }
     }
+
+    @Test
+    fun givenExistingPresetsWhenDeleteAllThenUpdateDao() {
+        repository.deleteAll(presets.subList(0, 2))
+        runBlockingTest {
+            repeat(2) {
+                assertThat(dao.get(presets[it].id)).isNull()
+            }
+        }
+    }
 }

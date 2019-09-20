@@ -267,4 +267,56 @@ class PresetsFragmentTest {
         onView(withTagValue(equalTo(sortedPresets[0].hashCode())))
             .check(matches(not(isActivated())))
     }
+
+    @Test
+    fun whenDisplayActionModeThenShowMenu() {
+        onView(withId(R.id.recyclerView))
+            .perform(
+                scrollToPosition<RecyclerView.ViewHolder>(0),
+                actionOnItemAtPosition<RecyclerView.ViewHolder>(0, longClick())
+            )
+        onView(withResourceName("menu_edit"))
+            .check(matches(isDisplayed()))
+        onView(withResourceName("menu_delete"))
+            .check(matches(isDisplayed()))
+    }
+
+    @Test
+    fun givenActionModeDisplayedWhenOnePresetSelectedThenShowEditMenu() {
+        onView(withId(R.id.recyclerView))
+            .perform(
+                scrollToPosition<RecyclerView.ViewHolder>(0),
+                actionOnItemAtPosition<RecyclerView.ViewHolder>(0, longClick())
+            )
+        onView(withResourceName("menu_edit"))
+            .check(matches(isDisplayed()))
+    }
+
+    @Test
+    fun givenActionModeDisplayedWhenMoreThanOnePresetSelectedThenHideEditMenu() {
+        onView(withId(R.id.recyclerView))
+            .perform(
+                scrollToPosition<RecyclerView.ViewHolder>(0),
+                actionOnItemAtPosition<RecyclerView.ViewHolder>(0, longClick()),
+                actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click())
+            )
+        onView(withResourceName("menu_edit"))
+            .check(doesNotExist())
+    }
+
+    @Test
+    fun givenSelectionWhenDeleteMenuSelectedThenDelete() {
+        onView(withId(R.id.recyclerView))
+            .perform(
+                scrollToPosition<RecyclerView.ViewHolder>(0),
+                actionOnItemAtPosition<RecyclerView.ViewHolder>(0, longClick()),
+                actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click())
+            )
+        onView(withResourceName("menu_delete"))
+            .perform(click())
+        repeat(2) {
+            onView(withTagValue(equalTo(sortedPresets[it].hashCode())))
+                .check(doesNotExist())
+        }
+    }
 }
