@@ -56,4 +56,10 @@ class DefaultPresetRepository(
             dao.deleteAll(presets)
         }
     }
+
+    override fun save(preset: Preset) {
+        coroutineScope.launch {
+            dao.save(preset)
+        }
+    }
 }

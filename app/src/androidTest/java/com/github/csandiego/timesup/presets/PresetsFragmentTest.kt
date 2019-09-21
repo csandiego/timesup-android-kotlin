@@ -319,4 +319,23 @@ class PresetsFragmentTest {
                 .check(doesNotExist())
         }
     }
+
+    @Test
+    fun givenSelectionWhenEditMenuSelectedThenNavigateToPresetEditorFragment() {
+        val navController = mock(NavController::class.java)
+        scenario.onFragment {
+            Navigation.setViewNavController(it.requireView(), navController)
+        }
+        onView(withId(R.id.recyclerView))
+            .perform(
+                scrollToPosition<RecyclerView.ViewHolder>(0),
+                actionOnItemAtPosition<RecyclerView.ViewHolder>(0, longClick())
+            )
+        onView(withResourceName("menu_edit"))
+            .perform(click())
+        verify(navController).navigate(
+            PresetsFragmentDirections
+                .actionPresetsFragmentToPresetEditorFragment(sortedPresets[0].id)
+        )
+    }
 }

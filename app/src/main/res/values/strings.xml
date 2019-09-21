@@ -1,7 +1,9 @@
 <resources>
     <string name="app_name">TimesUp</string>
     <string name="newpreset_title">New Preset</string>
+    <string name="editor_title">Edit Preset</string>
     <string name="button_create">Create</string>
+    <string name="button_save">Save</string>
     <string name="edit_text_preset_name_hint">Name (e.g. Brew Coffee, Soft-boiled Eggs, etc.)</string>
     <string name="menu_edit">Edit</string>
     <string name="menu_delete">Delete</string>

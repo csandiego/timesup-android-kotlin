@@ -16,4 +16,6 @@ interface PresetRepository {
     fun delete(preset: Preset)
 
     fun deleteAll(presets: List<Preset>)
+
+    fun save(preset: Preset)
 }

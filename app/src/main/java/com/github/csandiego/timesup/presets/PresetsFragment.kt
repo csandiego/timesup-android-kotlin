@@ -71,6 +71,15 @@ class PresetsFragment(
     private fun createActionModeCallback() = object : ActionMode.Callback {
 
         override fun onActionItemClicked(mode: ActionMode, item: MenuItem) = when (item.itemId) {
+            R.id.menu_edit -> {
+                viewModel.selection.value?.let {
+                    findNavController().navigate(
+                        PresetsFragmentDirections
+                            .actionPresetsFragmentToPresetEditorFragment(it.first().id)
+                    )
+                    true
+                } ?: false
+            }
             R.id.menu_delete -> {
                 viewModel.deleteSelected()
                 true

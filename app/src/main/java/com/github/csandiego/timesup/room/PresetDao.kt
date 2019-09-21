@@ -1,10 +1,7 @@
 package com.github.csandiego.timesup.room
 
 import androidx.lifecycle.LiveData
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Query
+import androidx.room.*
 import com.github.csandiego.timesup.data.Preset
 
 @Dao
@@ -30,4 +27,7 @@ interface PresetDao {
 
     @Delete
     suspend fun deleteAll(presets: List<Preset>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun save(preset: Preset)
 }

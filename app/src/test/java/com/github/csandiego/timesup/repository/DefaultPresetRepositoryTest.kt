@@ -116,4 +116,22 @@ class DefaultPresetRepositoryTest {
             }
         }
     }
+
+    @Test
+    fun givenNewPresetWhenSaveThenUpdateDao() {
+        val preset = Preset(presets.size.toLong(), "5 hours", 5, 0, 0)
+        repository.save(preset)
+        runBlockingTest {
+            assertThat(dao.get(preset.id)).isEqualTo(preset)
+        }
+    }
+
+    @Test
+    fun givenExistingPresetWhenSaveThenUpdateDao() {
+        val preset = presets[0].copy(name = "Test")
+        repository.save(preset)
+        runBlockingTest {
+            assertThat(dao.get(preset.id)).isEqualTo(preset)
+        }
+    }
 }
