@@ -76,7 +76,7 @@ class PresetsFragment(
                     it.elementAtOrNull(0)?.let {
                         findNavController().navigate(
                             PresetsFragmentDirections
-                                .actionPresetsFragmentToPresetEditorFragment(it.id)
+                                .actionPresetsFragmentToEditPresetFragment(it.id)
                         )
                         true
                     }

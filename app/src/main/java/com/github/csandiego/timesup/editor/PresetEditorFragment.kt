@@ -9,24 +9,16 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
-import androidx.navigation.fragment.navArgs
 import com.github.csandiego.timesup.R
 import com.github.csandiego.timesup.databinding.FragmentPresetEditorBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
-class PresetEditorFragment(
+abstract class PresetEditorFragment(
     viewModelFactoryProducer: (() -> ViewModelProvider.Factory)?
 ) : DialogFragment() {
 
-    constructor() : this(null)
-
-    private val viewModel by viewModels<PresetEditorViewModel>(factoryProducer = viewModelFactoryProducer)
-    private val params by navArgs<PresetEditorFragmentArgs>()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel.load(params.presetId)
-    }
+    protected val viewModel by viewModels<PresetEditorViewModel>(factoryProducer = viewModelFactoryProducer)
+    protected abstract val titleResourceId: Int
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val context = requireContext()
@@ -56,7 +48,7 @@ class PresetEditorFragment(
             lifecycleOwner = this@PresetEditorFragment
         }
         return MaterialAlertDialogBuilder(context)
-            .setTitle(R.string.editor_title)
+            .setTitle(titleResourceId)
             .setView(binding.root)
             .setPositiveButton(R.string.button_save) { _, _ -> viewModel.save() }
             .create()

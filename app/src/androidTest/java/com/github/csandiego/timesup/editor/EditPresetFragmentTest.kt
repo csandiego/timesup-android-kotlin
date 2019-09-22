@@ -32,14 +32,14 @@ import org.junit.runner.RunWith
 
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
-class PresetEditorFragmentTest {
+class EditPresetFragmentTest {
 
     private val preset = Preset(1, "1 minute", 0, 1, 0)
 
     private lateinit var database: TimesUpDatabase
     private lateinit var repository: DefaultPresetRepository
     private lateinit var viewModel: PresetEditorViewModel
-    private lateinit var scenario: FragmentScenario<PresetEditorFragment>
+    private lateinit var scenario: FragmentScenario<EditPresetFragment>
 
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
@@ -63,7 +63,7 @@ class PresetEditorFragmentTest {
             },
             R.style.Theme_TimesUp
         ) {
-            PresetEditorFragment {
+            EditPresetFragment {
                 object : ViewModelProvider.Factory {
                     @Suppress("UNCHECKED_CAST")
                     override fun <T : ViewModel> create(modelClass: Class<T>): T {

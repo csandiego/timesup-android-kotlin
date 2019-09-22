@@ -335,7 +335,7 @@ class PresetsFragmentTest {
             .perform(click())
         verify(navController).navigate(
             PresetsFragmentDirections
-                .actionPresetsFragmentToPresetEditorFragment(sortedPresets[0].id)
+                .actionPresetsFragmentToEditPresetFragment(sortedPresets[0].id)
         )
     }
 }
