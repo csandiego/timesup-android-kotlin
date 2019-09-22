@@ -12,7 +12,7 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
-import androidx.test.espresso.assertion.ViewAssertions
+import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.csandiego.timesup.R
@@ -78,6 +78,30 @@ class EditPresetFragmentTest {
     @After
     fun tearDown() {
         database.close()
+    }
+
+    @Test
+    fun whenLoadedBindIntoView() {
+        onView(withId(R.id.editTextName))
+            .check(matches(withText(preset.name)))
+        onView(
+            allOf(
+                withParent(withId(R.id.numberPickerHours)),
+                withClassName(endsWith("CustomEditText"))
+            )
+        ).check(matches(withText(String.format("%02d", preset.hours))))
+        onView(
+            allOf(
+                withParent(withId(R.id.numberPickerMinutes)),
+                withClassName(endsWith("CustomEditText"))
+            )
+        ).check(matches(withText(String.format("%02d", preset.minutes))))
+        onView(
+            allOf(
+                withParent(withId(R.id.numberPickerSeconds)),
+                withClassName(endsWith("CustomEditText"))
+            )
+        ).check(matches(withText(String.format("%02d", preset.seconds))))
     }
 
     @Test
@@ -173,7 +197,7 @@ class EditPresetFragmentTest {
                 isAssignableFrom(Button::class.java),
                 withText(R.string.button_save)
             )
-        ).check(ViewAssertions.matches(not(isEnabled())))
+        ).check(matches(not(isEnabled())))
     }
 
     @Test
@@ -221,7 +245,7 @@ class EditPresetFragmentTest {
                 isAssignableFrom(Button::class.java),
                 withText(R.string.button_save)
             )
-        ).check(ViewAssertions.matches(not(isEnabled())))
+        ).check(matches(not(isEnabled())))
     }
 
     @Test
@@ -266,7 +290,7 @@ class EditPresetFragmentTest {
                 isAssignableFrom(Button::class.java),
                 withText(R.string.button_save)
             )
-        ).check(ViewAssertions.matches(not(isEnabled())))
+        ).check(matches(not(isEnabled())))
     }
 
     @Test
@@ -314,7 +338,7 @@ class EditPresetFragmentTest {
                 isAssignableFrom(Button::class.java),
                 withText(R.string.button_save)
             )
-        ).check(ViewAssertions.matches(isEnabled()))
+        ).check(matches(isEnabled()))
     }
 
     @Test

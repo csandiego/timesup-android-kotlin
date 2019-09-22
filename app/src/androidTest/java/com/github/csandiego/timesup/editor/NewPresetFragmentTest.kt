@@ -69,6 +69,31 @@ class NewPresetFragmentTest {
     }
 
     @Test
+    fun whenLoadedBindIntoView() {
+        val preset = Preset()
+        onView(withId(R.id.editTextName))
+            .check(matches(withText(preset.name)))
+        onView(
+            allOf(
+                withParent(withId(R.id.numberPickerHours)),
+                withClassName(endsWith("CustomEditText"))
+            )
+        ).check(matches(withText(String.format("%02d", preset.hours))))
+        onView(
+            allOf(
+                withParent(withId(R.id.numberPickerMinutes)),
+                withClassName(endsWith("CustomEditText"))
+            )
+        ).check(matches(withText(String.format("%02d", preset.minutes))))
+        onView(
+            allOf(
+                withParent(withId(R.id.numberPickerSeconds)),
+                withClassName(endsWith("CustomEditText"))
+            )
+        ).check(matches(withText(String.format("%02d", preset.seconds))))
+    }
+
+    @Test
     fun whenNameAndDurationEnteredThenBindIntoViewModel() {
         onView(withId(R.id.editTextName))
             .perform(
