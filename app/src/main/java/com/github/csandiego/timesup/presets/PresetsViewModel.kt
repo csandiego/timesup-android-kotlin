@@ -28,31 +28,33 @@ class PresetsViewModel(
     val selection: LiveData<Set<Preset>> = _selection
 
     fun toggleSelect(preset: Preset) {
-        _selection.value = _selection.value?.let {
-            if (it.contains(preset)) {
-                it - preset
-            } else {
-                it + preset
-            }
-        } ?: setOf(preset)
+        with (_selection) {
+            value = value?.let {
+                if (it.contains(preset)) {
+                    it - preset
+                } else {
+                    it + preset
+                }
+            } ?: setOf(preset)
+        }
     }
 
     fun clearSelection() {
-        _selection.value?.run {
-            if (isNotEmpty()) {
-                _selection.value = emptySet()
+        with(_selection) {
+            if (value?.isNotEmpty() == true) {
+                value = emptySet()
             }
         }
     }
 
     fun deleteSelected() {
-        val selection = _selection.value
-
-        if (selection == null || selection.isEmpty()) {
-            return
+        with(_selection) {
+            val selection = value
+            if (selection.isNullOrEmpty()) {
+                return
+            }
+            value = emptySet()
+            repository.deleteAll(selection.toList())
         }
-
-        _selection.value = emptySet()
-        repository.deleteAll(selection.toList())
     }
 }

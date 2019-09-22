@@ -137,17 +137,17 @@ class PresetsFragmentTest {
     }
 
     @Test
-    fun whenLoadedThenFabNewDisplayed() {
-        onView(withId(R.id.fabNew)).check(matches(isDisplayed()))
+    fun whenLoadedThenButtonNewDisplayed() {
+        onView(withId(R.id.buttonNew)).check(matches(isDisplayed()))
     }
 
     @Test
-    fun whenFabNewClickedThenNavigateToNewPresetFragment() {
+    fun whenButtonNewClickedThenNavigateToNewPresetFragment() {
         val navController = mock(NavController::class.java)
         scenario.onFragment {
             Navigation.setViewNavController(it.requireView(), navController)
         }
-        onView(withId(R.id.fabNew)).perform(click())
+        onView(withId(R.id.buttonNew)).perform(click())
         verify(navController).navigate(
             PresetsFragmentDirections.actionPresetsFragmentToNewPresetFragment()
         )
@@ -244,7 +244,7 @@ class PresetsFragmentTest {
     }
 
     @Test
-    fun givenSelectionWhenSelectedPresetClickedThenHideActionMode() {
+    fun givenActionModeDisplayedWhenDeselectAllThenHideActionMode() {
         onView(withId(R.id.recyclerView))
             .perform(
                 scrollToPosition<RecyclerView.ViewHolder>(0),
@@ -256,7 +256,7 @@ class PresetsFragmentTest {
     }
 
     @Test
-    fun givenSelectionWhenActionModeCloseThenClearSelection() {
+    fun givenActionModeDisplayedWhenActionModeClosedThenDeselectAll() {
         onView(withId(R.id.recyclerView))
             .perform(
                 scrollToPosition<RecyclerView.ViewHolder>(0),
@@ -269,15 +269,15 @@ class PresetsFragmentTest {
     }
 
     @Test
-    fun whenDisplayActionModeThenShowMenu() {
+    fun whenActionModeDisplayedThenShowMenu() {
         onView(withId(R.id.recyclerView))
             .perform(
                 scrollToPosition<RecyclerView.ViewHolder>(0),
                 actionOnItemAtPosition<RecyclerView.ViewHolder>(0, longClick())
             )
-        onView(withResourceName("menu_edit"))
+        onView(withResourceName("menuEdit"))
             .check(matches(isDisplayed()))
-        onView(withResourceName("menu_delete"))
+        onView(withResourceName("menuDelete"))
             .check(matches(isDisplayed()))
     }
 
@@ -288,7 +288,7 @@ class PresetsFragmentTest {
                 scrollToPosition<RecyclerView.ViewHolder>(0),
                 actionOnItemAtPosition<RecyclerView.ViewHolder>(0, longClick())
             )
-        onView(withResourceName("menu_edit"))
+        onView(withResourceName("menuEdit"))
             .check(matches(isDisplayed()))
     }
 
@@ -300,7 +300,7 @@ class PresetsFragmentTest {
                 actionOnItemAtPosition<RecyclerView.ViewHolder>(0, longClick()),
                 actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click())
             )
-        onView(withResourceName("menu_edit"))
+        onView(withResourceName("menuEdit"))
             .check(doesNotExist())
     }
 
@@ -312,7 +312,7 @@ class PresetsFragmentTest {
                 actionOnItemAtPosition<RecyclerView.ViewHolder>(0, longClick()),
                 actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click())
             )
-        onView(withResourceName("menu_delete"))
+        onView(withResourceName("menuDelete"))
             .perform(click())
         repeat(2) {
             onView(withTagValue(equalTo(sortedPresets[it].hashCode())))
@@ -331,7 +331,7 @@ class PresetsFragmentTest {
                 scrollToPosition<RecyclerView.ViewHolder>(0),
                 actionOnItemAtPosition<RecyclerView.ViewHolder>(0, longClick())
             )
-        onView(withResourceName("menu_edit"))
+        onView(withResourceName("menuEdit"))
             .perform(click())
         verify(navController).navigate(
             PresetsFragmentDirections

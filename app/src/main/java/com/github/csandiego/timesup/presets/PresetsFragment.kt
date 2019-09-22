@@ -31,7 +31,7 @@ class PresetsFragment(
             layoutManager = LinearLayoutManager(context)
             ItemTouchHelper(createItemTouchHelperCallback()).attachToRecyclerView(this)
         }
-        fabNew.setOnClickListener {
+        buttonNew.setOnClickListener {
             findNavController().navigate(
                 PresetsFragmentDirections.actionPresetsFragmentToNewPresetFragment()
             )
@@ -46,7 +46,7 @@ class PresetsFragment(
                 } else {
                     actionMode =
                         actionMode ?: requireActivity().startActionMode(createActionModeCallback())
-                    actionMode?.menu?.findItem(R.id.menu_edit)?.run {
+                    actionMode?.menu?.findItem(R.id.menuEdit)?.run {
                         isVisible = it.size == 1
                     }
                 }
@@ -71,16 +71,18 @@ class PresetsFragment(
     private fun createActionModeCallback() = object : ActionMode.Callback {
 
         override fun onActionItemClicked(mode: ActionMode, item: MenuItem) = when (item.itemId) {
-            R.id.menu_edit -> {
+            R.id.menuEdit -> {
                 viewModel.selection.value?.let {
-                    findNavController().navigate(
-                        PresetsFragmentDirections
-                            .actionPresetsFragmentToPresetEditorFragment(it.first().id)
-                    )
-                    true
-                } ?: false
+                    it.elementAtOrNull(0)?.let {
+                        findNavController().navigate(
+                            PresetsFragmentDirections
+                                .actionPresetsFragmentToPresetEditorFragment(it.id)
+                        )
+                        true
+                    }
+                } ?: throw IllegalStateException("No selected preset for editing")
             }
-            R.id.menu_delete -> {
+            R.id.menuDelete -> {
                 viewModel.deleteSelected()
                 true
             }
@@ -115,7 +117,7 @@ class PresetsFragment(
             with(viewModel) {
                 presets.value?.get(viewHolder.adapterPosition)?.let {
                     delete(it)
-                }
+                } ?: throw IllegalStateException("No corresponding preset for deletion")
             }
         }
     }
@@ -138,22 +140,24 @@ class PresetsFragment(
                 ).apply {
                     root.setOnLongClickListener {
                         preset?.let {
-                            val selection = viewModel.selection.value
-                            if (selection == null || selection.isEmpty()) {
-                                viewModel.toggleSelect(it)
-                                true
-                            } else {
-                                false
+                            viewModel.run {
+                                if (selection.value.isNullOrEmpty()) {
+                                    toggleSelect(it)
+                                    true
+                                } else {
+                                    false
+                                }
                             }
                         } ?: false
                     }
                     root.setOnClickListener {
                         preset?.let {
-                            val selection = viewModel.selection.value
-                            if (selection == null || selection.isEmpty()) {
-                                startTimer(it)
-                            } else {
-                                viewModel.toggleSelect(it)
+                            with (viewModel) {
+                                if (selection.value.isNullOrEmpty()) {
+                                    startTimer(it)
+                                } else {
+                                    toggleSelect(it)
+                                }
                             }
                         }
                     }

@@ -7,6 +7,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.csandiego.timesup.data.Preset
 import com.github.csandiego.timesup.repository.DefaultPresetRepository
+import com.github.csandiego.timesup.repository.PresetRepository
 import com.github.csandiego.timesup.room.TimesUpDatabase
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -32,7 +33,7 @@ class PresetsViewModelTest {
     private val sortedPresets = presets.sortedBy { it.name }
 
     private lateinit var database: TimesUpDatabase
-    private lateinit var repository: DefaultPresetRepository
+    private lateinit var repository: PresetRepository
     private lateinit var viewModel: PresetsViewModel
 
     @get:Rule
@@ -65,7 +66,7 @@ class PresetsViewModelTest {
     }
 
     @Test
-    fun givenPositionWhenDeleteThenUpdateRepository() {
+    fun givenPresetWhenDeleteThenUpdateRepository() {
         with(viewModel) {
             presets.observeForever {}
             delete(sortedPresets[0])
