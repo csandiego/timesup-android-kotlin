@@ -11,16 +11,12 @@
         android:label="fragment_presets"
         tools:layout="@layout/fragment_presets" >
         <action
-            android:id="@+id/action_presetsFragment_to_newPresetFragment"
-            app:destination="@id/newPresetFragment" />
-        <action
             android:id="@+id/action_presetsFragment_to_editPresetFragment"
             app:destination="@id/editPresetFragment" />
+        <action
+            android:id="@+id/action_presetsFragment_to_newPresetFragment"
+            app:destination="@id/newPresetFragment" />
     </fragment>
-    <dialog
-        android:id="@+id/newPresetFragment"
-        android:name="com.github.csandiego.timesup.newpreset.NewPresetFragment"
-        android:label="NewPresetFragment" />
     <dialog
         android:id="@+id/editPresetFragment"
         android:name="com.github.csandiego.timesup.editor.EditPresetFragment"
@@ -29,4 +25,8 @@
             android:name="presetId"
             app:argType="long" />
     </dialog>
+    <dialog
+        android:id="@+id/newPresetFragment"
+        android:name="com.github.csandiego.timesup.editor.NewPresetFragment"
+        android:label="NewPresetFragment" />
 </navigation>

@@ -1,4 +1,4 @@
-package com.github.csandiego.timesup.newpreset
+package com.github.csandiego.timesup.editor
 
 import android.app.Application
 import android.widget.Button
@@ -17,6 +17,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.csandiego.timesup.R
 import com.github.csandiego.timesup.data.Preset
 import com.github.csandiego.timesup.repository.DefaultPresetRepository
+import com.github.csandiego.timesup.repository.PresetRepository
 import com.github.csandiego.timesup.room.TimesUpDatabase
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -36,8 +37,8 @@ class NewPresetFragmentTest {
     private val preset = Preset(1, "1 minute", 0, 1, 0)
 
     private lateinit var database: TimesUpDatabase
-    private lateinit var repository: DefaultPresetRepository
-    private lateinit var viewModel: NewPresetViewModel
+    private lateinit var repository: PresetRepository
+    private lateinit var viewModel: PresetEditorViewModel
     private lateinit var scenario: FragmentScenario<NewPresetFragment>
 
     @get:Rule
@@ -50,7 +51,7 @@ class NewPresetFragmentTest {
             .allowMainThreadQueries()
             .build()
         repository = DefaultPresetRepository(database.presetDao(), TestCoroutineScope())
-        viewModel = NewPresetViewModel(application, repository)
+        viewModel = PresetEditorViewModel(application, repository)
         scenario = launchFragment(themeResId = R.style.Theme_TimesUp) {
             NewPresetFragment {
                 object : ViewModelProvider.Factory {
@@ -70,33 +71,49 @@ class NewPresetFragmentTest {
 
     @Test
     fun whenNameAndDurationEnteredThenBindIntoViewModel() {
-        onView(withId(R.id.editTextName)).perform(typeText(preset.name), closeSoftKeyboard())
-        onView(withId(R.id.numberPickerHours)).perform(longClick())
+        onView(withId(R.id.editTextName))
+            .perform(
+                typeText(preset.name),
+                closeSoftKeyboard()
+            )
+        onView(withId(R.id.numberPickerHours))
+            .perform(longClick())
         onView(
             allOf(
                 withParent(withId(R.id.numberPickerHours)),
                 withClassName(endsWith("CustomEditText"))
             )
-        ).perform(replaceText(preset.hours.toString()), closeSoftKeyboard())
-        onView(withId(R.id.numberPickerMinutes)).perform(longClick())
+        ).perform(
+            replaceText(preset.hours.toString()),
+            closeSoftKeyboard()
+        )
+        onView(withId(R.id.numberPickerMinutes))
+            .perform(longClick())
         onView(
             allOf(
                 withParent(withId(R.id.numberPickerMinutes)),
                 withClassName(endsWith("CustomEditText"))
             )
-        ).perform(replaceText(preset.minutes.toString()), closeSoftKeyboard())
-        onView(withId(R.id.numberPickerSeconds)).perform(longClick())
+        ).perform(
+            replaceText(preset.minutes.toString()),
+            closeSoftKeyboard()
+        )
+        onView(withId(R.id.numberPickerSeconds))
+            .perform(longClick())
         onView(
             allOf(
                 withParent(withId(R.id.numberPickerSeconds)),
                 withClassName(endsWith("CustomEditText"))
             )
-        ).perform(replaceText(preset.seconds.toString()), closeSoftKeyboard())
+        ).perform(
+            replaceText(preset.seconds.toString()),
+            closeSoftKeyboard()
+        )
         with(viewModel) {
-            assertThat(name).isEqualTo(preset.name)
-            assertThat(hours).isEqualTo(preset.hours)
-            assertThat(minutes).isEqualTo(preset.minutes)
-            assertThat(seconds).isEqualTo(preset.seconds)
+            assertThat(name.value).isEqualTo(preset.name)
+            assertThat(hours.value).isEqualTo(preset.hours)
+            assertThat(minutes.value).isEqualTo(preset.minutes)
+            assertThat(seconds.value).isEqualTo(preset.seconds)
         }
     }
 
@@ -105,113 +122,161 @@ class NewPresetFragmentTest {
         onView(
             allOf(
                 isAssignableFrom(Button::class.java),
-                withText(R.string.button_create)
+                withText(R.string.button_save)
             )
         ).check(matches(not(isEnabled())))
     }
 
     @Test
     fun whenNameNotEmptyAndDurationEmptyThenPositiveButtonDisabled() {
-        onView(withId(R.id.editTextName)).perform(typeText(preset.name), closeSoftKeyboard())
+        onView(withId(R.id.editTextName))
+            .perform(
+                typeText(preset.name),
+                closeSoftKeyboard()
+            )
         onView(
             allOf(
                 isAssignableFrom(Button::class.java),
-                withText(R.string.button_create)
+                withText(R.string.button_save)
             )
         ).check(matches(not(isEnabled())))
     }
 
     @Test
     fun whenNameEmptyAndDurationNotEmptyThenPositiveButtonDisabled() {
-        onView(withId(R.id.numberPickerHours)).perform(longClick())
+        onView(withId(R.id.numberPickerHours))
+            .perform(longClick())
         onView(
             allOf(
                 withParent(withId(R.id.numberPickerHours)),
                 withClassName(endsWith("CustomEditText"))
             )
-        ).perform(replaceText(preset.hours.toString()), closeSoftKeyboard())
-        onView(withId(R.id.numberPickerMinutes)).perform(longClick())
+        ).perform(
+            replaceText(preset.hours.toString()),
+            closeSoftKeyboard()
+        )
+        onView(withId(R.id.numberPickerMinutes))
+            .perform(longClick())
         onView(
             allOf(
                 withParent(withId(R.id.numberPickerMinutes)),
                 withClassName(endsWith("CustomEditText"))
             )
-        ).perform(replaceText(preset.minutes.toString()), closeSoftKeyboard())
-        onView(withId(R.id.numberPickerSeconds)).perform(longClick())
+        ).perform(
+            replaceText(preset.minutes.toString()),
+            closeSoftKeyboard()
+        )
+        onView(withId(R.id.numberPickerSeconds))
+            .perform(longClick())
         onView(
             allOf(
                 withParent(withId(R.id.numberPickerSeconds)),
                 withClassName(endsWith("CustomEditText"))
             )
-        ).perform(replaceText(preset.seconds.toString()), closeSoftKeyboard())
+        ).perform(
+            replaceText(preset.seconds.toString()),
+            closeSoftKeyboard()
+        )
         onView(
             allOf(
                 isAssignableFrom(Button::class.java),
-                withText(R.string.button_create)
+                withText(R.string.button_save)
             )
         ).check(matches(not(isEnabled())))
     }
 
     @Test
     fun whenNameNotEmptyAndDurationNotEmptyThenPositiveButtonEnabled() {
-        onView(withId(R.id.editTextName)).perform(typeText(preset.name), closeSoftKeyboard())
-        onView(withId(R.id.numberPickerHours)).perform(longClick())
+        onView(withId(R.id.editTextName))
+            .perform(
+                typeText(preset.name),
+                closeSoftKeyboard()
+            )
+        onView(withId(R.id.numberPickerHours))
+            .perform(longClick())
         onView(
             allOf(
                 withParent(withId(R.id.numberPickerHours)),
                 withClassName(endsWith("CustomEditText"))
             )
-        ).perform(replaceText(preset.hours.toString()), closeSoftKeyboard())
-        onView(withId(R.id.numberPickerMinutes)).perform(longClick())
+        ).perform(
+            replaceText(preset.hours.toString()),
+            closeSoftKeyboard()
+        )
+        onView(withId(R.id.numberPickerMinutes))
+            .perform(longClick())
         onView(
             allOf(
                 withParent(withId(R.id.numberPickerMinutes)),
                 withClassName(endsWith("CustomEditText"))
             )
-        ).perform(replaceText(preset.minutes.toString()), closeSoftKeyboard())
-        onView(withId(R.id.numberPickerSeconds)).perform(longClick())
+        ).perform(
+            replaceText(preset.minutes.toString()),
+            closeSoftKeyboard()
+        )
+        onView(withId(R.id.numberPickerSeconds))
+            .perform(longClick())
         onView(
             allOf(
                 withParent(withId(R.id.numberPickerSeconds)),
                 withClassName(endsWith("CustomEditText"))
             )
-        ).perform(replaceText(preset.seconds.toString()), closeSoftKeyboard())
+        ).perform(
+            replaceText(preset.seconds.toString()),
+            closeSoftKeyboard()
+        )
         onView(
             allOf(
                 isAssignableFrom(Button::class.java),
-                withText(R.string.button_create)
+                withText(R.string.button_save)
             )
         ).check(matches(isEnabled()))
     }
 
     @Test
     fun givenPositiveButtonEnabledWhenCreateThenUpdateRepository() {
-        onView(withId(R.id.editTextName)).perform(typeText(preset.name), closeSoftKeyboard())
-        onView(withId(R.id.numberPickerHours)).perform(longClick())
+        onView(withId(R.id.editTextName))
+            .perform(
+                typeText(preset.name),
+                closeSoftKeyboard()
+            )
+        onView(withId(R.id.numberPickerHours))
+            .perform(longClick())
         onView(
             allOf(
                 withParent(withId(R.id.numberPickerHours)),
                 withClassName(endsWith("CustomEditText"))
             )
-        ).perform(replaceText(preset.hours.toString()), closeSoftKeyboard())
-        onView(withId(R.id.numberPickerMinutes)).perform(longClick())
+        ).perform(
+            replaceText(preset.hours.toString()),
+            closeSoftKeyboard()
+        )
+        onView(withId(R.id.numberPickerMinutes))
+            .perform(longClick())
         onView(
             allOf(
                 withParent(withId(R.id.numberPickerMinutes)),
                 withClassName(endsWith("CustomEditText"))
             )
-        ).perform(replaceText(preset.minutes.toString()), closeSoftKeyboard())
-        onView(withId(R.id.numberPickerSeconds)).perform(longClick())
+        ).perform(
+            replaceText(preset.minutes.toString()),
+            closeSoftKeyboard()
+        )
+        onView(withId(R.id.numberPickerSeconds))
+            .perform(longClick())
         onView(
             allOf(
                 withParent(withId(R.id.numberPickerSeconds)),
                 withClassName(endsWith("CustomEditText"))
             )
-        ).perform(replaceText(preset.seconds.toString()), closeSoftKeyboard())
+        ).perform(
+            replaceText(preset.seconds.toString()),
+            closeSoftKeyboard()
+        )
         onView(
             allOf(
                 isAssignableFrom(Button::class.java),
-                withText(R.string.button_create)
+                withText(R.string.button_save)
             )
         ).perform(click())
         runBlockingTest {

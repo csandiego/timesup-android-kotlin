@@ -11,7 +11,7 @@ class EditPresetFragment(
 
     constructor() : this(null)
 
-    override val titleResourceId = R.string.editor_title
+    override val titleResourceId = R.string.editor_edit_title
     private val params by navArgs<EditPresetFragmentArgs>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
