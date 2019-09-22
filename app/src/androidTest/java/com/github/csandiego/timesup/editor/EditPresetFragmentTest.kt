@@ -29,6 +29,8 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mockito.spy
+import org.mockito.Mockito.verify
 
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
@@ -37,7 +39,6 @@ class EditPresetFragmentTest {
     private val preset = Preset(1, "1 minute", 0, 1, 0)
 
     private lateinit var database: TimesUpDatabase
-    private lateinit var repository: DefaultPresetRepository
     private lateinit var viewModel: PresetEditorViewModel
     private lateinit var scenario: FragmentScenario<EditPresetFragment>
 
@@ -55,11 +56,11 @@ class EditPresetFragmentTest {
                 insert(preset)
             }
         }
-        repository = DefaultPresetRepository(dao, TestCoroutineScope())
-        viewModel = PresetEditorViewModel(application, repository)
+        val repository = DefaultPresetRepository(dao, TestCoroutineScope())
+        viewModel = spy(PresetEditorViewModel(application, repository))
         scenario = launchFragment(
             Bundle().apply {
-              putLong("presetId", preset.id)
+                putLong("presetId", preset.id)
             },
             R.style.Theme_TimesUp
         ) {
@@ -317,7 +318,7 @@ class EditPresetFragmentTest {
     }
 
     @Test
-    fun givenPositiveButtonEnabledWhenCreateThenUpdateRepository() {
+    fun givenPositiveButtonEnabledWhenClickedThenSave() {
         onView(withId(R.id.editTextName))
             .perform(
                 replaceText(preset.name),
@@ -362,8 +363,6 @@ class EditPresetFragmentTest {
                 withText(R.string.button_save)
             )
         ).perform(click())
-        runBlockingTest {
-            assertThat(repository.get(preset.id)).isEqualTo(preset)
-        }
+        verify(viewModel).save()
     }
 }

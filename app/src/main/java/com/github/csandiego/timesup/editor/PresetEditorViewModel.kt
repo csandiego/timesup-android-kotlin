@@ -9,7 +9,7 @@ import com.github.csandiego.timesup.data.Preset
 import com.github.csandiego.timesup.repository.DefaultPresetRepository
 import com.github.csandiego.timesup.repository.PresetRepository
 
-class PresetEditorViewModel(
+open class PresetEditorViewModel(
     application: Application,
     private val repository: PresetRepository
 ) : AndroidViewModel(application) {
@@ -122,7 +122,7 @@ class PresetEditorViewModel(
     }
     val showSaveButton: LiveData<Boolean> = isValid
 
-    fun save() {
+    open fun save() {
         if (isValid.value == true) {
             preset.value?.let {
                 repository.save(it)

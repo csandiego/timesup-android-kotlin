@@ -17,18 +17,18 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.csandiego.timesup.R
 import com.github.csandiego.timesup.data.Preset
 import com.github.csandiego.timesup.repository.DefaultPresetRepository
-import com.github.csandiego.timesup.repository.PresetRepository
 import com.github.csandiego.timesup.room.TimesUpDatabase
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineScope
-import kotlinx.coroutines.test.runBlockingTest
 import org.hamcrest.Matchers.*
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mockito.spy
+import org.mockito.Mockito.verify
 
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
@@ -37,7 +37,6 @@ class NewPresetFragmentTest {
     private val preset = Preset(1, "1 minute", 0, 1, 0)
 
     private lateinit var database: TimesUpDatabase
-    private lateinit var repository: PresetRepository
     private lateinit var viewModel: PresetEditorViewModel
     private lateinit var scenario: FragmentScenario<NewPresetFragment>
 
@@ -50,8 +49,8 @@ class NewPresetFragmentTest {
         database = Room.inMemoryDatabaseBuilder(application, TimesUpDatabase::class.java)
             .allowMainThreadQueries()
             .build()
-        repository = DefaultPresetRepository(database.presetDao(), TestCoroutineScope())
-        viewModel = PresetEditorViewModel(application, repository)
+        val repository = DefaultPresetRepository(database.presetDao(), TestCoroutineScope())
+        viewModel = spy(PresetEditorViewModel(application, repository))
         scenario = launchFragment(themeResId = R.style.Theme_TimesUp) {
             NewPresetFragment {
                 object : ViewModelProvider.Factory {
@@ -234,7 +233,7 @@ class NewPresetFragmentTest {
     }
 
     @Test
-    fun givenPositiveButtonEnabledWhenCreateThenUpdateRepository() {
+    fun givenPositiveButtonEnabledWhenClickedThenSave() {
         onView(withId(R.id.editTextName))
             .perform(
                 typeText(preset.name),
@@ -279,8 +278,6 @@ class NewPresetFragmentTest {
                 withText(R.string.button_save)
             )
         ).perform(click())
-        runBlockingTest {
-            assertThat(repository.get(preset.id)).isEqualTo(preset)
-        }
+        verify(viewModel).save()
     }
 }
