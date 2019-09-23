@@ -14,12 +14,12 @@ import com.github.csandiego.timesup.R
 import com.github.csandiego.timesup.data.Preset
 import com.github.csandiego.timesup.databinding.ListItemPresetsBinding
 import kotlinx.android.synthetic.main.fragment_presets.*
+import javax.inject.Inject
 
-class PresetsFragment(
-    viewModelFactoryProducer: (() -> ViewModelProvider.Factory)?
-) : Fragment(R.layout.fragment_presets) {
+class PresetsFragment @Inject constructor(viewModelFactory: ViewModelProvider.Factory)
+    : Fragment(R.layout.fragment_presets) {
 
-    private val viewModel by viewModels<PresetsViewModel>(factoryProducer = viewModelFactoryProducer)
+    private val viewModel by viewModels<PresetsViewModel> { viewModelFactory }
     private var actionMode: ActionMode? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

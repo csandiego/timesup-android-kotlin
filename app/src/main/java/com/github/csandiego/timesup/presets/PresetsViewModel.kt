@@ -1,17 +1,14 @@
 package com.github.csandiego.timesup.presets
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.github.csandiego.timesup.data.Preset
 import com.github.csandiego.timesup.repository.PresetRepository
 import javax.inject.Inject
 
-class PresetsViewModel @Inject constructor(
-    application: Application,
-    private val repository: PresetRepository
-) : AndroidViewModel(application) {
+class PresetsViewModel @Inject constructor(private val repository: PresetRepository)
+    : ViewModel() {
 
     val presets = repository.getAllByNameAscendingAsLiveData()
 

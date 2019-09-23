@@ -1,18 +1,15 @@
 package com.github.csandiego.timesup.editor
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.github.csandiego.timesup.data.Preset
 import com.github.csandiego.timesup.repository.PresetRepository
 import javax.inject.Inject
 
-open class PresetEditorViewModel @Inject constructor(
-    application: Application,
-    private val repository: PresetRepository
-) : AndroidViewModel(application) {
+open class PresetEditorViewModel @Inject constructor(private val repository: PresetRepository)
+    : ViewModel() {
 
     private val preset = MediatorLiveData<Preset?>().apply { value = Preset() }
     

@@ -1,6 +1,6 @@
 package com.github.csandiego.timesup.editor
 
-import android.app.Application
+import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
@@ -33,8 +33,8 @@ class PresetEditorViewModelTest {
 
     @Before
     fun setUp() {
-        val application = ApplicationProvider.getApplicationContext<Application>()
-        database = Room.inMemoryDatabaseBuilder(application, TimesUpDatabase::class.java)
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        database = Room.inMemoryDatabaseBuilder(context, TimesUpDatabase::class.java)
             .allowMainThreadQueries()
             .build()
         val dao = database.presetDao().apply {
@@ -43,7 +43,7 @@ class PresetEditorViewModelTest {
             }
         }
         repository = DefaultPresetRepository(dao, TestCoroutineScope())
-        viewModel = PresetEditorViewModel(application, repository)
+        viewModel = PresetEditorViewModel(repository)
     }
 
     @After

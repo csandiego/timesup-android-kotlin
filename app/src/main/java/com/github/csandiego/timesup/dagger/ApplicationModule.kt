@@ -64,23 +64,17 @@ class ApplicationModule(private val application: TimesUpApplication) {
     @Provides
     @IntoMap
     @FragmentKey(NewPresetFragment::class)
-    fun provideNewPresetFragment(viewModelFactory: ViewModelProvider.Factory): Fragment {
-        return NewPresetFragment { viewModelFactory }
-    }
+    fun provideNewPresetFragment(fragment: NewPresetFragment): Fragment = fragment
 
     @Provides
     @IntoMap
     @FragmentKey(EditPresetFragment::class)
-    fun provideEditPresetFragment(viewModelFactory: ViewModelProvider.Factory): Fragment {
-        return EditPresetFragment { viewModelFactory }
-    }
+    fun provideEditPresetFragment(fragment: EditPresetFragment): Fragment = fragment
 
     @Provides
     @IntoMap
     @FragmentKey(PresetsFragment::class)
-    fun providePresetsFragment(viewModelFactory: ViewModelProvider.Factory): Fragment {
-        return PresetsFragment { viewModelFactory }
-    }
+    fun providePresetsFragment(fragment: PresetsFragment): Fragment = fragment
 
     @Provides
     fun provideFragmentFactory(factory: DaggerFragmentFactory): FragmentFactory = factory

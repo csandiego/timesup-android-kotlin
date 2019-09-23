@@ -1,6 +1,6 @@
 package com.github.csandiego.timesup.presets
 
-import android.app.Application
+import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
@@ -41,8 +41,8 @@ class PresetsViewModelTest {
 
     @Before
     fun setUp() {
-        val application = ApplicationProvider.getApplicationContext<Application>()
-        database = Room.inMemoryDatabaseBuilder(application, TimesUpDatabase::class.java)
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        database = Room.inMemoryDatabaseBuilder(context, TimesUpDatabase::class.java)
             .allowMainThreadQueries()
             .build()
         val dao = database.presetDao().apply {
@@ -51,7 +51,7 @@ class PresetsViewModelTest {
             }
         }
         repository = DefaultPresetRepository(dao, TestCoroutineScope())
-        viewModel = PresetsViewModel(application, repository)
+        viewModel = PresetsViewModel(repository)
     }
 
     @After

@@ -1,6 +1,6 @@
 package com.github.csandiego.timesup.editor
 
-import android.app.Application
+import android.content.Context
 import android.os.Bundle
 import android.widget.Button
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
@@ -47,8 +47,8 @@ class EditPresetFragmentTest {
 
     @Before
     fun setUp() {
-        val application = ApplicationProvider.getApplicationContext<Application>()
-        database = Room.inMemoryDatabaseBuilder(application, TimesUpDatabase::class.java)
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        database = Room.inMemoryDatabaseBuilder(context, TimesUpDatabase::class.java)
             .allowMainThreadQueries()
             .build()
         val dao = database.presetDao().apply {
@@ -57,21 +57,20 @@ class EditPresetFragmentTest {
             }
         }
         val repository = DefaultPresetRepository(dao, TestCoroutineScope())
-        viewModel = spy(PresetEditorViewModel(application, repository))
+        viewModel = spy(PresetEditorViewModel(repository))
+        val viewModelFactory = object : ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return viewModel as T
+            }
+        }
         scenario = launchFragment(
             Bundle().apply {
                 putLong("presetId", preset.id)
             },
             R.style.Theme_TimesUp
         ) {
-            EditPresetFragment {
-                object : ViewModelProvider.Factory {
-                    @Suppress("UNCHECKED_CAST")
-                    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                        return viewModel as T
-                    }
-                }
-            }
+            EditPresetFragment(viewModelFactory)
         }
     }
 

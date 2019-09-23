@@ -13,11 +13,10 @@ import com.github.csandiego.timesup.R
 import com.github.csandiego.timesup.databinding.FragmentPresetEditorBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
-abstract class PresetEditorFragment(
-    viewModelFactoryProducer: (() -> ViewModelProvider.Factory)?
-) : DialogFragment() {
+abstract class PresetEditorFragment(viewModelFactory: ViewModelProvider.Factory)
+    : DialogFragment() {
 
-    protected val viewModel by viewModels<PresetEditorViewModel>(factoryProducer = viewModelFactoryProducer)
+    protected val viewModel by viewModels<PresetEditorViewModel> { viewModelFactory }
     protected abstract val titleResourceId: Int
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
