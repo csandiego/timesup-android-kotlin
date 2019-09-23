@@ -13,8 +13,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
-        super.onCreate(savedInstanceState)
         supportFragmentManager.fragmentFactory = fragmentFactory
+        super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
     }
 }

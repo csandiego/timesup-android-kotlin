@@ -1,7 +1,6 @@
 package com.github.csandiego.timesup
 
 import android.app.Application
-import com.github.csandiego.timesup.dagger.ApplicationModule
 import com.github.csandiego.timesup.dagger.DaggerApplicationComponent
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -16,7 +15,7 @@ class TimesUpApplication : Application(), HasAndroidInjector {
     override fun onCreate() {
         super.onCreate()
         DaggerApplicationComponent.builder()
-            .applicationModule(ApplicationModule(this))
+            .application(this)
             .build()
             .inject(this)
     }
