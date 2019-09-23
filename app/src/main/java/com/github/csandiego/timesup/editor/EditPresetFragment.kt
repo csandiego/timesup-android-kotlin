@@ -9,8 +9,6 @@ class EditPresetFragment(
     viewModelFactoryProducer: (() -> ViewModelProvider.Factory)?
 ) : PresetEditorFragment(viewModelFactoryProducer) {
 
-    constructor() : this(null)
-
     override val titleResourceId = R.string.editor_edit_title
     private val params by navArgs<EditPresetFragmentArgs>()
 

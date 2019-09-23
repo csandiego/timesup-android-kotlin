@@ -19,8 +19,6 @@ class PresetsFragment(
     viewModelFactoryProducer: (() -> ViewModelProvider.Factory)?
 ) : Fragment(R.layout.fragment_presets) {
 
-    constructor() : this(null)
-
     private val viewModel by viewModels<PresetsViewModel>(factoryProducer = viewModelFactoryProducer)
     private var actionMode: ActionMode? = null
 
