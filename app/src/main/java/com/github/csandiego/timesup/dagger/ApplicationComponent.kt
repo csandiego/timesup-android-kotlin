@@ -12,8 +12,7 @@ import javax.inject.Singleton
     AndroidInjectionModule::class,
     ApplicationModule::class,
     RoomModule::class,
-    CoroutineScopeModule::class,
-    MainActivityInjectorModule::class
+    CoroutineScopeModule::class
 ])
 interface ApplicationComponent {
 
