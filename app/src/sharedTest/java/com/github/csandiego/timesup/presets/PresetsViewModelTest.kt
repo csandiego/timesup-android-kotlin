@@ -72,7 +72,7 @@ class PresetsViewModelTest {
     }
 
     @Test
-    fun `given unselected preset when toggleSelect then selection contains preset`() {
+    fun `givenUnselectedPresetWhenToggleSelectThenSelectionContainsPreset`() {
         with(viewModel) {
             toggleSelect(sortedPresets[0])
             assertThat(selection.apply { observeForever {} }.value).contains(sortedPresets[0])
@@ -80,7 +80,7 @@ class PresetsViewModelTest {
     }
 
     @Test
-    fun `given selected preset when toggleSelect then selection does not contain preset`() {
+    fun `givenSelectedPresetWhenToggleSelectThenSelectionDoesNotContainPreset`() {
         with(viewModel) {
             toggleSelect(sortedPresets[0])
             toggleSelect(sortedPresets[0])
@@ -89,7 +89,7 @@ class PresetsViewModelTest {
     }
 
     @Test
-    fun `given selected items when clearSelection then selection is empty`() {
+    fun `givenSelectedItemsWhenClearSelectionThenSelectionIsEmpty`() {
         with(viewModel) {
             toggleSelect(sortedPresets[0])
             clearSelection()
@@ -98,7 +98,7 @@ class PresetsViewModelTest {
     }
 
     @Test
-    fun `given selection when deleteSelected then update repository`() {
+    fun `givenSelectionWhenDeleteSelectedThenUpdateRepository`() {
         with(viewModel) {
             repeat(2) {
                 toggleSelect(sortedPresets[it])
@@ -113,7 +113,7 @@ class PresetsViewModelTest {
     }
 
     @Test
-    fun `given selection when deleteSelected then clear selection`() {
+    fun `givenSelectionWhenDeleteSelectedThenClearSelection`() {
         with(viewModel) {
             repeat(2) {
                 toggleSelect(sortedPresets[it])

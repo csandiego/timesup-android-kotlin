@@ -48,7 +48,10 @@ class DefaultPresetRepositoryTest {
                 insertAll(presets)
             }
         }
-        repository = DefaultPresetRepository(dao, TestCoroutineScope())
+        repository = DefaultPresetRepository(
+            dao,
+            TestCoroutineScope()
+        )
     }
 
     @Test
