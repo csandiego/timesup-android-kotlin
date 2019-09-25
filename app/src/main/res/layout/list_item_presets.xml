@@ -6,6 +6,10 @@
     <data>
 
         <variable
+            name="viewModel"
+            type="com.github.csandiego.timesup.presets.PresetsViewModel" />
+
+        <variable
             name="preset"
             type="com.github.csandiego.timesup.data.Preset" />
     </data>
@@ -14,10 +18,12 @@
         android:layout_width="match_parent"
         android:layout_height="72dp"
         android:background="@drawable/item_background"
-        android:clickable="true"
         android:paddingStart="16dp"
         android:paddingTop="16dp"
-        android:paddingEnd="16dp">
+        android:paddingEnd="16dp"
+        android:onClick="@{() -> viewModel.onClick(preset)}"
+        android:onLongClick="@{() -> viewModel.onLongClick(preset)}"
+        app:activated="@{viewModel.selection.contains(preset)}">
 
         <ImageView
             android:id="@+id/imageView"

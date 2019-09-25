@@ -72,37 +72,19 @@ class PresetsViewModelTest {
     }
 
     @Test
-    fun `givenUnselectedPresetWhenToggleSelectThenSelectionContainsPreset`() {
+    fun givenSelectedItemsWhenClearSelectionThenSelectionIsEmpty() {
         with(viewModel) {
-            toggleSelect(sortedPresets[0])
-            assertThat(selection.apply { observeForever {} }.value).contains(sortedPresets[0])
-        }
-    }
-
-    @Test
-    fun `givenSelectedPresetWhenToggleSelectThenSelectionDoesNotContainPreset`() {
-        with(viewModel) {
-            toggleSelect(sortedPresets[0])
-            toggleSelect(sortedPresets[0])
-            assertThat(selection.apply { observeForever {} }.value).isEmpty()
-        }
-    }
-
-    @Test
-    fun `givenSelectedItemsWhenClearSelectionThenSelectionIsEmpty`() {
-        with(viewModel) {
-            toggleSelect(sortedPresets[0])
+            onLongClick(sortedPresets[0])
             clearSelection()
-            assertThat(selection.apply { observeForever {} }.value).isEmpty()
+            assertThat(selection.value).isEmpty()
         }
     }
 
     @Test
-    fun `givenSelectionWhenDeleteSelectedThenUpdateRepository`() {
+    fun givenSelectionWhenDeleteSelectedThenUpdateRepository() {
         with(viewModel) {
-            repeat(2) {
-                toggleSelect(sortedPresets[it])
-            }
+            onLongClick(sortedPresets[0])
+            onClick(sortedPresets[1])
             deleteSelected()
         }
         runBlockingTest {
@@ -113,12 +95,53 @@ class PresetsViewModelTest {
     }
 
     @Test
-    fun `givenSelectionWhenDeleteSelectedThenClearSelection`() {
+    fun givenSelectionWhenDeleteSelectedThenClearSelection() {
         with(viewModel) {
-            repeat(2) {
-                toggleSelect(sortedPresets[it])
-            }
+            onLongClick(sortedPresets[0])
+            onClick(sortedPresets[1])
             deleteSelected()
+            assertThat(selection.value).isEmpty()
+        }
+    }
+
+    @Test
+    fun givenEmptySelectionWhenPresetLongClickedThenAddToSelection() {
+        with(viewModel) {
+            assertThat(onLongClick(sortedPresets[0])).isTrue()
+            assertThat(selection.value).containsExactly(sortedPresets[0])
+        }
+    }
+
+    @Test
+    fun givenSelectionWhenPresetLongClickedThenReturnFalse() {
+        with(viewModel) {
+            onLongClick(sortedPresets[0])
+            assertThat(onLongClick(sortedPresets[1])).isFalse()
+        }
+    }
+
+    @Test
+    fun givenEmptySelectionWhenPresetClickedThenStartTimerForPreset() {
+        with(viewModel) {
+            onClick(sortedPresets[0])
+            assertThat(startTimerForPreset.value).isEqualTo(sortedPresets[0])
+        }
+    }
+
+    @Test
+    fun givenSelectionWhenUnselectedPresetClickedThenAddToSelection() {
+        with(viewModel) {
+            onLongClick(sortedPresets[0])
+            onClick(sortedPresets[1])
+            assertThat(selection.value).containsExactlyElementsIn(sortedPresets.subList(0, 2))
+        }
+    }
+
+    @Test
+    fun givenSelectionWhenSelectedPresetClickedThenRemoveFromSelection() {
+        with(viewModel) {
+            onLongClick(sortedPresets[0])
+            onClick(sortedPresets[0])
             assertThat(selection.value).isEmpty()
         }
     }

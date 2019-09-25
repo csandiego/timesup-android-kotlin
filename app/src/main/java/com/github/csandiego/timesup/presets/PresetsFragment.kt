@@ -4,6 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.provider.AlarmClock
 import android.view.*
+import androidx.databinding.BindingMethod
+import androidx.databinding.BindingMethods
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
@@ -16,6 +18,13 @@ import com.github.csandiego.timesup.databinding.ListItemPresetsBinding
 import kotlinx.android.synthetic.main.fragment_presets.*
 import javax.inject.Inject
 
+@BindingMethods(value = [
+    BindingMethod(
+        type = View::class,
+        attribute = "app:activated",
+        method = "setActivated"
+    )
+])
 class PresetsFragment @Inject constructor(viewModelFactory: ViewModelProvider.Factory)
     : Fragment(R.layout.fragment_presets) {
 
@@ -47,6 +56,12 @@ class PresetsFragment @Inject constructor(viewModelFactory: ViewModelProvider.Fa
                     actionMode?.menu?.findItem(R.id.menuEdit)?.run {
                         isVisible = it.size == 1
                     }
+                }
+            }
+            startTimerForPreset.observe(viewLifecycleOwner) {
+                it?.let {
+                    viewModel.startTimerForPresetHandled()
+                    startTimer(it)
                 }
             }
         }
@@ -136,34 +151,8 @@ class PresetsFragment @Inject constructor(viewModelFactory: ViewModelProvider.Fa
                     parent,
                     false
                 ).apply {
-                    root.setOnLongClickListener {
-                        preset?.let {
-                            viewModel.run {
-                                if (selection.value.isNullOrEmpty()) {
-                                    toggleSelect(it)
-                                    true
-                                } else {
-                                    false
-                                }
-                            }
-                        } ?: false
-                    }
-                    root.setOnClickListener {
-                        preset?.let {
-                            with (viewModel) {
-                                if (selection.value.isNullOrEmpty()) {
-                                    startTimer(it)
-                                } else {
-                                    toggleSelect(it)
-                                }
-                            }
-                        }
-                    }
-                    viewModel.selection.observe(viewLifecycleOwner) { selection ->
-                        preset?.let {
-                            root.isActivated = selection.contains(it)
-                        }
-                    }
+                    viewModel = this@PresetsFragment.viewModel
+                    lifecycleOwner = viewLifecycleOwner
                 }
             )
 

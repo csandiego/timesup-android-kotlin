@@ -19,7 +19,7 @@ class PresetsViewModel @Inject constructor(private val repository: PresetReposit
     private val _selection = MutableLiveData<Set<Preset>>()
     val selection: LiveData<Set<Preset>> = _selection
 
-    fun toggleSelect(preset: Preset) {
+    private fun toggleSelect(preset: Preset) {
         with (_selection) {
             value = value?.let {
                 if (it.contains(preset)) {
@@ -48,5 +48,26 @@ class PresetsViewModel @Inject constructor(private val repository: PresetReposit
             value = emptySet()
             repository.deleteAll(selection.toList())
         }
+    }
+
+    private val _startTimerForPreset = MutableLiveData<Preset?>()
+    val startTimerForPreset: LiveData<Preset?> = _startTimerForPreset
+    fun startTimerForPresetHandled() {
+        _startTimerForPreset.value = null
+    }
+
+    fun onClick(preset: Preset) {
+        if (_selection.value.isNullOrEmpty()) {
+            _startTimerForPreset.value = preset
+        } else {
+            toggleSelect(preset)
+        }
+    }
+
+    fun onLongClick(preset: Preset) = if (_selection.value.isNullOrEmpty()) {
+        toggleSelect(preset)
+        true
+    } else {
+        false
     }
 }
