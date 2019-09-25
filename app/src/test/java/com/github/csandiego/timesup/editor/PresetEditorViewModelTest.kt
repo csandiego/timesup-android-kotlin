@@ -2,17 +2,16 @@ package com.github.csandiego.timesup.editor
 
 import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.csandiego.timesup.data.Preset
+import com.github.csandiego.timesup.junit.RoomDatabaseRule
 import com.github.csandiego.timesup.repository.DefaultPresetRepository
 import com.github.csandiego.timesup.room.TimesUpDatabase
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineScope
 import kotlinx.coroutines.test.runBlockingTest
-import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -24,31 +23,27 @@ class PresetEditorViewModelTest {
 
     private val preset = Preset(1, "3.5 hours and 10 seconds", 3, 30, 10)
 
-    private lateinit var database: TimesUpDatabase
     private lateinit var repository: DefaultPresetRepository
     private lateinit var viewModel: PresetEditorViewModel
 
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
+    @get:Rule
+    val roomDatabaseRule = RoomDatabaseRule(
+        ApplicationProvider.getApplicationContext<Context>(),
+        TimesUpDatabase::class
+    )
+
     @Before
     fun setUp() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        database = Room.inMemoryDatabaseBuilder(context, TimesUpDatabase::class.java)
-            .allowMainThreadQueries()
-            .build()
-        val dao = database.presetDao().apply {
+        val dao = roomDatabaseRule.database.presetDao().apply {
             runBlockingTest {
                 insert(preset)
             }
         }
         repository = DefaultPresetRepository(dao, TestCoroutineScope())
         viewModel = PresetEditorViewModel(repository)
-    }
-
-    @After
-    fun tearDown() {
-        database.close()
     }
 
     @Test

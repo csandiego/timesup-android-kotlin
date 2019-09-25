@@ -2,10 +2,10 @@ package com.github.csandiego.timesup.presets
 
 import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.csandiego.timesup.data.Preset
+import com.github.csandiego.timesup.junit.RoomDatabaseRule
 import com.github.csandiego.timesup.repository.DefaultPresetRepository
 import com.github.csandiego.timesup.repository.PresetRepository
 import com.github.csandiego.timesup.room.TimesUpDatabase
@@ -13,7 +13,6 @@ import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineScope
 import kotlinx.coroutines.test.runBlockingTest
-import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -32,31 +31,27 @@ class PresetsViewModelTest {
     )
     private val sortedPresets = presets.sortedBy { it.name }
 
-    private lateinit var database: TimesUpDatabase
     private lateinit var repository: PresetRepository
     private lateinit var viewModel: PresetsViewModel
 
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
+    @get:Rule
+    val roomDatabaseRule = RoomDatabaseRule(
+        ApplicationProvider.getApplicationContext<Context>(),
+        TimesUpDatabase::class
+    )
+
     @Before
     fun setUp() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        database = Room.inMemoryDatabaseBuilder(context, TimesUpDatabase::class.java)
-            .allowMainThreadQueries()
-            .build()
-        val dao = database.presetDao().apply {
+        val dao = roomDatabaseRule.database.presetDao().apply {
             runBlockingTest {
                 insertAll(presets)
             }
         }
         repository = DefaultPresetRepository(dao, TestCoroutineScope())
         viewModel = PresetsViewModel(repository)
-    }
-
-    @After
-    fun tearDown() {
-        database.close()
     }
 
     @Test
