@@ -7,7 +7,6 @@ import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
@@ -16,13 +15,13 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.csandiego.timesup.R
 import com.github.csandiego.timesup.data.Preset
+import com.github.csandiego.timesup.junit.RoomDatabaseRule
 import com.github.csandiego.timesup.repository.DefaultPresetRepository
 import com.github.csandiego.timesup.room.TimesUpDatabase
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineScope
 import org.hamcrest.Matchers.*
-import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -36,20 +35,24 @@ class NewPresetFragmentTest {
 
     private val preset = Preset(1, "1 minute", 0, 1, 0)
 
-    private lateinit var database: TimesUpDatabase
     private lateinit var viewModel: PresetEditorViewModel
     private lateinit var scenario: FragmentScenario<NewPresetFragment>
 
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
+    @get:Rule
+    val roomDatabaseRule = RoomDatabaseRule(
+        ApplicationProvider.getApplicationContext<Context>(),
+        TimesUpDatabase::class
+    )
+
     @Before
     fun setUp() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        database = Room.inMemoryDatabaseBuilder(context, TimesUpDatabase::class.java)
-            .allowMainThreadQueries()
-            .build()
-        val repository = DefaultPresetRepository(database.presetDao(), TestCoroutineScope())
+        val repository = DefaultPresetRepository(
+            roomDatabaseRule.database.presetDao(),
+            TestCoroutineScope()
+        )
         viewModel = spy(PresetEditorViewModel(repository))
         val viewModelFactory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
@@ -60,11 +63,6 @@ class NewPresetFragmentTest {
         scenario = launchFragment(themeResId = R.style.Theme_TimesUp) {
             NewPresetFragment(viewModelFactory)
         }
-    }
-
-    @After
-    fun tearDown() {
-        database.close()
     }
 
     @Test

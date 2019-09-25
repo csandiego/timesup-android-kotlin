@@ -8,7 +8,6 @@ import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
@@ -17,6 +16,7 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.csandiego.timesup.R
 import com.github.csandiego.timesup.data.Preset
+import com.github.csandiego.timesup.junit.RoomDatabaseRule
 import com.github.csandiego.timesup.repository.DefaultPresetRepository
 import com.github.csandiego.timesup.room.TimesUpDatabase
 import com.google.common.truth.Truth.assertThat
@@ -24,7 +24,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineScope
 import kotlinx.coroutines.test.runBlockingTest
 import org.hamcrest.Matchers.*
-import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -38,20 +37,21 @@ class EditPresetFragmentTest {
 
     private val preset = Preset(1, "1 minute", 0, 1, 0)
 
-    private lateinit var database: TimesUpDatabase
     private lateinit var viewModel: PresetEditorViewModel
     private lateinit var scenario: FragmentScenario<EditPresetFragment>
 
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
+    @get:Rule
+    val roomDatabaseRule = RoomDatabaseRule(
+        ApplicationProvider.getApplicationContext<Context>(),
+        TimesUpDatabase::class
+    )
+
     @Before
     fun setUp() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        database = Room.inMemoryDatabaseBuilder(context, TimesUpDatabase::class.java)
-            .allowMainThreadQueries()
-            .build()
-        val dao = database.presetDao().apply {
+        val dao = roomDatabaseRule.database.presetDao().apply {
             runBlockingTest {
                 insert(preset)
             }
@@ -72,11 +72,6 @@ class EditPresetFragmentTest {
         ) {
             EditPresetFragment(viewModelFactory)
         }
-    }
-
-    @After
-    fun tearDown() {
-        database.close()
     }
 
     @Test

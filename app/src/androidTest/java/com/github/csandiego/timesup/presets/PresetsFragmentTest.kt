@@ -10,7 +10,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
-import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
@@ -27,6 +26,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.csandiego.timesup.R
 import com.github.csandiego.timesup.data.Preset
 import com.github.csandiego.timesup.espresso.ViewMatchers.isActivated
+import com.github.csandiego.timesup.junit.RoomDatabaseRule
 import com.github.csandiego.timesup.repository.DefaultPresetRepository
 import com.github.csandiego.timesup.room.TimesUpDatabase
 import com.google.common.truth.Truth.assertThat
@@ -55,20 +55,21 @@ class PresetsFragmentTest {
     )
     private val sortedPresets = presets.sortedBy { it.name }
 
-    private lateinit var database: TimesUpDatabase
     private lateinit var scenario: FragmentScenario<PresetsFragment>
 
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
+    @get:Rule
+    val roomDatabaseRule = RoomDatabaseRule(
+        ApplicationProvider.getApplicationContext<Context>(),
+        TimesUpDatabase::class
+    )
+
     @Before
     fun setUp() {
         Intents.init()
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        database = Room.inMemoryDatabaseBuilder(context, TimesUpDatabase::class.java)
-            .allowMainThreadQueries()
-            .build()
-        val dao = database.presetDao().apply {
+        val dao = roomDatabaseRule.database.presetDao().apply {
             runBlockingTest {
                 insertAll(presets)
             }
@@ -88,7 +89,6 @@ class PresetsFragmentTest {
 
     @After
     fun tearDown() {
-        database.close()
         Intents.release()
     }
 
