@@ -281,6 +281,18 @@ class PresetsFragmentTest {
     }
 
     @Test
+    fun whenActionModeDisplayedThenTitleIsSelectionCount() {
+        onView(withId(R.id.recyclerView))
+            .perform(
+                scrollToPosition<RecyclerView.ViewHolder>(0),
+                actionOnItemAtPosition<RecyclerView.ViewHolder>(0, longClick()),
+                actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click())
+            )
+        onView(withResourceName("action_bar_title"))
+            .check(matches(withText("2")))
+    }
+
+    @Test
     fun givenActionModeDisplayedWhenOnePresetSelectedThenShowEditMenu() {
         onView(withId(R.id.recyclerView))
             .perform(

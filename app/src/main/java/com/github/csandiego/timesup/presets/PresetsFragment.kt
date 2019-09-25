@@ -51,10 +51,10 @@ class PresetsFragment @Inject constructor(viewModelFactory: ViewModelProvider.Fa
                 if (it.isEmpty()) {
                     actionMode?.finish()
                 } else {
-                    actionMode =
-                        actionMode ?: requireActivity().startActionMode(createActionModeCallback())
-                    actionMode?.menu?.findItem(R.id.menuEdit)?.run {
-                        isVisible = it.size == 1
+                    val mode = actionMode ?: requireActivity().startActionMode(createActionModeCallback())
+                    actionMode = mode.apply {
+                        title = it.size.toString()
+                        menu?.findItem(R.id.menuEdit)?.isVisible = it.size == 1
                     }
                 }
             }
