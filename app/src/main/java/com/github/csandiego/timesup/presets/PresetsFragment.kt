@@ -85,14 +85,12 @@ class PresetsFragment @Inject constructor(viewModelFactory: ViewModelProvider.Fa
 
         override fun onActionItemClicked(mode: ActionMode, item: MenuItem) = when (item.itemId) {
             R.id.menuEdit -> {
-                viewModel.selection.value?.let {
-                    it.elementAtOrNull(0)?.let {
-                        findNavController().navigate(
-                            PresetsFragmentDirections
-                                .actionPresetsFragmentToEditPresetFragment(it.id)
-                        )
-                        true
-                    }
+                viewModel.selection.value?.firstOrNull()?.let {
+                    findNavController().navigate(
+                        PresetsFragmentDirections
+                            .actionPresetsFragmentToEditPresetFragment(it.id)
+                    )
+                    true
                 } ?: throw IllegalStateException("No selected preset for editing")
             }
             R.id.menuDelete -> {
@@ -127,11 +125,9 @@ class PresetsFragment @Inject constructor(viewModelFactory: ViewModelProvider.Fa
         ) = false
 
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-            with(viewModel) {
-                presets.value?.get(viewHolder.adapterPosition)?.let {
-                    delete(it)
-                } ?: throw IllegalStateException("No corresponding preset for deletion")
-            }
+            (viewHolder as? ViewHolder)?.binding?.preset?.let {
+                viewModel.delete(it)
+            } ?: throw IllegalStateException("No corresponding preset for deletion")
         }
     }
 
@@ -150,10 +146,7 @@ class PresetsFragment @Inject constructor(viewModelFactory: ViewModelProvider.Fa
                     LayoutInflater.from(parent.context),
                     parent,
                     false
-                ).apply {
-                    viewModel = this@PresetsFragment.viewModel
-                    lifecycleOwner = viewLifecycleOwner
-                }
+                )
             )
 
             override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -161,8 +154,15 @@ class PresetsFragment @Inject constructor(viewModelFactory: ViewModelProvider.Fa
             }
         }
 
-    private class ViewHolder(private val binding: ListItemPresetsBinding) :
+    private inner class ViewHolder(val binding: ListItemPresetsBinding) :
         RecyclerView.ViewHolder(binding.root) {
+
+        init {
+            with(binding) {
+                viewModel = this@PresetsFragment.viewModel
+                lifecycleOwner = viewLifecycleOwner
+            }
+        }
 
         fun bind(preset: Preset) {
             with(binding) {
