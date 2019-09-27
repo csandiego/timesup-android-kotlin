@@ -2,5 +2,6 @@
 <resources>
 
     <dimen name="list_item_swipe_icon_margin">24dp</dimen>
+    <dimen name="list_Item_swipe_radius">12dp</dimen>
 
 </resources>

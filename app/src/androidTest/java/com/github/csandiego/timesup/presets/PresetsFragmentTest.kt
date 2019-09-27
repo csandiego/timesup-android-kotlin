@@ -25,7 +25,6 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.csandiego.timesup.R
 import com.github.csandiego.timesup.data.Preset
-import com.github.csandiego.timesup.espresso.ViewMatchers.isActivated
 import com.github.csandiego.timesup.junit.RoomDatabaseRule
 import com.github.csandiego.timesup.repository.DefaultPresetRepository
 import com.github.csandiego.timesup.room.TimesUpDatabase
@@ -111,13 +110,13 @@ class PresetsFragmentTest {
                 .perform(scrollToPosition<RecyclerView.ViewHolder>(index))
             onView(
                 allOf(
-                    withParent(withTagValue(equalTo(preset.hashCode()))),
+                    isDescendantOfA(withTagValue(equalTo(preset.hashCode()))),
                     withId(R.id.textViewName)
                 )
             ).check(matches(withText(preset.name)))
             onView(
                 allOf(
-                    withParent(withTagValue(equalTo(preset.hashCode()))),
+                    isDescendantOfA(withTagValue(equalTo(preset.hashCode()))),
                     withId(R.id.textViewDuration)
                 )
             ).check(
@@ -202,7 +201,7 @@ class PresetsFragmentTest {
                 actionOnItemAtPosition<RecyclerView.ViewHolder>(0, longClick())
             )
         onView(withTagValue(equalTo(sortedPresets[0].hashCode())))
-            .check(matches(isActivated()))
+            .check(matches(isChecked()))
     }
 
     @Test
@@ -215,7 +214,7 @@ class PresetsFragmentTest {
             )
         repeat(2) {
             onView(withTagValue(equalTo(sortedPresets[it].hashCode())))
-                .check(matches(isActivated()))
+                .check(matches(isChecked()))
         }
     }
 
@@ -228,7 +227,7 @@ class PresetsFragmentTest {
                 actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click())
             )
         onView(withTagValue(equalTo(sortedPresets[0].hashCode())))
-            .check(matches(not(isActivated())))
+            .check(matches(not(isChecked())))
     }
 
     @Test
@@ -264,7 +263,7 @@ class PresetsFragmentTest {
         onView(withResourceName("action_mode_close_button"))
             .perform(click())
         onView(withTagValue(equalTo(sortedPresets[0].hashCode())))
-            .check(matches(not(isActivated())))
+            .check(matches(not(isChecked())))
     }
 
     @Test

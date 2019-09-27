@@ -7,8 +7,7 @@ import android.graphics.drawable.ShapeDrawable
 import android.os.Bundle
 import android.provider.AlarmClock
 import android.view.*
-import androidx.databinding.BindingMethod
-import androidx.databinding.BindingMethods
+import android.view.animation.DecelerateInterpolator
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
@@ -18,16 +17,11 @@ import androidx.recyclerview.widget.*
 import com.github.csandiego.timesup.R
 import com.github.csandiego.timesup.data.Preset
 import com.github.csandiego.timesup.databinding.ListItemPresetsBinding
+import com.google.android.material.card.MaterialCardView
 import kotlinx.android.synthetic.main.fragment_presets.*
 import javax.inject.Inject
+import kotlin.math.absoluteValue
 
-@BindingMethods(value = [
-    BindingMethod(
-        type = View::class,
-        attribute = "app:activated",
-        method = "setActivated"
-    )
-])
 class PresetsFragment @Inject constructor(viewModelFactory: ViewModelProvider.Factory)
     : Fragment(R.layout.fragment_presets) {
 
@@ -132,8 +126,10 @@ class PresetsFragment @Inject constructor(viewModelFactory: ViewModelProvider.Fa
         ) {
             super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
 
-            val icon = requireContext().getDrawable(R.drawable.ic_delete) ?: throw IllegalStateException("Delete icon not found")
+            val icon = requireContext().getDrawable(R.drawable.ic_delete)!!.mutate()
             val margin = resources.getDimensionPixelOffset(R.dimen.list_item_swipe_icon_margin)
+            val radius = resources.getDimension(R.dimen.list_Item_swipe_radius)
+            val interpolator = DecelerateInterpolator()
 
             with(ShapeDrawable()) {
                 setTint(Color.RED)
@@ -155,6 +151,10 @@ class PresetsFragment @Inject constructor(viewModelFactory: ViewModelProvider.Fa
                 left = right - intrinsicWidth
                 setBounds(left, top, right, bottom)
                 draw(c)
+            }
+
+            with(viewHolder.itemView as MaterialCardView) {
+                this.radius = radius * interpolator.getInterpolation(dX.absoluteValue / width)
             }
         }
 
