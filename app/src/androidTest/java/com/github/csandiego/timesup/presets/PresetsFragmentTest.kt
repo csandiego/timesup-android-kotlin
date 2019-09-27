@@ -227,7 +227,7 @@ class PresetsFragmentTest {
                 actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click())
             )
         onView(withTagValue(equalTo(sortedPresets[0].hashCode())))
-            .check(matches(not(isChecked())))
+            .check(matches(isNotChecked()))
     }
 
     @Test
@@ -263,7 +263,7 @@ class PresetsFragmentTest {
         onView(withResourceName("action_mode_close_button"))
             .perform(click())
         onView(withTagValue(equalTo(sortedPresets[0].hashCode())))
-            .check(matches(not(isChecked())))
+            .check(matches(isNotChecked()))
     }
 
     @Test
@@ -347,5 +347,18 @@ class PresetsFragmentTest {
             PresetsFragmentDirections
                 .actionPresetsFragmentToEditPresetFragment(sortedPresets[0].id)
         )
+    }
+
+    @Test
+    fun givenSelectionWhenSelectedSwipedThenRemoveFromSelection() {
+        onView(withId(R.id.recyclerView))
+            .perform(
+                scrollToPosition<RecyclerView.ViewHolder>(0),
+                actionOnItemAtPosition<RecyclerView.ViewHolder>(0, longClick()),
+                actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()),
+                actionOnItemAtPosition<RecyclerView.ViewHolder>(1, swipeRight())
+            )
+        onView(withResourceName("action_bar_title"))
+            .check(matches(withText("1")))
     }
 }

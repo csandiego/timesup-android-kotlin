@@ -13,6 +13,9 @@ class PresetsViewModel @Inject constructor(private val repository: PresetReposit
     val presets = repository.getAllByNameAscendingAsLiveData()
 
     fun delete(preset: Preset) {
+        if (_selection.value?.contains(preset) == true) {
+            toggleSelect(preset)
+        }
         repository.delete(preset)
     }
 

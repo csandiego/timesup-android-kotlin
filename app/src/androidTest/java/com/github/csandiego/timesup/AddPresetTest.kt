@@ -79,13 +79,13 @@ class AddPresetTest {
                 .perform(scrollToPosition<RecyclerView.ViewHolder>(0))
             onView(
                 allOf(
-                    withParent(withTagValue(equalTo(preset.hashCode()))),
+                    isDescendantOfA(withTagValue(equalTo(preset.hashCode()))),
                     withId(R.id.textViewName)
                 )
             ).check(matches(withText(preset.name)))
             onView(
                 allOf(
-                    withParent(withTagValue(equalTo(preset.hashCode()))),
+                    isDescendantOfA(withTagValue(equalTo(preset.hashCode()))),
                     withId(R.id.textViewDuration)
                 )
             ).check(

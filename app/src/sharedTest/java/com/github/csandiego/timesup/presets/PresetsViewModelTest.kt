@@ -145,4 +145,13 @@ class PresetsViewModelTest {
             assertThat(selection.value).isEmpty()
         }
     }
+
+    @Test
+    fun givenSelectionWhenSelectedDeletedThenRemoveFromSelection() {
+        with(viewModel) {
+            onLongClick(sortedPresets[0])
+            delete(sortedPresets[0])
+            assertThat(selection.value).isEmpty()
+        }
+    }
 }
