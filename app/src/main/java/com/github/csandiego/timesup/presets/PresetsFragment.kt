@@ -82,13 +82,13 @@ class PresetsFragment @Inject constructor(viewModelFactory: ViewModelProvider.Fa
 
         override fun onActionItemClicked(mode: ActionMode, item: MenuItem) = when (item.itemId) {
             R.id.menuEdit -> {
-                viewModel.selection.value?.firstOrNull()?.let {
-                    findNavController().navigate(
-                        PresetsFragmentDirections
-                            .actionPresetsFragmentToEditPresetFragment(it.id)
-                    )
-                    true
-                } ?: throw IllegalStateException("No selected preset for editing")
+                findNavController().navigate(
+                    PresetsFragmentDirections
+                        .actionPresetsFragmentToEditPresetFragment(
+                            viewModel.selection.value!!.first().id
+                        )
+                )
+                true
             }
             R.id.menuDelete -> {
                 viewModel.deleteSelected()
@@ -165,9 +165,7 @@ class PresetsFragment @Inject constructor(viewModelFactory: ViewModelProvider.Fa
         ) = false
 
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-            (viewHolder as? ViewHolder)?.binding?.preset?.let {
-                viewModel.delete(it)
-            } ?: throw IllegalStateException("No corresponding preset for deletion")
+            viewModel.delete((viewHolder as ViewHolder).binding.preset)
         }
     }
 
