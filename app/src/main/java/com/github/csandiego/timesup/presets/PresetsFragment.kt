@@ -1,6 +1,9 @@
 package com.github.csandiego.timesup.presets
 
 import android.content.Intent
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.drawable.ShapeDrawable
 import android.os.Bundle
 import android.provider.AlarmClock
 import android.view.*
@@ -117,6 +120,43 @@ class PresetsFragment @Inject constructor(viewModelFactory: ViewModelProvider.Fa
         0,
         ItemTouchHelper.START or ItemTouchHelper.END
     ) {
+
+        override fun onChildDraw(
+            c: Canvas,
+            recyclerView: RecyclerView,
+            viewHolder: RecyclerView.ViewHolder,
+            dX: Float,
+            dY: Float,
+            actionState: Int,
+            isCurrentlyActive: Boolean
+        ) {
+            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+
+            val icon = requireContext().getDrawable(R.drawable.ic_delete) ?: throw IllegalStateException("Delete icon not found")
+            val margin = resources.getDimensionPixelOffset(R.dimen.list_item_swipe_icon_margin)
+
+            with(ShapeDrawable()) {
+                setTint(Color.RED)
+                setBounds(viewHolder.itemView.left, viewHolder.itemView.top, viewHolder.itemView.right, viewHolder.itemView.bottom)
+                draw(c)
+            }
+
+            with(icon) {
+                setTint(Color.WHITE)
+
+                val top = viewHolder.itemView.top + viewHolder.itemView.height / 2 - intrinsicHeight / 2
+                val bottom = top + intrinsicHeight
+                var left = viewHolder.itemView.left + margin
+                var right = left + intrinsicWidth
+                setBounds(left, top, right, bottom)
+                draw(c)
+
+                right = viewHolder.itemView.right - margin
+                left = right - intrinsicWidth
+                setBounds(left, top, right, bottom)
+                draw(c)
+            }
+        }
 
         override fun onMove(
             recyclerView: RecyclerView,
