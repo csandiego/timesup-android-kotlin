@@ -12,25 +12,18 @@ class PresetsViewModel @Inject constructor(private val repository: PresetReposit
 
     val presets = repository.getAllByNameAscendingAsLiveData()
 
-    fun delete(preset: Preset) {
-        if (_selection.value?.contains(preset) == true) {
-            toggleSelect(preset)
-        }
-        repository.delete(preset)
-    }
+    private val _selection = MutableLiveData<Set<Long>>()
+    val selection: LiveData<Set<Long>> = _selection
 
-    private val _selection = MutableLiveData<Set<Preset>>()
-    val selection: LiveData<Set<Preset>> = _selection
-
-    private fun toggleSelect(preset: Preset) {
+    private fun toggleSelect(presetId: Long) {
         with (_selection) {
             value = value?.let {
-                if (it.contains(preset)) {
-                    it - preset
+                if (it.contains(presetId)) {
+                    it - presetId
                 } else {
-                    it + preset
+                    it + presetId
                 }
-            } ?: setOf(preset)
+            } ?: setOf(presetId)
         }
     }
 
@@ -42,6 +35,13 @@ class PresetsViewModel @Inject constructor(private val repository: PresetReposit
         }
     }
 
+    fun delete(preset: Preset) {
+        if (_selection.value?.contains(preset.id) == true) {
+            toggleSelect(preset.id)
+        }
+        repository.delete(preset.id)
+    }
+
     fun deleteSelected() {
         with(_selection) {
             val selection = value
@@ -49,7 +49,7 @@ class PresetsViewModel @Inject constructor(private val repository: PresetReposit
                 return
             }
             value = emptySet()
-            repository.deleteAll(selection.toList())
+            repository.delete(selection)
         }
     }
 
@@ -63,12 +63,12 @@ class PresetsViewModel @Inject constructor(private val repository: PresetReposit
         if (_selection.value.isNullOrEmpty()) {
             _startTimerForPreset.value = preset
         } else {
-            toggleSelect(preset)
+            toggleSelect(preset.id)
         }
     }
 
     fun onLongClick(preset: Preset) = if (_selection.value.isNullOrEmpty()) {
-        toggleSelect(preset)
+        toggleSelect(preset.id)
         true
     } else {
         false

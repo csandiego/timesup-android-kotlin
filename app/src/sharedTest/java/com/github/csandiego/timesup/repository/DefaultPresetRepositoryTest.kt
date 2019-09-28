@@ -132,4 +132,23 @@ class DefaultPresetRepositoryTest {
             assertThat(dao.get(preset.id)).isEqualTo(preset)
         }
     }
+
+    @Test
+    fun givenValidPresetIdWhenDeleteThenUpdateDao() {
+        repository.delete(presets[0].id)
+        runBlockingTest {
+            assertThat(dao.get(presets[0].id)).isNull()
+        }
+    }
+
+    @Test
+    fun giveValidPresetIdsWhenDeleteThenUpdateDao() {
+        val ids = presets.subList(0, 4).map { it.id }.toSet()
+        repository.delete(ids)
+        runBlockingTest {
+            ids.forEach {
+                assertThat(dao.get(it)).isNull()
+            }
+        }
+    }
 }

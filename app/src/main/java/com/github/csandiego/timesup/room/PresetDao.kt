@@ -30,4 +30,10 @@ interface PresetDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun save(preset: Preset)
+
+    @Query("DELETE FROM Preset WHERE id = :presetId")
+    suspend fun delete(presetId: Long)
+
+    @Query("DELETE FROM Preset WHERE id IN (:presetIds)")
+    suspend fun delete(presetIds: Set<Long>)
 }

@@ -80,4 +80,27 @@ class PresetDaoTest {
             observeForever {}
         }.value).isNull()
     }
+
+    @Test
+    fun givenValidPresetIdWhenDeleteByIdThenDeleteFromDatabase() {
+        runBlockingTest {
+            with(dao) {
+                delete(presets[0].id)
+                assertThat(get(presets[0].id)).isNull()
+            }
+        }
+    }
+
+    @Test
+    fun givenValidPresetIdsWhenDeleteAllByIdsThenDeleteFromDatabase() {
+        runBlockingTest {
+            with(dao) {
+                val ids = presets.subList(0, 4).map { it.id }.toSet()
+                delete(ids)
+                ids.forEach {
+                    assertThat(get(it)).isNull()
+                }
+            }
+        }
+    }
 }

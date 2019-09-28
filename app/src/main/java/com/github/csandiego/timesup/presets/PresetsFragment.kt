@@ -85,7 +85,7 @@ class PresetsFragment @Inject constructor(viewModelFactory: ViewModelProvider.Fa
                 findNavController().navigate(
                     PresetsFragmentDirections
                         .actionPresetsFragmentToEditPresetFragment(
-                            viewModel.selection.value!!.first().id
+                            viewModel.selection.value!!.first()
                         )
                 )
                 true

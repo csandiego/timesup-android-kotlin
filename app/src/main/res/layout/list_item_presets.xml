@@ -15,7 +15,7 @@
     </data>
 
     <com.google.android.material.card.MaterialCardView
-        checked="@{viewModel.selection.contains(preset)}"
+        checked="@{viewModel.selection.contains(preset.id)}"
         android:layout_width="match_parent"
         android:layout_height="72dp"
         android:checkable="true"

@@ -108,7 +108,7 @@ class PresetsViewModelTest {
     fun givenEmptySelectionWhenPresetLongClickedThenAddToSelection() {
         with(viewModel) {
             assertThat(onLongClick(sortedPresets[0])).isTrue()
-            assertThat(selection.value).containsExactly(sortedPresets[0])
+            assertThat(selection.value).containsExactly(sortedPresets[0].id)
         }
     }
 
@@ -133,7 +133,8 @@ class PresetsViewModelTest {
         with(viewModel) {
             onLongClick(sortedPresets[0])
             onClick(sortedPresets[1])
-            assertThat(selection.value).containsExactlyElementsIn(sortedPresets.subList(0, 2))
+            assertThat(selection.value)
+                .containsExactlyElementsIn(sortedPresets.subList(0, 2).map { it.id })
         }
     }
 
