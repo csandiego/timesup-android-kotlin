@@ -165,7 +165,7 @@ class PresetsFragment @Inject constructor(viewModelFactory: ViewModelProvider.Fa
         ) = false
 
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-            viewModel.delete((viewHolder as ViewHolder).binding.preset)
+            viewModel.delete((viewHolder as ViewHolder).binding.preset!!)
         }
     }
 
