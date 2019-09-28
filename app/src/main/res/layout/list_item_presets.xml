@@ -15,6 +15,7 @@
     </data>
 
     <com.google.android.material.card.MaterialCardView
+        checked="@{viewModel.selection.contains(preset)}"
         android:layout_width="match_parent"
         android:layout_height="72dp"
         android:checkable="true"
@@ -22,13 +23,12 @@
         android:onLongClick="@{() -> viewModel.onLongClick(preset)}"
         app:cardCornerRadius="0dp"
         app:cardElevation="0dp"
-        checked="@{viewModel.selection.contains(preset)}"
-        app:checkedIcon="@null"
-        app:contentPadding="16dp">
+        app:checkedIcon="@null">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_margin="16dp">
 
             <ImageView
                 android:id="@+id/imageView"
