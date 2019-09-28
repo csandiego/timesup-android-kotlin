@@ -15,7 +15,7 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.csandiego.timesup.R
-import com.github.csandiego.timesup.data.Preset
+import com.github.csandiego.timesup.data.TestData.presets
 import com.github.csandiego.timesup.junit.RoomDatabaseRule
 import com.github.csandiego.timesup.repository.DefaultPresetRepository
 import com.github.csandiego.timesup.room.TimesUpDatabase
@@ -35,7 +35,7 @@ import org.mockito.Mockito.verify
 @RunWith(AndroidJUnit4::class)
 class EditPresetFragmentTest {
 
-    private val preset = Preset(1, "1 minute", 0, 1, 0)
+    private val preset = presets[0]
 
     private lateinit var viewModel: PresetEditorViewModel
     private lateinit var scenario: FragmentScenario<EditPresetFragment>

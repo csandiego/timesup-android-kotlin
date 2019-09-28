@@ -24,7 +24,8 @@ import androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.csandiego.timesup.R
-import com.github.csandiego.timesup.data.Preset
+import com.github.csandiego.timesup.data.TestData.presets
+import com.github.csandiego.timesup.data.TestData.presetsSortedByName
 import com.github.csandiego.timesup.junit.RoomDatabaseRule
 import com.github.csandiego.timesup.repository.DefaultPresetRepository
 import com.github.csandiego.timesup.room.TimesUpDatabase
@@ -45,14 +46,6 @@ import org.mockito.Mockito.verify
 @RunWith(AndroidJUnit4::class)
 class PresetsFragmentTest {
 
-    private val presets = listOf(
-        Preset(1, "1 minute", 0, 1, 0),
-        Preset(2, "2.5 minutes", 0, 2, 30),
-        Preset(3, "5 minutes", 0, 5, 0),
-        Preset(4, "1 hour", 1, 0, 0),
-        Preset(5, "1.5 hours", 1, 30, 0)
-    )
-    private val sortedPresets = presets.sortedBy { it.name }
 
     private lateinit var scenario: FragmentScenario<PresetsFragment>
 
@@ -94,7 +87,7 @@ class PresetsFragmentTest {
     @Test
     fun whenLoadedThenRecyclerViewSortedByNameAscending() {
         scenario.onFragment {
-            sortedPresets.forEachIndexed { index, preset ->
+            presetsSortedByName.forEachIndexed { index, preset ->
                 assertThat(
                     it.view?.findViewById<RecyclerView>(R.id.recyclerView)
                         ?.findViewHolderForAdapterPosition(index)?.itemView?.tag
@@ -105,7 +98,7 @@ class PresetsFragmentTest {
 
     @Test
     fun whenLoadedThenRecyclerViewDisplaysNameAndDuration() {
-        sortedPresets.forEachIndexed { index, preset ->
+        presetsSortedByName.forEachIndexed { index, preset ->
             onView(withId(R.id.recyclerView))
                 .perform(scrollToPosition<RecyclerView.ViewHolder>(index))
             onView(
@@ -158,13 +151,13 @@ class PresetsFragmentTest {
                 scrollToPosition<RecyclerView.ViewHolder>(0),
                 actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click())
             )
-        val s = sortedPresets[0].run {
+        val s = presetsSortedByName[0].run {
             hours * 60 * 60 + minutes * 60 + seconds
         }
         intended(
             allOf(
                 hasAction(AlarmClock.ACTION_SET_TIMER),
-                hasExtra(AlarmClock.EXTRA_MESSAGE, sortedPresets[0].name),
+                hasExtra(AlarmClock.EXTRA_MESSAGE, presetsSortedByName[0].name),
                 hasExtra(AlarmClock.EXTRA_LENGTH, s),
                 hasExtra(AlarmClock.EXTRA_SKIP_UI, false)
             )
@@ -178,7 +171,7 @@ class PresetsFragmentTest {
                 scrollToPosition<RecyclerView.ViewHolder>(0),
                 actionOnItemAtPosition<RecyclerView.ViewHolder>(0, swipeLeft())
             )
-        onView(withTagValue(equalTo(sortedPresets[0].hashCode())))
+        onView(withTagValue(equalTo(presetsSortedByName[0].hashCode())))
             .check(doesNotExist())
     }
 
@@ -189,7 +182,7 @@ class PresetsFragmentTest {
                 scrollToPosition<RecyclerView.ViewHolder>(0),
                 actionOnItemAtPosition<RecyclerView.ViewHolder>(0, swipeRight())
             )
-        onView(withTagValue(equalTo(sortedPresets[0].hashCode())))
+        onView(withTagValue(equalTo(presetsSortedByName[0].hashCode())))
             .check(doesNotExist())
     }
 
@@ -200,7 +193,7 @@ class PresetsFragmentTest {
                 scrollToPosition<RecyclerView.ViewHolder>(0),
                 actionOnItemAtPosition<RecyclerView.ViewHolder>(0, longClick())
             )
-        onView(withTagValue(equalTo(sortedPresets[0].hashCode())))
+        onView(withTagValue(equalTo(presetsSortedByName[0].hashCode())))
             .check(matches(isChecked()))
     }
 
@@ -213,7 +206,7 @@ class PresetsFragmentTest {
                 actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click())
             )
         repeat(2) {
-            onView(withTagValue(equalTo(sortedPresets[it].hashCode())))
+            onView(withTagValue(equalTo(presetsSortedByName[it].hashCode())))
                 .check(matches(isChecked()))
         }
     }
@@ -226,7 +219,7 @@ class PresetsFragmentTest {
                 actionOnItemAtPosition<RecyclerView.ViewHolder>(0, longClick()),
                 actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click())
             )
-        onView(withTagValue(equalTo(sortedPresets[0].hashCode())))
+        onView(withTagValue(equalTo(presetsSortedByName[0].hashCode())))
             .check(matches(isNotChecked()))
     }
 
@@ -262,7 +255,7 @@ class PresetsFragmentTest {
             )
         onView(withResourceName("action_mode_close_button"))
             .perform(click())
-        onView(withTagValue(equalTo(sortedPresets[0].hashCode())))
+        onView(withTagValue(equalTo(presetsSortedByName[0].hashCode())))
             .check(matches(isNotChecked()))
     }
 
@@ -325,7 +318,7 @@ class PresetsFragmentTest {
         onView(withResourceName("menuDelete"))
             .perform(click())
         repeat(2) {
-            onView(withTagValue(equalTo(sortedPresets[it].hashCode())))
+            onView(withTagValue(equalTo(presetsSortedByName[it].hashCode())))
                 .check(doesNotExist())
         }
     }
@@ -345,7 +338,7 @@ class PresetsFragmentTest {
             .perform(click())
         verify(navController).navigate(
             PresetsFragmentDirections
-                .actionPresetsFragmentToEditPresetFragment(sortedPresets[0].id)
+                .actionPresetsFragmentToEditPresetFragment(presetsSortedByName[0].id)
         )
     }
 

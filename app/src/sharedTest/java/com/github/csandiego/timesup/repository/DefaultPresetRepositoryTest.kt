@@ -5,6 +5,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.csandiego.timesup.data.Preset
+import com.github.csandiego.timesup.data.TestData.presets
 import com.github.csandiego.timesup.junit.RoomDatabaseRule
 import com.github.csandiego.timesup.room.PresetDao
 import com.github.csandiego.timesup.room.TimesUpDatabase
@@ -20,14 +21,6 @@ import org.junit.runner.RunWith
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
 class DefaultPresetRepositoryTest {
-
-    private val presets = listOf(
-        Preset(1, "1 minute", 0, 1, 0),
-        Preset(2, "2.5 minutes", 0, 2, 30),
-        Preset(3, "5 minutes", 0, 5, 0),
-        Preset(4, "1 hour", 1, 0, 0),
-        Preset(5, "1.5 hours", 1, 30, 0)
-    )
 
     private lateinit var dao: PresetDao
     private lateinit var repository: DefaultPresetRepository

@@ -5,6 +5,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.csandiego.timesup.data.Preset
+import com.github.csandiego.timesup.data.TestData.presets
 import com.github.csandiego.timesup.junit.RoomDatabaseRule
 import com.github.csandiego.timesup.repository.DefaultPresetRepository
 import com.github.csandiego.timesup.room.TimesUpDatabase
@@ -21,7 +22,7 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class PresetEditorViewModelTest {
 
-    private val preset = Preset(1, "3.5 hours and 10 seconds", 3, 30, 10)
+    private val preset = presets[0]
 
     private lateinit var repository: DefaultPresetRepository
     private lateinit var viewModel: PresetEditorViewModel
