@@ -1,7 +1,10 @@
 package com.github.csandiego.timesup.room
 
 import androidx.lifecycle.LiveData
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
 import com.github.csandiego.timesup.data.Preset
 
 @Dao
@@ -10,30 +13,24 @@ interface PresetDao {
     @Query("SELECT * FROM Preset WHERE id = :presetId")
     suspend fun get(presetId: Long): Preset?
 
-    @Insert
-    suspend fun insert(preset: Preset)
-
-    @Insert
-    suspend fun insertAll(presets: List<Preset>)
-
     @Query("SELECT * FROM Preset WHERE id = :presetId")
     fun getAsLiveData(presetId: Long): LiveData<Preset?>
 
     @Query("SELECT * FROM Preset ORDER BY name ASC")
     fun getAllByNameAscendingAsLiveData(): LiveData<List<Preset>>
 
-    @Delete
-    suspend fun delete(preset: Preset)
-
-    @Delete
-    suspend fun deleteAll(presets: List<Preset>)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun save(preset: Preset)
-
     @Query("DELETE FROM Preset WHERE id = :presetId")
     suspend fun delete(presetId: Long)
 
     @Query("DELETE FROM Preset WHERE id IN (:presetIds)")
     suspend fun delete(presetIds: Set<Long>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun save(preset: Preset)
+
+    @Insert
+    suspend fun insert(preset: Preset)
+
+    @Insert
+    suspend fun insert(presets: List<Preset>)
 }

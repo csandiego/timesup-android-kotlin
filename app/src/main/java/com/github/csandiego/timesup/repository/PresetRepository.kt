@@ -5,10 +5,6 @@ import com.github.csandiego.timesup.data.Preset
 
 interface PresetRepository {
 
-    suspend fun get(presetId: Long): Preset?
-
-    fun create(preset: Preset)
-
     fun getAsLiveData(presetId: Long): LiveData<Preset?>
 
     fun getAllByNameAscendingAsLiveData(): LiveData<List<Preset>>
@@ -16,10 +12,6 @@ interface PresetRepository {
     fun delete(presetId: Long)
 
     fun delete(presetIds: Set<Long>)
-
-    fun delete(preset: Preset)
-
-    fun deleteAll(presets: List<Preset>)
 
     fun save(preset: Preset)
 }

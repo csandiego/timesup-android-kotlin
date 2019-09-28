@@ -7,7 +7,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.csandiego.timesup.data.Preset
 import com.github.csandiego.timesup.junit.RoomDatabaseRule
 import com.github.csandiego.timesup.repository.DefaultPresetRepository
-import com.github.csandiego.timesup.repository.PresetRepository
 import com.github.csandiego.timesup.room.TimesUpDatabase
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -31,7 +30,7 @@ class PresetsViewModelTest {
     )
     private val sortedPresets = presets.sortedBy { it.name }
 
-    private lateinit var repository: PresetRepository
+    private lateinit var repository: DefaultPresetRepository
     private lateinit var viewModel: PresetsViewModel
 
     @get:Rule
@@ -47,7 +46,7 @@ class PresetsViewModelTest {
     fun setUp() {
         val dao = roomDatabaseRule.database.presetDao().apply {
             runBlockingTest {
-                insertAll(presets)
+                insert(presets)
             }
         }
         repository = DefaultPresetRepository(dao, TestCoroutineScope())

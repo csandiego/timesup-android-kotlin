@@ -41,7 +41,7 @@ class PresetDaoTest {
     fun setUp() {
         dao = roomDatabaseRule.database.presetDao().apply {
             runBlockingTest {
-                insertAll(presets)
+                insert(presets)
             }
         }
     }

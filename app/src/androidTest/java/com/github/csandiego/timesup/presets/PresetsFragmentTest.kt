@@ -70,7 +70,7 @@ class PresetsFragmentTest {
         Intents.init()
         val dao = roomDatabaseRule.database.presetDao().apply {
             runBlockingTest {
-                insertAll(presets)
+                insert(presets)
             }
         }
         val repository = DefaultPresetRepository(dao, TestCoroutineScope())

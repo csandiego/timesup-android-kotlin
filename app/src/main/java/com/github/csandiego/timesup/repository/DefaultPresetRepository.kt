@@ -11,13 +11,7 @@ class DefaultPresetRepository @Inject constructor(
     private val coroutineScope: CoroutineScope
 ) : PresetRepository {
 
-    override suspend fun get(presetId: Long) = dao.get(presetId)
-
-    override fun create(preset: Preset) {
-        coroutineScope.launch {
-            dao.insert(preset)
-        }
-    }
+    suspend fun get(presetId: Long) = dao.get(presetId)
 
     override fun getAsLiveData(presetId: Long) = dao.getAsLiveData(presetId)
 
@@ -32,18 +26,6 @@ class DefaultPresetRepository @Inject constructor(
     override fun delete(presetIds: Set<Long>) {
         coroutineScope.launch {
             dao.delete(presetIds)
-        }
-    }
-
-    override fun delete(preset: Preset) {
-        coroutineScope.launch {
-            dao.delete(preset)
-        }
-    }
-
-    override fun deleteAll(presets: List<Preset>) {
-        coroutineScope.launch {
-            dao.deleteAll(presets)
         }
     }
 

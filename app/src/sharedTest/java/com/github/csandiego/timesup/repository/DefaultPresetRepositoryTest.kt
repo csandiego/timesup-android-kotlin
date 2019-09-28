@@ -45,7 +45,7 @@ class DefaultPresetRepositoryTest {
     fun setUp() {
         dao = roomDatabaseRule.database.presetDao().apply {
             runBlockingTest {
-                insertAll(presets)
+                insert(presets)
             }
         }
         repository = DefaultPresetRepository(
@@ -68,14 +68,6 @@ class DefaultPresetRepositoryTest {
         }
     }
 
-    fun givenNewPresetWhenCreatedThenUpdateDao() {
-        val preset = Preset(6, "5 hours", 5, 0, 0)
-        repository.create(preset)
-        runBlockingTest {
-            assertThat(dao.get(preset.id)).isEqualTo(preset)
-        }
-    }
-
     @Test
     fun givenValidPresetIdWhenGetAsLiveDataThenLiveDataContainsPreset() {
         assertThat(repository.getAsLiveData(presets[0].id).apply {
@@ -95,24 +87,6 @@ class DefaultPresetRepositoryTest {
         assertThat(repository.getAllByNameAscendingAsLiveData().apply {
             observeForever {}
         }.value).containsExactlyElementsIn(presets.sortedBy { it.name })
-    }
-
-    @Test
-    fun givenExistingPresetWhenDeleteThenUpdateDao() {
-        repository.delete(presets[0])
-        runBlockingTest {
-            assertThat(dao.get(presets[0].id)).isNull()
-        }
-    }
-
-    @Test
-    fun givenExistingPresetsWhenDeleteAllThenUpdateDao() {
-        repository.deleteAll(presets.subList(0, 2))
-        runBlockingTest {
-            repeat(2) {
-                assertThat(dao.get(presets[it].id)).isNull()
-            }
-        }
     }
 
     @Test
