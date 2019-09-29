@@ -7,13 +7,17 @@ import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
 import javax.inject.Inject
 
-class TimesUpApplication : Application(), HasAndroidInjector {
+open class TimesUpApplication : Application(), HasAndroidInjector {
 
     @Inject
     lateinit var injector: DispatchingAndroidInjector<Any>
 
     override fun onCreate() {
         super.onCreate()
+        initDagger()
+    }
+
+    protected open fun initDagger() {
         DaggerApplicationComponent.builder()
             .application(this)
             .build()

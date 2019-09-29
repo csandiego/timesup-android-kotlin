@@ -9,7 +9,7 @@ import javax.inject.Singleton
 
 @ExperimentalCoroutinesApi
 @Module
-class CoroutineScopeModule {
+class TestCoroutineScopeModule {
 
     @Singleton
     @Provides

@@ -17,7 +17,7 @@ android {
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "com.github.csandiego.timesup.test.TimesUpRunner"
     }
     buildTypes {
         release {
@@ -87,10 +87,16 @@ dependencies {
     //testImplementation 'org.mockito:mockito-core:3.0.0'
     testImplementation 'org.robolectric:robolectric:4.3'
 
+    kaptTest 'com.google.dagger:dagger-compiler:2.24'
+    kaptTest 'com.google.dagger:dagger-android-processor:2.24'
+
     //androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-intents:3.2.0'
     androidTestImplementation 'com.google.truth:truth:1.0'
     androidTestImplementation 'org.mockito:mockito-android:3.0.0'
+
+    kaptAndroidTest 'com.google.dagger:dagger-compiler:2.24'
+    kaptAndroidTest 'com.google.dagger:dagger-android-processor:2.24'
 }
