@@ -43,6 +43,8 @@ class PresetsFragment @Inject constructor(viewModelFactory: ViewModelProvider.Fa
         with(viewModel) {
             presets.observe(viewLifecycleOwner) {
                 adapter.submitList(it)
+                recyclerView.visibility = if (it.isEmpty()) View.GONE else View.VISIBLE
+                emptyView.visibility = if (it.isEmpty()) View.VISIBLE else View.GONE
             }
             selection.observe(viewLifecycleOwner) {
                 if (it.isEmpty()) {

@@ -6,4 +6,5 @@
     <string name="edit_text_preset_name_hint">Name (e.g. Brew Coffee, Soft-boiled Eggs, etc.)</string>
     <string name="menu_edit">Edit</string>
     <string name="menu_delete">Delete</string>
+    <string name="preset_empty_message">Click the Add button to create a new preset.</string>
 </resources>
