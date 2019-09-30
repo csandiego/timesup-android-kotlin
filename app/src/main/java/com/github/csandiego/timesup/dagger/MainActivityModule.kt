@@ -14,38 +14,38 @@ import dagger.Module
 import dagger.multibindings.IntoMap
 
 @Module
-abstract class MainActivityModule {
+interface MainActivityModule {
 
     @Binds
     @IntoMap
     @ViewModelKey(PresetEditorViewModel::class)
-    abstract fun providePresetEditorViewModel(viewModel: PresetEditorViewModel): ViewModel
+    fun providePresetEditorViewModel(viewModel: PresetEditorViewModel): ViewModel
 
     @Binds
     @IntoMap
     @ViewModelKey(PresetsViewModel::class)
-    abstract fun providePresetsViewModel(viewModel: PresetsViewModel): ViewModel
+    fun providePresetsViewModel(viewModel: PresetsViewModel): ViewModel
 
     @ActivityScope
     @Binds
-    abstract fun provideViewModelFactory(factory: DaggerViewModelFactory): ViewModelProvider.Factory
+    fun provideViewModelFactory(factory: DaggerViewModelFactory): ViewModelProvider.Factory
 
     @Binds
     @IntoMap
     @FragmentKey(NewPresetFragment::class)
-    abstract fun provideNewPresetFragment(fragment: NewPresetFragment): Fragment
+    fun provideNewPresetFragment(fragment: NewPresetFragment): Fragment
 
     @Binds
     @IntoMap
     @FragmentKey(EditPresetFragment::class)
-    abstract fun provideEditPresetFragment(fragment: EditPresetFragment): Fragment
+    fun provideEditPresetFragment(fragment: EditPresetFragment): Fragment
 
     @Binds
     @IntoMap
     @FragmentKey(PresetsFragment::class)
-    abstract fun providePresetsFragment(fragment: PresetsFragment): Fragment
+    fun providePresetsFragment(fragment: PresetsFragment): Fragment
 
     @ActivityScope
     @Binds
-    abstract fun provideFragmentFactory(factory: DaggerFragmentFactory): FragmentFactory
+    fun provideFragmentFactory(factory: DaggerFragmentFactory): FragmentFactory
 }

@@ -1,28 +1,12 @@
 package com.github.csandiego.timesup
 
-import android.app.Application
 import com.github.csandiego.timesup.dagger.DaggerApplicationComponent
 import dagger.android.AndroidInjector
-import dagger.android.DispatchingAndroidInjector
-import dagger.android.HasAndroidInjector
-import javax.inject.Inject
+import dagger.android.DaggerApplication
 
-open class TimesUpApplication : Application(), HasAndroidInjector {
+open class TimesUpApplication : DaggerApplication() {
 
-    @Inject
-    lateinit var injector: DispatchingAndroidInjector<Any>
-
-    override fun onCreate() {
-        super.onCreate()
-        initDagger()
+    override fun applicationInjector(): AndroidInjector<out DaggerApplication> {
+        return DaggerApplicationComponent.factory().create(this)
     }
-
-    protected open fun initDagger() {
-        DaggerApplicationComponent.builder()
-            .application(this)
-            .build()
-            .inject(this)
-    }
-
-    override fun androidInjector(): AndroidInjector<Any> = injector
 }

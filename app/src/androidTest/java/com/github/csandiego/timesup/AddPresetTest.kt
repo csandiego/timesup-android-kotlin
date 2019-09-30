@@ -2,20 +2,24 @@ package com.github.csandiego.timesup
 
 import android.widget.Button
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.recyclerview.widget.RecyclerView
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.csandiego.timesup.data.Preset
+import com.github.csandiego.timesup.data.TestData.presets
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runBlockingTest
 import org.hamcrest.Matchers.*
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
+@ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
 class AddPresetTest {
 
@@ -26,6 +30,14 @@ class AddPresetTest {
 
     @get:Rule
     val activityScenarioRule = ActivityScenarioRule(MainActivity::class.java)
+
+    @Before
+    fun setUp() {
+        runBlockingTest {
+            ApplicationProvider.getApplicationContext<TestTimesUpApplication>()
+                .database.presetDao().insert(presets)
+        }
+    }
 
     @Test
     fun whenAddNewPresetThenUpdateList() {
@@ -75,30 +87,28 @@ class AddPresetTest {
                 withText(R.string.button_save)
             )
         ).perform(click())
-        onView(withId(R.id.recyclerView))
-                .perform(scrollToPosition<RecyclerView.ViewHolder>(0))
-            onView(
-                allOf(
-                    isDescendantOfA(withTagValue(equalTo(preset.hashCode()))),
-                    withId(R.id.textViewName)
-                )
-            ).check(matches(withText(preset.name)))
-            onView(
-                allOf(
-                    isDescendantOfA(withTagValue(equalTo(preset.hashCode()))),
-                    withId(R.id.textViewDuration)
-                )
-            ).check(
-                matches(
-                    withText(
-                        String.format(
-                            "%02d:%02d:%02d",
-                            preset.hours,
-                            preset.minutes,
-                            preset.seconds
-                        )
+        onView(
+            allOf(
+                isDescendantOfA(withTagValue(equalTo(preset.hashCode()))),
+                withId(R.id.textViewName)
+            )
+        ).check(matches(withText(preset.name)))
+        onView(
+            allOf(
+                isDescendantOfA(withTagValue(equalTo(preset.hashCode()))),
+                withId(R.id.textViewDuration)
+            )
+        ).check(
+            matches(
+                withText(
+                    String.format(
+                        "%02d:%02d:%02d",
+                        preset.hours,
+                        preset.minutes,
+                        preset.seconds
                     )
                 )
             )
+        )
     }
 }

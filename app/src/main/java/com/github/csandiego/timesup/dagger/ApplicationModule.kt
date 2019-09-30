@@ -3,6 +3,7 @@ package com.github.csandiego.timesup.dagger
 import android.app.Application
 import android.content.Context
 import com.github.csandiego.timesup.MainActivity
+import com.github.csandiego.timesup.TimesUpApplication
 import com.github.csandiego.timesup.repository.DefaultPresetRepository
 import com.github.csandiego.timesup.repository.PresetRepository
 import dagger.Binds
@@ -11,17 +12,21 @@ import dagger.android.ContributesAndroidInjector
 import javax.inject.Singleton
 
 @Module
-abstract class ApplicationModule {
+interface ApplicationModule {
 
     @Singleton
     @Binds
-    abstract fun provideContext(application: Application): Context
+    fun provideContext(application: TimesUpApplication): Context
 
     @Singleton
     @Binds
-    abstract fun providePresetRepository(repository: DefaultPresetRepository): PresetRepository
+    fun provideApplication(application: TimesUpApplication): Application
+
+    @Singleton
+    @Binds
+    fun providePresetRepository(repository: DefaultPresetRepository): PresetRepository
 
     @ActivityScope
     @ContributesAndroidInjector(modules = [MainActivityModule::class])
-    abstract fun contributeAndroidInjector(): MainActivity
+    fun contributeAndroidInjector(): MainActivity
 }

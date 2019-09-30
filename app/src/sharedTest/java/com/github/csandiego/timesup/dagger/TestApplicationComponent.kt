@@ -3,6 +3,7 @@ package com.github.csandiego.timesup.dagger
 import com.github.csandiego.timesup.TestTimesUpApplication
 import dagger.Component
 import dagger.android.AndroidInjectionModule
+import dagger.android.AndroidInjector
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import javax.inject.Singleton
 
@@ -11,13 +12,12 @@ import javax.inject.Singleton
 @Component(modules = [
     AndroidInjectionModule::class,
     ApplicationModule::class,
+    TestApplicationModule::class,
     TestRoomModule::class,
     TestCoroutineScopeModule::class
 ])
-interface TestApplicationComponent : ApplicationComponent {
+interface TestApplicationComponent : AndroidInjector<TestTimesUpApplication> {
 
-    fun inject(application: TestTimesUpApplication)
-
-    @Component.Builder
-    interface Builder : ApplicationComponent.Builder
+    @Component.Factory
+    interface Factory : AndroidInjector.Factory<TestTimesUpApplication>
 }
