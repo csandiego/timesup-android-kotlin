@@ -2,6 +2,7 @@ package com.github.csandiego.timesup
 
 import android.widget.Button
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.test.annotation.UiThreadTest
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
@@ -31,6 +32,7 @@ class AddPresetTest {
     @get:Rule
     val activityScenarioRule = ActivityScenarioRule(MainActivity::class.java)
 
+    @UiThreadTest
     @Before
     fun setUp() {
         runBlockingTest {
