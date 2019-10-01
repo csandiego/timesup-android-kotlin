@@ -8,6 +8,12 @@ apply plugin: 'kotlin-kapt'
 
 apply plugin: 'androidx.navigation.safeargs'
 
+apply plugin: 'jacoco'
+
+jacoco {
+    toolVersion = "$jacoco_version"
+}
+
 android {
     compileSdkVersion 28
     buildToolsVersion '28.0.3'
@@ -20,6 +26,9 @@ android {
         testInstrumentationRunner "com.github.csandiego.timesup.test.TimesUpRunner"
     }
     buildTypes {
+        debug {
+            testCoverageEnabled = true
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'

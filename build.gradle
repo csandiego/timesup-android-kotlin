@@ -9,6 +9,7 @@ buildscript {
         dagger_version = '2.24'
         espresso_version = '3.2.0'
         fragment_version = '1.1.0'
+        jacoco_version = '0.8.4'
         junit_version = '4.12'
         lifecycle_version = '2.1.0'
         material_version = '1.1.0-alpha10'
@@ -32,6 +33,7 @@ buildscript {
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$navigation_version"
+        classpath "org.jacoco:org.jacoco.core:$jacoco_version"
     }
 }
 
