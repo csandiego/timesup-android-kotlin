@@ -1,17 +1,10 @@
-apply plugin: 'com.android.application'
-
-apply plugin: 'kotlin-android'
-
-apply plugin: 'kotlin-android-extensions'
-
-apply plugin: 'kotlin-kapt'
-
-apply plugin: 'androidx.navigation.safeargs'
-
-apply plugin: 'jacoco'
-
-jacoco {
-    toolVersion = "$jacoco_version"
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'kotlin-android-extensions'
+    id 'kotlin-kapt'
+    id 'androidx.navigation.safeargs'
+    id 'jacoco'
 }
 
 android {
@@ -27,7 +20,7 @@ android {
     }
     buildTypes {
         debug {
-            testCoverageEnabled = true
+            testCoverageEnabled true
         }
         release {
             minifyEnabled false
@@ -35,18 +28,18 @@ android {
         }
     }
     dataBinding {
-        enabled = true
+        enabled true
     }
     kotlinOptions {
         jvmTarget = "1.8"
     }
     testOptions {
         unitTests {
-            includeAndroidResources = true
+            includeAndroidResources true
         }
     }
     sourceSets {
-        String sharedTestDir = 'src/sharedTest/java'
+        def sharedTestDir = 'src/sharedTest/java'
         test {
             java.srcDir sharedTestDir
         }
@@ -54,11 +47,14 @@ android {
             java.srcDir sharedTestDir
         }
     }
+    jacoco {
+        version "$jacoco_version"
+    }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.core:core-ktx:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
