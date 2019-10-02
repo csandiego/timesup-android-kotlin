@@ -5,7 +5,9 @@ import android.content.Context
 import androidx.test.runner.AndroidJUnitRunner
 import com.github.csandiego.timesup.TestTimesUpApplication
 import com.github.csandiego.timesup.TimesUpApplication
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
+@ExperimentalCoroutinesApi
 class TimesUpRunner : AndroidJUnitRunner() {
 
     override fun newApplication(
