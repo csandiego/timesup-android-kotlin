@@ -42,12 +42,14 @@ class PresetsViewModelTest {
             }
         }
         repository = DefaultPresetRepository(dao, TestCoroutineScope())
-        viewModel = PresetsViewModel(repository)
+        viewModel = PresetsViewModel(repository).apply {
+            presets.observeForever {}
+        }
     }
 
     @Test
     fun whenLoadedThenPresetsSortedByNameAscending() {
-        assertThat(viewModel.presets.apply { observeForever {} }.value)
+        assertThat(viewModel.presets.value)
             .containsExactlyElementsIn(presetsSortedByName)
     }
 

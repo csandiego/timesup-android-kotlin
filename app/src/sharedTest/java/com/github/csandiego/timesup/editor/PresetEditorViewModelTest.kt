@@ -44,60 +44,66 @@ class PresetEditorViewModelTest {
             }
         }
         repository = DefaultPresetRepository(dao, TestCoroutineScope())
-        viewModel = PresetEditorViewModel(repository)
+        viewModel = PresetEditorViewModel(repository).apply { 
+            name.observeForever {}
+            hours.observeForever {}
+            minutes.observeForever {}
+            seconds.observeForever {}
+            showSaveButton.observeForever {}
+        }
     }
 
     @Test
     fun whenLoadedThenContainsEmptyPreset() {
         val preset = Preset()
-        assertThat(viewModel.name.apply { observeForever {} }.value).isEqualTo(preset.name)
-        assertThat(viewModel.hours.apply { observeForever {} }.value).isEqualTo(preset.hours)
-        assertThat(viewModel.minutes.apply { observeForever {} }.value).isEqualTo(preset.minutes)
-        assertThat(viewModel.seconds.apply { observeForever {} }.value).isEqualTo(preset.seconds)
+        assertThat(viewModel.name.value).isEqualTo(preset.name)
+        assertThat(viewModel.hours.value).isEqualTo(preset.hours)
+        assertThat(viewModel.minutes.value).isEqualTo(preset.minutes)
+        assertThat(viewModel.seconds.value).isEqualTo(preset.seconds)
     }
 
     @Test
     fun whenLoadPresetThenContainsLoadedPreset() {
         with(viewModel) {
             load(preset.id)
-            assertThat(name.apply { observeForever {} }.value).isEqualTo(preset.name)
-            assertThat(hours.apply { observeForever {} }.value).isEqualTo(preset.hours)
-            assertThat(minutes.apply { observeForever {} }.value).isEqualTo(preset.minutes)
-            assertThat(seconds.apply { observeForever {} }.value).isEqualTo(preset.seconds)
+            assertThat(name.value).isEqualTo(preset.name)
+            assertThat(hours.value).isEqualTo(preset.hours)
+            assertThat(minutes.value).isEqualTo(preset.minutes)
+            assertThat(seconds.value).isEqualTo(preset.seconds)
         }
     }
 
     @Test
     fun whenNameEmptyAndDurationEmptyThenHideSaveButton() {
-        assertThat(viewModel.showSaveButton.apply { observeForever {} }.value).isFalse()
+        assertThat(viewModel.showSaveButton.value).isFalse()
     }
 
     @Test
     fun whenNameNotEmptyAndDurationEmptyThenHideSaveButton() {
         with(viewModel) {
-            name.apply { observeForever {} }.value = preset.name
-            assertThat(showSaveButton.apply { observeForever {} }.value).isFalse()
+            name.value = preset.name
+            assertThat(showSaveButton.value).isFalse()
         }
     }
 
     @Test
     fun whenNameEmptyAndDurationNotEmptyThenHideSaveButton() {
         with(viewModel) {
-            hours.apply { observeForever {} }.value = preset.hours
-            minutes.apply { observeForever {} }.value = preset.minutes
-            seconds.apply { observeForever {} }.value = preset.seconds
-            assertThat(showSaveButton.apply { observeForever {} }.value).isFalse()
+            hours.value = preset.hours
+            minutes.value = preset.minutes
+            seconds.value = preset.seconds
+            assertThat(showSaveButton.value).isFalse()
         }
     }
 
     @Test
     fun whenNameNotEmptyAndDurationNotEmptyThenShowSaveButton() {
         with(viewModel) {
-            name.apply { observeForever {} }.value = preset.name
-            hours.apply { observeForever {} }.value = preset.hours
-            minutes.apply { observeForever {} }.value = preset.minutes
-            seconds.apply { observeForever {} }.value = preset.seconds
-            assertThat(showSaveButton.apply { observeForever {} }.value).isTrue()
+            name.value = preset.name
+            hours.value = preset.hours
+            minutes.value = preset.minutes
+            seconds.value = preset.seconds
+            assertThat(showSaveButton.value).isTrue()
         }
     }
 
@@ -105,11 +111,10 @@ class PresetEditorViewModelTest {
     fun givenSaveButtonShownWhenSaveThenUpdateRepository() {
         val preset = Preset(2, "5 hours", 5, 0, 0)
         with(viewModel) {
-            name.apply { observeForever {} }.value = preset.name
-            hours.apply { observeForever {} }.value = preset.hours
-            minutes.apply { observeForever {} }.value = preset.minutes
-            seconds.apply { observeForever {} }.value = preset.seconds
-            showSaveButton.apply { observeForever {} }
+            name.value = preset.name
+            hours.value = preset.hours
+            minutes.value = preset.minutes
+            seconds.value = preset.seconds
             save()
         }
         runBlockingTest {
