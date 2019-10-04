@@ -109,7 +109,13 @@ class PresetEditorViewModelTest {
 
     @Test
     fun givenSaveButtonShownWhenSaveThenUpdateRepository() {
-        val preset = Preset(2, "5 hours", 5, 0, 0)
+        val preset = Preset(
+            preset.id + 1,
+            "12 hours 34 minutes 56 seconds",
+            12,
+            34,
+            56
+        )
         with(viewModel) {
             name.value = preset.name
             hours.value = preset.hours
@@ -119,6 +125,19 @@ class PresetEditorViewModelTest {
         }
         runBlockingTest {
             assertThat(repository.get(preset.id)).isEqualTo(preset)
+        }
+    }
+
+    @Test
+    fun givenLoadedPresetWhenDeletedThenOnlyHideSaveButton() {
+        with(viewModel) {
+            load(preset.id)
+            repository.delete(preset.id)
+            assertThat(name.value).isEqualTo(preset.name)
+            assertThat(hours.value).isEqualTo(preset.hours)
+            assertThat(minutes.value).isEqualTo(preset.minutes)
+            assertThat(seconds.value).isEqualTo(preset.seconds)
+            assertThat(showSaveButton.value).isFalse()
         }
     }
 }

@@ -45,11 +45,10 @@ class PresetsViewModel @Inject constructor(private val repository: PresetReposit
     fun deleteSelected() {
         with(_selection) {
             val selection = value
-            if (selection.isNullOrEmpty()) {
-                return
+            if (selection?.isNotEmpty() == true) {
+                value = emptySet()
+                repository.delete(selection)
             }
-            value = emptySet()
-            repository.delete(selection)
         }
     }
 
