@@ -55,10 +55,7 @@ class PresetsViewModelTest {
 
     @Test
     fun givenPresetWhenDeleteThenUpdateRepository() {
-        with(viewModel) {
-            presets.observeForever {}
-            delete(presetsSortedByName[0])
-        }
+        viewModel.delete(presetsSortedByName[0])
         runBlockingTest {
             assertThat(repository.get(presetsSortedByName[0].id)).isNull()
         }
