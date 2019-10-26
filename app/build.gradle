@@ -33,20 +33,20 @@ android {
         jvmTarget = "1.8"
     }
     testOptions {
-        unitTests {
-            includeAndroidResources true
-        }
+//        unitTests {
+//            includeAndroidResources true
+//        }
         execution 'ANDROIDX_TEST_ORCHESTRATOR'
     }
-    sourceSets {
-        def sharedTestDir = 'src/sharedTest/java'
-        test {
-            java.srcDir sharedTestDir
-        }
-        androidTest {
-            java.srcDir sharedTestDir
-        }
-    }
+//    sourceSets {
+//        def sharedTestDir = 'src/sharedTest/java'
+//        test {
+//            java.srcDir sharedTestDir
+//        }
+//        androidTest {
+//            java.srcDir sharedTestDir
+//        }
+//    }
 //    jacoco {
 //        version "$jacoco_version"
 //    }
