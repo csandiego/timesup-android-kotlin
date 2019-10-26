@@ -45,7 +45,7 @@ import org.mockito.Mockito.verify
 
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
-class PresetsTest {
+class PresetsIntegrationTest {
 
     private lateinit var repository: DefaultPresetRepository
     private lateinit var scenario: FragmentScenario<PresetsFragment>

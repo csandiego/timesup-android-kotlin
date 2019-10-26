@@ -1,6 +1,7 @@
 package com.github.csandiego.timesup
 
 import android.content.Context
+import android.os.Bundle
 import android.widget.Button
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.fragment.app.testing.FragmentScenario
@@ -12,8 +13,8 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.csandiego.timesup.data.TestData.presets
-import com.github.csandiego.timesup.editor.NewPresetFragment
+import com.github.csandiego.timesup.data.TestData.presetsSortedByName
+import com.github.csandiego.timesup.editor.EditPresetFragment
 import com.github.csandiego.timesup.editor.PresetEditorViewModel
 import com.github.csandiego.timesup.junit.RoomDatabaseRule
 import com.github.csandiego.timesup.repository.DefaultPresetRepository
@@ -31,13 +32,13 @@ import org.junit.runner.RunWith
 
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
-class NewPresetTest {
+class EditPresetIntegrationTest {
 
-    private val preset = presets[0]
+    private val preset = presetsSortedByName[0]
 
     private lateinit var repository: DefaultPresetRepository
     private lateinit var viewModel: PresetEditorViewModel
-    private lateinit var scenario: FragmentScenario<NewPresetFragment>
+    private lateinit var scenario: FragmentScenario<EditPresetFragment>
 
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
@@ -50,10 +51,12 @@ class NewPresetTest {
 
     @Before
     fun setUp() {
-        repository = DefaultPresetRepository(
-            roomDatabaseRule.database.presetDao(),
-            TestCoroutineScope()
-        )
+        val dao = roomDatabaseRule.database.presetDao().apply {
+            runBlockingTest {
+                insert(preset)
+            }
+        }
+        repository = DefaultPresetRepository(dao, TestCoroutineScope())
         viewModel = PresetEditorViewModel(repository)
         val viewModelFactory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
@@ -61,17 +64,21 @@ class NewPresetTest {
                 return viewModel as T
             }
         }
-        scenario = launchFragment(themeResId = R.style.Theme_TimesUp) {
-            NewPresetFragment(viewModelFactory)
+        scenario = launchFragment(
+            Bundle().apply {
+                putLong("presetId", preset.id)
+            },
+            R.style.Theme_TimesUp
+        ) {
+            EditPresetFragment(viewModelFactory)
         }
     }
-
 
 //    @Test
 //    fun whenNameAndDurationEnteredThenBindIntoViewModel() {
 //        onView(withId(R.id.editTextName))
 //            .perform(
-//                typeText(preset.name),
+//                replaceText(preset.name),
 //                closeSoftKeyboard()
 //            )
 //        onView(withId(R.id.numberPickerHours))
@@ -119,7 +126,7 @@ class NewPresetTest {
     fun givenPositiveButtonEnabledWhenClickedThenSave() {
         onView(withId(R.id.editTextName))
             .perform(
-                typeText(preset.name),
+                replaceText(preset.name),
                 closeSoftKeyboard()
             )
         onView(withId(R.id.numberPickerHours))
