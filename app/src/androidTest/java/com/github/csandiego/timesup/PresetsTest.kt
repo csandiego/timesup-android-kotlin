@@ -12,16 +12,15 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.longClick
-import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasAction
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra
-import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withResourceName
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.csandiego.timesup.data.TestData.presets
 import com.github.csandiego.timesup.data.TestData.presetsSortedByName
@@ -48,6 +47,7 @@ import org.mockito.Mockito.verify
 @RunWith(AndroidJUnit4::class)
 class PresetsTest {
 
+    private lateinit var repository: DefaultPresetRepository
     private lateinit var scenario: FragmentScenario<PresetsFragment>
 
     @get:Rule
@@ -67,7 +67,7 @@ class PresetsTest {
                 insert(presets)
             }
         }
-        val repository = DefaultPresetRepository(dao, TestCoroutineScope())
+        repository = DefaultPresetRepository(dao, TestCoroutineScope())
         val viewModel = PresetsViewModel(repository)
         val viewModelFactory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
@@ -83,23 +83,6 @@ class PresetsTest {
     @After
     fun tearDown() {
         Intents.release()
-    }
-
-    @Test
-    fun whenLoadedThenRecyclerViewSortedByNameAscending() {
-        scenario.onFragment {
-            presetsSortedByName.forEachIndexed { index, preset ->
-                assertThat(
-                    it.view?.findViewById<RecyclerView>(R.id.recyclerView)
-                        ?.findViewHolderForAdapterPosition(index)?.itemView?.tag
-                ).isEqualTo(preset.hashCode())
-            }
-        }
-    }
-
-    @Test
-    fun whenLoadedThenButtonNewDisplayed() {
-        onView(withId(R.id.buttonNew)).check(matches(isDisplayed()))
     }
 
     @Test
@@ -152,5 +135,47 @@ class PresetsTest {
                 presetsSortedByName[0].id
             )
         )
+    }
+
+    @Test
+    fun whenPresetSwipeLeftThenDelete() {
+        onView(withId(R.id.recyclerView))
+            .perform(
+                scrollToPosition<RecyclerView.ViewHolder>(0),
+                actionOnItemAtPosition<RecyclerView.ViewHolder>(0, swipeLeft())
+            )
+        runBlockingTest {
+            assertThat(repository.get(presetsSortedByName[0].id)).isNull()
+        }
+    }
+
+    @Test
+    fun whenPresetSwipeRightThenDelete() {
+        onView(withId(R.id.recyclerView))
+            .perform(
+                scrollToPosition<RecyclerView.ViewHolder>(0),
+                actionOnItemAtPosition<RecyclerView.ViewHolder>(0, swipeRight())
+            )
+        runBlockingTest {
+            assertThat(repository.get(presetsSortedByName[0].id)).isNull()
+        }
+
+    }
+
+    @Test
+    fun givenSelectionWhenDeleteMenuSelectedThenDelete() {
+        onView(withId(R.id.recyclerView))
+            .perform(
+                scrollToPosition<RecyclerView.ViewHolder>(0),
+                actionOnItemAtPosition<RecyclerView.ViewHolder>(0, longClick()),
+                actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click())
+            )
+        onView(withResourceName("menuDelete"))
+            .perform(click())
+        runBlockingTest {
+            repeat(2) {
+                assertThat(repository.get(presetsSortedByName[it].id)).isNull()
+            }
+        }
     }
 }
