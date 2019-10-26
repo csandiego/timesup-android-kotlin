@@ -18,9 +18,9 @@ android {
         testInstrumentationRunner "com.github.csandiego.timesup.test.TimesUpRunner"
     }
     buildTypes {
-//        debug {
-//            testCoverageEnabled true
-//        }
+        debug {
+            testCoverageEnabled true
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -33,23 +33,14 @@ android {
         jvmTarget = "1.8"
     }
     testOptions {
-//        unitTests {
-//            includeAndroidResources true
-//        }
+        unitTests {
+            includeAndroidResources true
+        }
         execution 'ANDROIDX_TEST_ORCHESTRATOR'
     }
-//    sourceSets {
-//        def sharedTestDir = 'src/sharedTest/java'
-//        test {
-//            java.srcDir sharedTestDir
-//        }
-//        androidTest {
-//            java.srcDir sharedTestDir
-//        }
-//    }
-//    jacoco {
-//        version "$jacoco_version"
-//    }
+    jacoco {
+        version "$jacoco_version"
+    }
 }
 
 dependencies {
@@ -80,15 +71,9 @@ dependencies {
     debugImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutine_test_version"
     debugImplementation "org.mockito:mockito-core:$mockito_version"
 
-    testImplementation "androidx.test.espresso:espresso-core:$espresso_version"
-    testImplementation "androidx.test.espresso:espresso-contrib:$espresso_version"
-    testImplementation "androidx.test.espresso:espresso-intents:$espresso_version"
     testImplementation "com.google.truth:truth:$truth_version"
     testImplementation "junit:junit:$junit_version"
     testImplementation "org.robolectric:robolectric:$robolectric_version"
-
-    kaptTest "com.google.dagger:dagger-compiler:$dagger_version"
-    kaptTest "com.google.dagger:dagger-android-processor:$dagger_version"
 
     androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_version"
     androidTestImplementation "androidx.test.espresso:espresso-contrib:$espresso_version"
