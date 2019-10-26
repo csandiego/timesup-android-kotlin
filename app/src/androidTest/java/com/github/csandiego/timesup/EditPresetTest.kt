@@ -1,6 +1,7 @@
-package com.github.csandiego.timesup.editor
+package com.github.csandiego.timesup
 
 import android.content.Context
+import android.os.Bundle
 import android.widget.Button
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.fragment.app.testing.FragmentScenario
@@ -12,14 +13,16 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.csandiego.timesup.R
-import com.github.csandiego.timesup.data.TestData.presets
+import com.github.csandiego.timesup.data.TestData.presetsSortedByName
+import com.github.csandiego.timesup.editor.EditPresetFragment
+import com.github.csandiego.timesup.editor.PresetEditorViewModel
 import com.github.csandiego.timesup.junit.RoomDatabaseRule
 import com.github.csandiego.timesup.repository.DefaultPresetRepository
 import com.github.csandiego.timesup.room.TimesUpDatabase
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineScope
+import kotlinx.coroutines.test.runBlockingTest
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.endsWith
 import org.junit.Before
@@ -31,12 +34,12 @@ import org.mockito.Mockito.verify
 
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
-class NewPresetFragmentTest {
+class EditPresetTest {
 
-    private val preset = presets[0]
+    private val preset = presetsSortedByName[0]
 
     private lateinit var viewModel: PresetEditorViewModel
-    private lateinit var scenario: FragmentScenario<NewPresetFragment>
+    private lateinit var scenario: FragmentScenario<EditPresetFragment>
 
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
@@ -49,10 +52,12 @@ class NewPresetFragmentTest {
 
     @Before
     fun setUp() {
-        val repository = DefaultPresetRepository(
-            roomDatabaseRule.database.presetDao(),
-            TestCoroutineScope()
-        )
+        val dao = roomDatabaseRule.database.presetDao().apply {
+            runBlockingTest {
+                insert(preset)
+            }
+        }
+        val repository = DefaultPresetRepository(dao, TestCoroutineScope())
         viewModel = spy(PresetEditorViewModel(repository))
         val viewModelFactory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
@@ -60,17 +65,21 @@ class NewPresetFragmentTest {
                 return viewModel as T
             }
         }
-        scenario = launchFragment(themeResId = R.style.Theme_TimesUp) {
-            NewPresetFragment(viewModelFactory)
+        scenario = launchFragment(
+            Bundle().apply {
+                putLong("presetId", preset.id)
+            },
+            R.style.Theme_TimesUp
+        ) {
+            EditPresetFragment(viewModelFactory)
         }
     }
-
 
     @Test
     fun whenNameAndDurationEnteredThenBindIntoViewModel() {
         onView(withId(R.id.editTextName))
             .perform(
-                typeText(preset.name),
+                replaceText(preset.name),
                 closeSoftKeyboard()
             )
         onView(withId(R.id.numberPickerHours))
@@ -118,7 +127,7 @@ class NewPresetFragmentTest {
     fun givenPositiveButtonEnabledWhenClickedThenSave() {
         onView(withId(R.id.editTextName))
             .perform(
-                typeText(preset.name),
+                replaceText(preset.name),
                 closeSoftKeyboard()
             )
         onView(withId(R.id.numberPickerHours))

@@ -1,4 +1,4 @@
-package com.github.csandiego.timesup.presets
+package com.github.csandiego.timesup
 
 import android.content.Context
 import android.provider.AlarmClock
@@ -23,10 +23,12 @@ import androidx.test.espresso.intent.matcher.IntentMatchers.hasAction
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.csandiego.timesup.R
 import com.github.csandiego.timesup.data.TestData.presets
 import com.github.csandiego.timesup.data.TestData.presetsSortedByName
 import com.github.csandiego.timesup.junit.RoomDatabaseRule
+import com.github.csandiego.timesup.presets.PresetsFragment
+import com.github.csandiego.timesup.presets.PresetsFragmentDirections
+import com.github.csandiego.timesup.presets.PresetsViewModel
 import com.github.csandiego.timesup.repository.DefaultPresetRepository
 import com.github.csandiego.timesup.room.TimesUpDatabase
 import com.google.common.truth.Truth.assertThat
@@ -44,7 +46,7 @@ import org.mockito.Mockito.verify
 
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
-class PresetsFragmentTest {
+class PresetsTest {
 
     private lateinit var scenario: FragmentScenario<PresetsFragment>
 
@@ -146,8 +148,9 @@ class PresetsFragmentTest {
         onView(withResourceName("menuEdit"))
             .perform(click())
         verify(navController).navigate(
-            PresetsFragmentDirections
-                .actionPresetsFragmentToEditPresetFragment(presetsSortedByName[0].id)
+            PresetsFragmentDirections.actionPresetsFragmentToEditPresetFragment(
+                presetsSortedByName[0].id
+            )
         )
     }
 }
