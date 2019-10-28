@@ -1,15 +1,21 @@
 package com.github.csandiego.timesup
 
+import android.provider.AlarmClock
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.annotation.UiThreadTest
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
+import androidx.test.espresso.assertion.PositionAssertions.isCompletelyAbove
 import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition
+import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.intent.Intents.intended
+import androidx.test.espresso.intent.matcher.IntentMatchers.hasAction
+import androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -35,37 +41,61 @@ class PresetsUITest {
 
     @UiThreadTest
     @Before
-    fun setUp() {
-        runBlockingTest {
-            ApplicationProvider.getApplicationContext<TestTimesUpApplication>()
-                .database.presetDao().insert(presets)
-        }
+    fun setUp() = runBlockingTest {
+        ApplicationProvider.getApplicationContext<TestTimesUpApplication>()
+            .database.presetDao().insert(presets)
     }
 
     @Test
-    fun whenLoadedThenRecyclerViewDisplaysNameAndDuration() {
-        presetsSortedByName.forEachIndexed { index, preset ->
+    fun givenDataWhenLoadedThenDisplayByNameAscending() {
+        repeat(presetsSortedByName.size - 1) {
             onView(withId(R.id.recyclerView))
-                .perform(scrollToPosition<RecyclerView.ViewHolder>(index))
+                .perform(scrollToPosition<RecyclerView.ViewHolder>(it))
             onView(
                 allOf(
-                    isDescendantOfA(withTagValue(equalTo(preset.hashCode()))),
-                    withId(R.id.textViewName)
-                )
-            ).check(matches(withText(preset.name)))
-            onView(
-                allOf(
-                    isDescendantOfA(withTagValue(equalTo(preset.hashCode()))),
-                    withId(R.id.textViewDuration)
+                    withParent(withId(R.id.recyclerView)),
+                    hasDescendant(
+                        allOf(
+                            withId(R.id.textViewName),
+                            withText(presetsSortedByName[it].name)
+                        )
+                    ),
+                    hasDescendant(
+                        allOf(
+                            withId(R.id.textViewDuration),
+                            withText(
+                                String.format(
+                                    "%02d:%02d:%02d",
+                                    presetsSortedByName[it].hours,
+                                    presetsSortedByName[it].minutes,
+                                    presetsSortedByName[it].seconds
+                                )
+                            )
+                        )
+                    )
                 )
             ).check(
-                matches(
-                    withText(
-                        String.format(
-                            "%02d:%02d:%02d",
-                            preset.hours,
-                            preset.minutes,
-                            preset.seconds
+                isCompletelyAbove(
+                    allOf(
+                        withParent(withId(R.id.recyclerView)),
+                        hasDescendant(
+                            allOf(
+                                withId(R.id.textViewName),
+                                withText(presetsSortedByName[it + 1].name)
+                            )
+                        ),
+                        hasDescendant(
+                            allOf(
+                                withId(R.id.textViewDuration),
+                                withText(
+                                    String.format(
+                                        "%02d:%02d:%02d",
+                                        presetsSortedByName[it + 1].hours,
+                                        presetsSortedByName[it + 1].minutes,
+                                        presetsSortedByName[it + 1].seconds
+                                    )
+                                )
+                            )
                         )
                     )
                 )
@@ -74,7 +104,7 @@ class PresetsUITest {
     }
 
     @Test
-    fun whenPresetSwipeLeftThenDelete() {
+    fun givenDataWhenPresetSwipeLeftThenRemoveFromList() {
         onView(withId(R.id.recyclerView))
             .perform(
                 scrollToPosition<RecyclerView.ViewHolder>(0),
@@ -85,7 +115,7 @@ class PresetsUITest {
     }
 
     @Test
-    fun whenPresetSwipeRightThenDelete() {
+    fun givenDataWhenPresetSwipeRightThenRemoveFromList() {
         onView(withId(R.id.recyclerView))
             .perform(
                 scrollToPosition<RecyclerView.ViewHolder>(0),
@@ -96,7 +126,29 @@ class PresetsUITest {
     }
 
     @Test
-    fun givenEmptySelectionWhenPresetLongClickedThenAddToSelection() {
+    fun givenEmptySelectionWhenUnselectedClickedThenSendIntent() {
+        Intents.init()
+        onView(withId(R.id.recyclerView))
+            .perform(
+                scrollToPosition<RecyclerView.ViewHolder>(0),
+                actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click())
+            )
+        val s = presetsSortedByName[0].run {
+            hours * 60 * 60 + minutes * 60 + seconds
+        }
+        intended(
+            allOf(
+                hasAction(AlarmClock.ACTION_SET_TIMER),
+                hasExtra(AlarmClock.EXTRA_MESSAGE, presetsSortedByName[0].name),
+                hasExtra(AlarmClock.EXTRA_LENGTH, s),
+                hasExtra(AlarmClock.EXTRA_SKIP_UI, false)
+            )
+        )
+        Intents.release()
+    }
+
+    @Test
+    fun givenEmptySelectionWhenUnselectedLongClickedThenSelect() {
         onView(withId(R.id.recyclerView))
             .perform(
                 scrollToPosition<RecyclerView.ViewHolder>(0),
@@ -107,7 +159,7 @@ class PresetsUITest {
     }
 
     @Test
-    fun givenSelectionWhenUnselectedPresetClickedThenAddToSelection() {
+    fun givenSelectionWhenUnselectedClickedThenSelect() {
         onView(withId(R.id.recyclerView))
             .perform(
                 scrollToPosition<RecyclerView.ViewHolder>(0),
@@ -121,7 +173,7 @@ class PresetsUITest {
     }
 
     @Test
-    fun givenSelectionWhenSelectedPresetClickedThenRemoveFromSelection() {
+    fun givenSelectionWhenSelectedClickedThenDeselect() {
         onView(withId(R.id.recyclerView))
             .perform(
                 scrollToPosition<RecyclerView.ViewHolder>(0),
@@ -133,7 +185,7 @@ class PresetsUITest {
     }
 
     @Test
-    fun givenEmptySelectionWhenPresetLongClickedThenDisplayActionMode() {
+    fun givenEmptySelectionWhenUnselectedLongClickedThenDisplayActionMode() {
         onView(withId(R.id.recyclerView))
             .perform(
                 scrollToPosition<RecyclerView.ViewHolder>(0),
@@ -144,7 +196,7 @@ class PresetsUITest {
     }
 
     @Test
-    fun givenActionModeDisplayedWhenDeselectAllThenHideActionMode() {
+    fun givenSelectionWhenDeselectAllThenHideActionMode() {
         onView(withId(R.id.recyclerView))
             .perform(
                 scrollToPosition<RecyclerView.ViewHolder>(0),
@@ -156,7 +208,7 @@ class PresetsUITest {
     }
 
     @Test
-    fun givenActionModeDisplayedWhenActionModeClosedThenDeselectAll() {
+    fun givenSelectionWhenActionModeClosedThenDeselectAll() {
         onView(withId(R.id.recyclerView))
             .perform(
                 scrollToPosition<RecyclerView.ViewHolder>(0),
@@ -169,20 +221,7 @@ class PresetsUITest {
     }
 
     @Test
-    fun whenActionModeDisplayedThenShowMenu() {
-        onView(withId(R.id.recyclerView))
-            .perform(
-                scrollToPosition<RecyclerView.ViewHolder>(0),
-                actionOnItemAtPosition<RecyclerView.ViewHolder>(0, longClick())
-            )
-        onView(withResourceName("menuEdit"))
-            .check(matches(isDisplayed()))
-        onView(withResourceName("menuDelete"))
-            .check(matches(isDisplayed()))
-    }
-
-    @Test
-    fun whenActionModeDisplayedThenTitleIsSelectionCount() {
+    fun givenSelectionWhenActionModeDisplayedThenShowSelectionCount() {
         onView(withId(R.id.recyclerView))
             .perform(
                 scrollToPosition<RecyclerView.ViewHolder>(0),
@@ -191,45 +230,6 @@ class PresetsUITest {
             )
         onView(withResourceName("action_bar_title"))
             .check(matches(withText("2")))
-    }
-
-    @Test
-    fun givenActionModeDisplayedWhenOnePresetSelectedThenShowEditMenu() {
-        onView(withId(R.id.recyclerView))
-            .perform(
-                scrollToPosition<RecyclerView.ViewHolder>(0),
-                actionOnItemAtPosition<RecyclerView.ViewHolder>(0, longClick())
-            )
-        onView(withResourceName("menuEdit"))
-            .check(matches(isDisplayed()))
-    }
-
-    @Test
-    fun givenActionModeDisplayedWhenMoreThanOnePresetSelectedThenHideEditMenu() {
-        onView(withId(R.id.recyclerView))
-            .perform(
-                scrollToPosition<RecyclerView.ViewHolder>(0),
-                actionOnItemAtPosition<RecyclerView.ViewHolder>(0, longClick()),
-                actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click())
-            )
-        onView(withResourceName("menuEdit"))
-            .check(doesNotExist())
-    }
-
-    @Test
-    fun givenSelectionWhenDeleteMenuSelectedThenDelete() {
-        onView(withId(R.id.recyclerView))
-            .perform(
-                scrollToPosition<RecyclerView.ViewHolder>(0),
-                actionOnItemAtPosition<RecyclerView.ViewHolder>(0, longClick()),
-                actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click())
-            )
-        onView(withResourceName("menuDelete"))
-            .perform(click())
-        repeat(2) {
-            onView(withTagValue(equalTo(presetsSortedByName[it].hashCode())))
-                .check(doesNotExist())
-        }
     }
 
     @Test
@@ -243,5 +243,55 @@ class PresetsUITest {
             )
         onView(withResourceName("action_bar_title"))
             .check(matches(withText("1")))
+    }
+
+    @Test
+    fun givenSingleSelectionWhenActionModeDisplayedThenShowEditMenu() {
+        onView(withId(R.id.recyclerView))
+            .perform(
+                scrollToPosition<RecyclerView.ViewHolder>(0),
+                actionOnItemAtPosition<RecyclerView.ViewHolder>(0, longClick())
+            )
+        onView(withResourceName("menuEdit"))
+            .check(matches(isDisplayed()))
+    }
+
+    @Test
+    fun givenMultipleSelectionWhenActionModeDisplayedThenHideEditMenu() {
+        onView(withId(R.id.recyclerView))
+            .perform(
+                scrollToPosition<RecyclerView.ViewHolder>(0),
+                actionOnItemAtPosition<RecyclerView.ViewHolder>(0, longClick()),
+                actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click())
+            )
+        onView(withResourceName("menuEdit"))
+            .check(doesNotExist())
+    }
+
+    @Test
+    fun givenSelectionWhenActionModeDisplayedThenShowDeleteMenu() {
+        onView(withId(R.id.recyclerView))
+            .perform(
+                scrollToPosition<RecyclerView.ViewHolder>(0),
+                actionOnItemAtPosition<RecyclerView.ViewHolder>(0, longClick())
+            )
+        onView(withResourceName("menuDelete"))
+            .check(matches(isDisplayed()))
+    }
+
+    @Test
+    fun givenSelectionWhenDeleteMenuClickedThenRemoveFromList() {
+        onView(withId(R.id.recyclerView))
+            .perform(
+                scrollToPosition<RecyclerView.ViewHolder>(0),
+                actionOnItemAtPosition<RecyclerView.ViewHolder>(0, longClick()),
+                actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click())
+            )
+        onView(withResourceName("menuDelete"))
+            .perform(click())
+        repeat(2) {
+            onView(withTagValue(equalTo(presetsSortedByName[it].hashCode())))
+                .check(doesNotExist())
+        }
     }
 }
