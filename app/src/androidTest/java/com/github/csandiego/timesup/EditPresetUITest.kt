@@ -27,6 +27,7 @@ import org.junit.runner.RunWith
 class EditPresetUITest {
 
     private val preset = presetsSortedByName[0]
+    private val editedPreset = preset.copy(name = "Edited Name")
 
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
@@ -76,7 +77,7 @@ class EditPresetUITest {
 
 
     @Test
-    fun whenNameEmptyAndDurationEmptyThenPositiveButtonDisabled() {
+    fun whenNameEmptyAndDurationEmptyThenDisablePositiveButton() {
         onView(withId(R.id.editTextName))
             .perform(
                 replaceText(""),
@@ -124,10 +125,10 @@ class EditPresetUITest {
     }
 
     @Test
-    fun whenNameNotEmptyAndDurationEmptyThenPositiveButtonDisabled() {
+    fun whenNameNotEmptyAndDurationEmptyThenDisablePositiveButton() {
         onView(withId(R.id.editTextName))
             .perform(
-                replaceText(preset.name),
+                replaceText(editedPreset.name),
                 closeSoftKeyboard()
             )
         onView(withId(R.id.numberPickerHours))
@@ -172,7 +173,7 @@ class EditPresetUITest {
     }
 
     @Test
-    fun whenNameEmptyAndDurationNotEmptyThenPositiveButtonDisabled() {
+    fun whenNameEmptyAndDurationNotEmptyThenDisablePositiveButton() {
         onView(withId(R.id.editTextName))
             .perform(
                 replaceText(""),
@@ -185,7 +186,7 @@ class EditPresetUITest {
                 withParent(withId(R.id.numberPickerHours)),
                 withClassName(endsWith("CustomEditText"))
             )
-        ).perform(replaceText(preset.hours.toString()), closeSoftKeyboard())
+        ).perform(replaceText(editedPreset.hours.toString()), closeSoftKeyboard())
         onView(withId(R.id.numberPickerMinutes))
             .perform(longClick())
         onView(
@@ -194,7 +195,7 @@ class EditPresetUITest {
                 withClassName(endsWith("CustomEditText"))
             )
         ).perform(
-            replaceText(preset.minutes.toString()),
+            replaceText(editedPreset.minutes.toString()),
             closeSoftKeyboard()
         )
         onView(withId(R.id.numberPickerSeconds))
@@ -205,7 +206,7 @@ class EditPresetUITest {
                 withClassName(endsWith("CustomEditText"))
             )
         ).perform(
-            replaceText(preset.seconds.toString()),
+            replaceText(editedPreset.seconds.toString()),
             closeSoftKeyboard()
         )
         onView(
@@ -217,10 +218,10 @@ class EditPresetUITest {
     }
 
     @Test
-    fun whenNameNotEmptyAndDurationNotEmptyThenPositiveButtonEnabled() {
+    fun whenNameNotEmptyAndDurationNotEmptyThenPositiveEnableButton() {
         onView(withId(R.id.editTextName))
             .perform(
-                replaceText(preset.name),
+                replaceText(editedPreset.name),
                 closeSoftKeyboard()
             )
         onView(withId(R.id.numberPickerHours))
@@ -231,7 +232,7 @@ class EditPresetUITest {
                 withClassName(endsWith("CustomEditText"))
             )
         ).perform(
-            replaceText(preset.hours.toString()),
+            replaceText(editedPreset.hours.toString()),
             closeSoftKeyboard()
         )
         onView(withId(R.id.numberPickerMinutes))
@@ -242,7 +243,7 @@ class EditPresetUITest {
                 withClassName(endsWith("CustomEditText"))
             )
         ).perform(
-            replaceText(preset.minutes.toString()),
+            replaceText(editedPreset.minutes.toString()),
             closeSoftKeyboard()
         )
         onView(withId(R.id.numberPickerSeconds))
@@ -253,7 +254,7 @@ class EditPresetUITest {
                 withClassName(endsWith("CustomEditText"))
             )
         ).perform(
-            replaceText(preset.seconds.toString()),
+            replaceText(editedPreset.seconds.toString()),
             closeSoftKeyboard()
         )
         onView(
@@ -262,5 +263,76 @@ class EditPresetUITest {
                 withText(R.string.button_save)
             )
         ).check(matches(isEnabled()))
+    }
+
+    @Test
+    fun givenNameNotEmptyAndDurationNotEmptyWhenPositiveButtonClickedThenUpdateList() {
+        onView(withId(R.id.editTextName))
+            .perform(
+                replaceText(editedPreset.name),
+                closeSoftKeyboard()
+            )
+        onView(withId(R.id.numberPickerHours))
+            .perform(longClick())
+        onView(
+            allOf(
+                withParent(withId(R.id.numberPickerHours)),
+                withClassName(endsWith("CustomEditText"))
+            )
+        ).perform(
+            replaceText(editedPreset.hours.toString()),
+            closeSoftKeyboard()
+        )
+        onView(withId(R.id.numberPickerMinutes))
+            .perform(longClick())
+        onView(
+            allOf(
+                withParent(withId(R.id.numberPickerMinutes)),
+                withClassName(endsWith("CustomEditText"))
+            )
+        ).perform(
+            replaceText(editedPreset.minutes.toString()),
+            closeSoftKeyboard()
+        )
+        onView(withId(R.id.numberPickerSeconds))
+            .perform(longClick())
+        onView(
+            allOf(
+                withParent(withId(R.id.numberPickerSeconds)),
+                withClassName(endsWith("CustomEditText"))
+            )
+        ).perform(
+            replaceText(editedPreset.seconds.toString()),
+            closeSoftKeyboard()
+        )
+        onView(
+            allOf(
+                isAssignableFrom(Button::class.java),
+                withText(R.string.button_save)
+            )
+        ).perform(click())
+        onView(
+            allOf(
+                isDescendantOfA(withTagValue(equalTo(editedPreset.hashCode()))),
+                withId(R.id.textViewName)
+            )
+        ).check(matches(withText(editedPreset.name)))
+        onView(
+            allOf(
+                isDescendantOfA(withTagValue(equalTo(editedPreset.hashCode()))),
+                withId(R.id.textViewDuration)
+            )
+        ).check(
+            matches(
+                withText(
+                    String.format(
+                        "%02d:%02d:%02d",
+                        editedPreset.hours,
+                        editedPreset.minutes,
+                        editedPreset.seconds
+                    )
+                )
+            )
+        )
     }
 }
