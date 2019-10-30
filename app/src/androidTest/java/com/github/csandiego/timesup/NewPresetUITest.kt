@@ -261,7 +261,7 @@ class NewPresetUITest {
     }
 
     @Test
-    fun givenNameNotEmptyAndDurationNotEmptyWhenPositiveButtonClickedThenUpdateList() {
+    fun givenNameNotEmptyAndDurationNotEmptyWhenPositiveButtonClickedThenAddToList() {
         onView(withId(R.id.editTextName))
             .perform(
                 typeText(newPreset.name),

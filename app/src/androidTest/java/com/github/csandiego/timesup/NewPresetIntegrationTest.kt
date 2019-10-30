@@ -64,7 +64,7 @@ class NewPresetIntegrationTest {
     }
 
     @Test
-    fun givenPositiveButtonEnabledWhenClickedThenSave() = runBlockingTest {
+    fun givenNameNotEmptyAndDurationNotEmptyWhenPositiveButtonClickedThenInsertIntoRepository() = runBlockingTest {
         onView(withId(R.id.editTextName))
             .perform(
                 typeText(newPreset.name),

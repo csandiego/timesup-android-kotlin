@@ -146,7 +146,7 @@ class PresetsUnitTest {
     }
 
     @Test
-    fun givenSelectedItemsWhenActionModeClosedThenSelectionIsEmpty() {
+    fun givenSelectedItemsWhenActionModeClosedThenDeselectAll() {
         onView(withId(R.id.recyclerView))
             .perform(
                 scrollToPosition<RecyclerView.ViewHolder>(0),
@@ -159,7 +159,7 @@ class PresetsUnitTest {
     }
 
     @Test
-    fun givenSelectionWhenDeleteMenuClickedThenClearSelection() {
+    fun givenSelectionWhenDeleteMenuClickedThenDeselectAll() {
         onView(withId(R.id.recyclerView))
             .perform(
                 scrollToPosition<RecyclerView.ViewHolder>(0),
