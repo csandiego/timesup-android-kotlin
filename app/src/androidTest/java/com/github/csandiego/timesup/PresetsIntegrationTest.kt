@@ -65,31 +65,27 @@ class PresetsIntegrationTest {
     }
 
     @Test
-    fun givenDataWhenPresetSwipeLeftThenDeleteFromRepository() {
+    fun givenDataWhenPresetSwipeLeftThenDeleteFromRepository() = runBlockingTest {
         onView(withId(R.id.recyclerView))
             .perform(
                 scrollToPosition<RecyclerView.ViewHolder>(0),
                 actionOnItemAtPosition<RecyclerView.ViewHolder>(0, swipeLeft())
             )
-        runBlockingTest {
-            assertThat(repository.get(presetsSortedByName[0].id)).isNull()
-        }
+        assertThat(repository.get(presetsSortedByName[0].id)).isNull()
     }
 
     @Test
-    fun givenDataWhenPresetSwipeRightThenDeleteFromRepository() {
+    fun givenDataWhenPresetSwipeRightThenDeleteFromRepository() = runBlockingTest {
         onView(withId(R.id.recyclerView))
             .perform(
                 scrollToPosition<RecyclerView.ViewHolder>(0),
                 actionOnItemAtPosition<RecyclerView.ViewHolder>(0, swipeRight())
             )
-        runBlockingTest {
-            assertThat(repository.get(presetsSortedByName[0].id)).isNull()
-        }
+        assertThat(repository.get(presetsSortedByName[0].id)).isNull()
     }
 
     @Test
-    fun givenSelectionWhenDeleteMenuClickedThenDeleteFromRepository() {
+    fun givenSelectionWhenDeleteMenuClickedThenDeleteFromRepository() = runBlockingTest {
         onView(withId(R.id.recyclerView))
             .perform(
                 scrollToPosition<RecyclerView.ViewHolder>(0),
@@ -98,10 +94,8 @@ class PresetsIntegrationTest {
             )
         onView(withResourceName("menuDelete"))
             .perform(click())
-        runBlockingTest {
-            repeat(2) {
-                assertThat(repository.get(presetsSortedByName[it].id)).isNull()
-            }
+        repeat(2) {
+            assertThat(repository.get(presetsSortedByName[it].id)).isNull()
         }
     }
 }

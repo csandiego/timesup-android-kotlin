@@ -13,7 +13,9 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.csandiego.timesup.data.TestData.presetsSortedByName
+import com.github.csandiego.timesup.data.TestData.editPreset
+import com.github.csandiego.timesup.data.TestData.presets
+import com.github.csandiego.timesup.data.TestData.updatedPreset
 import com.github.csandiego.timesup.editor.EditPresetFragment
 import com.github.csandiego.timesup.editor.PresetEditorViewModel
 import com.github.csandiego.timesup.junit.RoomDatabaseRule
@@ -33,9 +35,6 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class EditPresetIntegrationTest {
 
-    private val preset = presetsSortedByName[0]
-    private val editedPreset = preset.copy(name = "Edited Name")
-
     private lateinit var repository: DefaultPresetRepository
     private lateinit var scenario: FragmentScenario<EditPresetFragment>
 
@@ -51,7 +50,7 @@ class EditPresetIntegrationTest {
     @Before
     fun setUp() = runBlockingTest {
         val dao = roomDatabaseRule.database.presetDao().apply {
-            insert(preset)
+            insert(presets)
         }
         repository = DefaultPresetRepository(dao, this)
         val viewModel = PresetEditorViewModel(repository)
@@ -63,7 +62,7 @@ class EditPresetIntegrationTest {
         }
         scenario = launchFragment(
             Bundle().apply {
-                putLong("presetId", preset.id)
+                putLong("presetId", editPreset.id)
             },
             R.style.Theme_TimesUp
         ) {
@@ -72,10 +71,10 @@ class EditPresetIntegrationTest {
     }
 
     @Test
-    fun givenPositiveButtonEnabledWhenClickedThenSave() {
+    fun givenPositiveButtonEnabledWhenClickedThenSave() = runBlockingTest {
         onView(withId(R.id.editTextName))
             .perform(
-                replaceText(editedPreset.name),
+                replaceText(updatedPreset.name),
                 closeSoftKeyboard()
             )
         onView(withId(R.id.numberPickerHours))
@@ -86,7 +85,7 @@ class EditPresetIntegrationTest {
                 withClassName(endsWith("CustomEditText"))
             )
         ).perform(
-            replaceText(editedPreset.hours.toString()),
+            replaceText(updatedPreset.hours.toString()),
             closeSoftKeyboard()
         )
         onView(withId(R.id.numberPickerMinutes))
@@ -97,7 +96,7 @@ class EditPresetIntegrationTest {
                 withClassName(endsWith("CustomEditText"))
             )
         ).perform(
-            replaceText(editedPreset.minutes.toString()),
+            replaceText(updatedPreset.minutes.toString()),
             closeSoftKeyboard()
         )
         onView(withId(R.id.numberPickerSeconds))
@@ -108,7 +107,7 @@ class EditPresetIntegrationTest {
                 withClassName(endsWith("CustomEditText"))
             )
         ).perform(
-            replaceText(editedPreset.seconds.toString()),
+            replaceText(updatedPreset.seconds.toString()),
             closeSoftKeyboard()
         )
         onView(
@@ -117,8 +116,6 @@ class EditPresetIntegrationTest {
                 withText(R.string.button_save)
             )
         ).perform(click())
-        runBlockingTest {
-            assertThat(repository.get(preset.id)).isEqualTo(editedPreset)
-        }
+        assertThat(repository.get(updatedPreset.id)).isEqualTo(updatedPreset)
     }
 }

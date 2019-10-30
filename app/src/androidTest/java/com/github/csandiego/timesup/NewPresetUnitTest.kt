@@ -1,57 +1,46 @@
 package com.github.csandiego.timesup
 
-import android.content.Context
-import android.widget.Button
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragment
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.csandiego.timesup.data.Preset
+import com.github.csandiego.timesup.data.TestData.editPreset
 import com.github.csandiego.timesup.data.TestData.newPreset
-import com.github.csandiego.timesup.data.TestData.presets
 import com.github.csandiego.timesup.editor.NewPresetFragment
 import com.github.csandiego.timesup.editor.PresetEditorViewModel
-import com.github.csandiego.timesup.junit.RoomDatabaseRule
-import com.github.csandiego.timesup.repository.DefaultPresetRepository
-import com.github.csandiego.timesup.room.TimesUpDatabase
+import com.github.csandiego.timesup.repository.PresetRepository
 import com.google.common.truth.Truth.assertThat
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.endsWith
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mockito.`when`
+import org.mockito.Mockito.mock
 
-@ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
-class NewPresetIntegrationTest {
+class NewPresetUnitTest {
 
-    private lateinit var repository: DefaultPresetRepository
+    private lateinit var viewModel: PresetEditorViewModel
     private lateinit var scenario: FragmentScenario<NewPresetFragment>
 
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
-    @get:Rule
-    val roomDatabaseRule = RoomDatabaseRule(
-        ApplicationProvider.getApplicationContext<Context>(),
-        TimesUpDatabase::class
-    )
-
     @Before
-    fun setUp() = runBlockingTest {
-        val dao = roomDatabaseRule.database.presetDao().apply {
-            insert(presets)
+    fun setUp() {
+        val repository = mock(PresetRepository::class.java).apply {
+            `when`(getAsLiveData(editPreset.id)).thenReturn(MutableLiveData<Preset>(editPreset))
         }
-        repository = DefaultPresetRepository(dao, this)
-        val viewModel = PresetEditorViewModel(repository)
+        viewModel = PresetEditorViewModel(repository)
         val viewModelFactory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -64,7 +53,7 @@ class NewPresetIntegrationTest {
     }
 
     @Test
-    fun givenPositiveButtonEnabledWhenClickedThenSave() = runBlockingTest {
+    fun whenNameAndDurationEnteredThenBindIntoViewModel() {
         onView(withId(R.id.editTextName))
             .perform(
                 typeText(newPreset.name),
@@ -103,12 +92,11 @@ class NewPresetIntegrationTest {
             replaceText(newPreset.seconds.toString()),
             closeSoftKeyboard()
         )
-        onView(
-            allOf(
-                isAssignableFrom(Button::class.java),
-                withText(R.string.button_save)
-            )
-        ).perform(click())
-        assertThat(repository.get(newPreset.id)).isEqualTo(newPreset)
+        with(viewModel) {
+            assertThat(name.value).isEqualTo(newPreset.name)
+            assertThat(hours.value).isEqualTo(newPreset.hours)
+            assertThat(minutes.value).isEqualTo(newPreset.minutes)
+            assertThat(seconds.value).isEqualTo(newPreset.seconds)
+        }
     }
 }

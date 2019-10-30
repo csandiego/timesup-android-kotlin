@@ -12,8 +12,9 @@ import androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.csandiego.timesup.data.TestData.editPreset
 import com.github.csandiego.timesup.data.TestData.presets
-import com.github.csandiego.timesup.data.TestData.presetsSortedByName
+import com.github.csandiego.timesup.data.TestData.updatedPreset
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.hamcrest.Matchers.*
@@ -25,9 +26,6 @@ import org.junit.runner.RunWith
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
 class EditPresetUITest {
-
-    private val preset = presetsSortedByName[0]
-    private val editedPreset = preset.copy(name = "Edited Name")
 
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
@@ -54,25 +52,25 @@ class EditPresetUITest {
     @Test
     fun whenLoadedBindIntoView() {
         onView(withId(R.id.editTextName))
-            .check(matches(withText(preset.name)))
+            .check(matches(withText(editPreset.name)))
         onView(
             allOf(
                 withParent(withId(R.id.numberPickerHours)),
                 withClassName(endsWith("CustomEditText"))
             )
-        ).check(matches(withText(String.format("%02d", preset.hours))))
+        ).check(matches(withText(String.format("%02d", editPreset.hours))))
         onView(
             allOf(
                 withParent(withId(R.id.numberPickerMinutes)),
                 withClassName(endsWith("CustomEditText"))
             )
-        ).check(matches(withText(String.format("%02d", preset.minutes))))
+        ).check(matches(withText(String.format("%02d", editPreset.minutes))))
         onView(
             allOf(
                 withParent(withId(R.id.numberPickerSeconds)),
                 withClassName(endsWith("CustomEditText"))
             )
-        ).check(matches(withText(String.format("%02d", preset.seconds))))
+        ).check(matches(withText(String.format("%02d", editPreset.seconds))))
     }
 
 
@@ -128,7 +126,7 @@ class EditPresetUITest {
     fun whenNameNotEmptyAndDurationEmptyThenDisablePositiveButton() {
         onView(withId(R.id.editTextName))
             .perform(
-                replaceText(editedPreset.name),
+                replaceText(updatedPreset.name),
                 closeSoftKeyboard()
             )
         onView(withId(R.id.numberPickerHours))
@@ -186,7 +184,7 @@ class EditPresetUITest {
                 withParent(withId(R.id.numberPickerHours)),
                 withClassName(endsWith("CustomEditText"))
             )
-        ).perform(replaceText(editedPreset.hours.toString()), closeSoftKeyboard())
+        ).perform(replaceText(updatedPreset.hours.toString()), closeSoftKeyboard())
         onView(withId(R.id.numberPickerMinutes))
             .perform(longClick())
         onView(
@@ -195,7 +193,7 @@ class EditPresetUITest {
                 withClassName(endsWith("CustomEditText"))
             )
         ).perform(
-            replaceText(editedPreset.minutes.toString()),
+            replaceText(updatedPreset.minutes.toString()),
             closeSoftKeyboard()
         )
         onView(withId(R.id.numberPickerSeconds))
@@ -206,7 +204,7 @@ class EditPresetUITest {
                 withClassName(endsWith("CustomEditText"))
             )
         ).perform(
-            replaceText(editedPreset.seconds.toString()),
+            replaceText(updatedPreset.seconds.toString()),
             closeSoftKeyboard()
         )
         onView(
@@ -221,7 +219,7 @@ class EditPresetUITest {
     fun whenNameNotEmptyAndDurationNotEmptyThenEnablePositiveButton() {
         onView(withId(R.id.editTextName))
             .perform(
-                replaceText(editedPreset.name),
+                replaceText(updatedPreset.name),
                 closeSoftKeyboard()
             )
         onView(withId(R.id.numberPickerHours))
@@ -232,7 +230,7 @@ class EditPresetUITest {
                 withClassName(endsWith("CustomEditText"))
             )
         ).perform(
-            replaceText(editedPreset.hours.toString()),
+            replaceText(updatedPreset.hours.toString()),
             closeSoftKeyboard()
         )
         onView(withId(R.id.numberPickerMinutes))
@@ -243,7 +241,7 @@ class EditPresetUITest {
                 withClassName(endsWith("CustomEditText"))
             )
         ).perform(
-            replaceText(editedPreset.minutes.toString()),
+            replaceText(updatedPreset.minutes.toString()),
             closeSoftKeyboard()
         )
         onView(withId(R.id.numberPickerSeconds))
@@ -254,7 +252,7 @@ class EditPresetUITest {
                 withClassName(endsWith("CustomEditText"))
             )
         ).perform(
-            replaceText(editedPreset.seconds.toString()),
+            replaceText(updatedPreset.seconds.toString()),
             closeSoftKeyboard()
         )
         onView(
@@ -269,7 +267,7 @@ class EditPresetUITest {
     fun givenNameNotEmptyAndDurationNotEmptyWhenPositiveButtonClickedThenUpdateList() {
         onView(withId(R.id.editTextName))
             .perform(
-                replaceText(editedPreset.name),
+                replaceText(updatedPreset.name),
                 closeSoftKeyboard()
             )
         onView(withId(R.id.numberPickerHours))
@@ -280,7 +278,7 @@ class EditPresetUITest {
                 withClassName(endsWith("CustomEditText"))
             )
         ).perform(
-            replaceText(editedPreset.hours.toString()),
+            replaceText(updatedPreset.hours.toString()),
             closeSoftKeyboard()
         )
         onView(withId(R.id.numberPickerMinutes))
@@ -291,7 +289,7 @@ class EditPresetUITest {
                 withClassName(endsWith("CustomEditText"))
             )
         ).perform(
-            replaceText(editedPreset.minutes.toString()),
+            replaceText(updatedPreset.minutes.toString()),
             closeSoftKeyboard()
         )
         onView(withId(R.id.numberPickerSeconds))
@@ -302,7 +300,7 @@ class EditPresetUITest {
                 withClassName(endsWith("CustomEditText"))
             )
         ).perform(
-            replaceText(editedPreset.seconds.toString()),
+            replaceText(updatedPreset.seconds.toString()),
             closeSoftKeyboard()
         )
         onView(
@@ -311,15 +309,17 @@ class EditPresetUITest {
                 withText(R.string.button_save)
             )
         ).perform(click())
+        onView(withId(R.id.recyclerView))
+            .perform(scrollToPosition<RecyclerView.ViewHolder>(0))
         onView(
             allOf(
-                isDescendantOfA(withTagValue(equalTo(editedPreset.hashCode()))),
+                isDescendantOfA(withTagValue(equalTo(updatedPreset.hashCode()))),
                 withId(R.id.textViewName)
             )
-        ).check(matches(withText(editedPreset.name)))
+        ).check(matches(withText(updatedPreset.name)))
         onView(
             allOf(
-                isDescendantOfA(withTagValue(equalTo(editedPreset.hashCode()))),
+                isDescendantOfA(withTagValue(equalTo(updatedPreset.hashCode()))),
                 withId(R.id.textViewDuration)
             )
         ).check(
@@ -327,9 +327,9 @@ class EditPresetUITest {
                 withText(
                     String.format(
                         "%02d:%02d:%02d",
-                        editedPreset.hours,
-                        editedPreset.minutes,
-                        editedPreset.seconds
+                        updatedPreset.hours,
+                        updatedPreset.minutes,
+                        updatedPreset.seconds
                     )
                 )
             )

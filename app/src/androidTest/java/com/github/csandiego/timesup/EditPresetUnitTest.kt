@@ -12,7 +12,8 @@ import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.csandiego.timesup.data.Preset
-import com.github.csandiego.timesup.data.TestData.presetsSortedByName
+import com.github.csandiego.timesup.data.TestData.editPreset
+import com.github.csandiego.timesup.data.TestData.updatedPreset
 import com.github.csandiego.timesup.editor.EditPresetFragment
 import com.github.csandiego.timesup.editor.PresetEditorViewModel
 import com.github.csandiego.timesup.repository.PresetRepository
@@ -29,9 +30,6 @@ import org.mockito.Mockito.mock
 @RunWith(AndroidJUnit4::class)
 class EditPresetUnitTest {
 
-    private val preset = presetsSortedByName[0]
-    private val editedPreset = preset.copy(name = "Edited Name")
-
     private lateinit var viewModel: PresetEditorViewModel
     private lateinit var scenario: FragmentScenario<EditPresetFragment>
 
@@ -41,7 +39,7 @@ class EditPresetUnitTest {
     @Before
     fun setUp() {
         val repository = mock(PresetRepository::class.java).apply {
-            `when`(getAsLiveData(preset.id)).thenReturn(MutableLiveData<Preset>(preset))
+            `when`(getAsLiveData(editPreset.id)).thenReturn(MutableLiveData<Preset>(editPreset))
         }
         viewModel = PresetEditorViewModel(repository)
         val viewModelFactory = object : ViewModelProvider.Factory {
@@ -52,7 +50,7 @@ class EditPresetUnitTest {
         }
         scenario = launchFragment(
             Bundle().apply {
-                putLong("presetId", preset.id)
+                putLong("presetId", editPreset.id)
             },
             R.style.Theme_TimesUp
         ) {
@@ -64,7 +62,7 @@ class EditPresetUnitTest {
     fun whenNameAndDurationEnteredThenBindIntoViewModel() {
         onView(withId(R.id.editTextName))
             .perform(
-                replaceText(editedPreset.name),
+                replaceText(updatedPreset.name),
                 closeSoftKeyboard()
             )
         onView(withId(R.id.numberPickerHours))
@@ -75,7 +73,7 @@ class EditPresetUnitTest {
                 withClassName(endsWith("CustomEditText"))
             )
         ).perform(
-            replaceText(editedPreset.hours.toString()),
+            replaceText(updatedPreset.hours.toString()),
             closeSoftKeyboard()
         )
         onView(withId(R.id.numberPickerMinutes))
@@ -86,7 +84,7 @@ class EditPresetUnitTest {
                 withClassName(endsWith("CustomEditText"))
             )
         ).perform(
-            replaceText(editedPreset.minutes.toString()),
+            replaceText(updatedPreset.minutes.toString()),
             closeSoftKeyboard()
         )
         onView(withId(R.id.numberPickerSeconds))
@@ -97,14 +95,14 @@ class EditPresetUnitTest {
                 withClassName(endsWith("CustomEditText"))
             )
         ).perform(
-            replaceText(editedPreset.seconds.toString()),
+            replaceText(updatedPreset.seconds.toString()),
             closeSoftKeyboard()
         )
         with(viewModel) {
-            assertThat(name.value).isEqualTo(editedPreset.name)
-            assertThat(hours.value).isEqualTo(editedPreset.hours)
-            assertThat(minutes.value).isEqualTo(editedPreset.minutes)
-            assertThat(seconds.value).isEqualTo(editedPreset.seconds)
+            assertThat(name.value).isEqualTo(updatedPreset.name)
+            assertThat(hours.value).isEqualTo(updatedPreset.hours)
+            assertThat(minutes.value).isEqualTo(updatedPreset.minutes)
+            assertThat(seconds.value).isEqualTo(updatedPreset.seconds)
         }
     }
 }
