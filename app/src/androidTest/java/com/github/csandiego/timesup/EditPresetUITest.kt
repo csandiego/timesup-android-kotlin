@@ -218,7 +218,7 @@ class EditPresetUITest {
     }
 
     @Test
-    fun whenNameNotEmptyAndDurationNotEmptyThenPositiveEnableButton() {
+    fun whenNameNotEmptyAndDurationNotEmptyThenEnablePositiveButton() {
         onView(withId(R.id.editTextName))
             .perform(
                 replaceText(editedPreset.name),
