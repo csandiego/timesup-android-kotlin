@@ -7,4 +7,8 @@
     <string name="menu_edit">Edit</string>
     <string name="menu_delete">Delete</string>
     <string name="preset_empty_message">Click the Add button to create a new preset.</string>
+    <string name="button_start">Start</string>
+    <string name="button_pause">Pause</string>
+    <string name="button_reset">Reset</string>
+    <string name="timer_title">Timer</string>
 </resources>

@@ -1,6 +1,5 @@
 package com.github.csandiego.timesup
 
-import android.provider.AlarmClock
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.annotation.UiThreadTest
@@ -12,10 +11,6 @@ import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition
-import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.intent.Intents.intended
-import androidx.test.espresso.intent.matcher.IntentMatchers.hasAction
-import androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -125,27 +120,27 @@ class PresetsUITest {
             .check(doesNotExist())
     }
 
-    @Test
-    fun givenEmptySelectionWhenUnselectedClickedThenSendIntent() {
-        Intents.init()
-        onView(withId(R.id.recyclerView))
-            .perform(
-                scrollToPosition<RecyclerView.ViewHolder>(0),
-                actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click())
-            )
-        val s = presetsSortedByName[0].run {
-            hours * 60 * 60 + minutes * 60 + seconds
-        }
-        intended(
-            allOf(
-                hasAction(AlarmClock.ACTION_SET_TIMER),
-                hasExtra(AlarmClock.EXTRA_MESSAGE, presetsSortedByName[0].name),
-                hasExtra(AlarmClock.EXTRA_LENGTH, s),
-                hasExtra(AlarmClock.EXTRA_SKIP_UI, false)
-            )
-        )
-        Intents.release()
-    }
+//    @Test
+//    fun givenEmptySelectionWhenUnselectedClickedThenSendIntent() {
+//        Intents.init()
+//        onView(withId(R.id.recyclerView))
+//            .perform(
+//                scrollToPosition<RecyclerView.ViewHolder>(0),
+//                actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click())
+//            )
+//        val s = presetsSortedByName[0].run {
+//            hours * 60 * 60 + minutes * 60 + seconds
+//        }
+//        intended(
+//            allOf(
+//                hasAction(AlarmClock.ACTION_SET_TIMER),
+//                hasExtra(AlarmClock.EXTRA_MESSAGE, presetsSortedByName[0].name),
+//                hasExtra(AlarmClock.EXTRA_LENGTH, s),
+//                hasExtra(AlarmClock.EXTRA_SKIP_UI, false)
+//            )
+//        )
+//        Intents.release()
+//    }
 
     @Test
     fun givenEmptySelectionWhenUnselectedLongClickedThenSelect() {

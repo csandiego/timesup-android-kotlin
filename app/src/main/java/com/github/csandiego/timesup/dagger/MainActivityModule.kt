@@ -9,12 +9,19 @@ import com.github.csandiego.timesup.editor.NewPresetFragment
 import com.github.csandiego.timesup.editor.PresetEditorViewModel
 import com.github.csandiego.timesup.presets.PresetsFragment
 import com.github.csandiego.timesup.presets.PresetsViewModel
+import com.github.csandiego.timesup.timer.TimerFragment
+import com.github.csandiego.timesup.timer.TimerViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
 
 @Module
 interface MainActivityModule {
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(TimerViewModel::class)
+    fun provideTimerViewModel(viewModel: TimerViewModel): ViewModel
 
     @Binds
     @IntoMap
@@ -29,6 +36,11 @@ interface MainActivityModule {
     @ActivityScope
     @Binds
     fun provideViewModelFactory(factory: DaggerViewModelFactory): ViewModelProvider.Factory
+
+    @Binds
+    @IntoMap
+    @FragmentKey(TimerFragment::class)
+    fun provideTimerFragment(fragment: TimerFragment): Fragment
 
     @Binds
     @IntoMap

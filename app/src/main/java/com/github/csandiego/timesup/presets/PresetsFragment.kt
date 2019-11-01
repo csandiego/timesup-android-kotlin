@@ -1,11 +1,9 @@
 package com.github.csandiego.timesup.presets
 
-import android.content.Intent
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.drawable.ShapeDrawable
 import android.os.Bundle
-import android.provider.AlarmClock
 import android.view.*
 import android.view.animation.DecelerateInterpolator
 import androidx.fragment.app.Fragment
@@ -13,6 +11,8 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.*
 import com.github.csandiego.timesup.R
 import com.github.csandiego.timesup.data.Preset
@@ -29,6 +29,9 @@ class PresetsFragment @Inject constructor(viewModelFactory: ViewModelProvider.Fa
     private var actionMode: ActionMode? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val navController = findNavController()
+        val appBarConfiguration = AppBarConfiguration(navController.graph)
+        toolbar.setupWithNavController(navController, appBarConfiguration)
         val adapter = createRecyclerViewAdapter()
         with(recyclerView) {
             this.adapter = adapter
@@ -67,17 +70,20 @@ class PresetsFragment @Inject constructor(viewModelFactory: ViewModelProvider.Fa
     }
 
     private fun startTimer(preset: Preset) {
-        val s = preset.run {
-            hours * 60 * 60 + minutes * 60 + seconds
-        }
-        val intent = Intent(AlarmClock.ACTION_SET_TIMER).apply {
-            putExtra(AlarmClock.EXTRA_MESSAGE, preset.name)
-            putExtra(AlarmClock.EXTRA_LENGTH, s)
-            putExtra(AlarmClock.EXTRA_SKIP_UI, false)
-        }
-        if (intent.resolveActivity(requireActivity().packageManager) != null) {
-            startActivity(intent)
-        }
+//        val s = preset.run {
+//            hours * 60 * 60 + minutes * 60 + seconds
+//        }
+//        val intent = Intent(AlarmClock.ACTION_SET_TIMER).apply {
+//            putExtra(AlarmClock.EXTRA_MESSAGE, preset.name)
+//            putExtra(AlarmClock.EXTRA_LENGTH, s)
+//            putExtra(AlarmClock.EXTRA_SKIP_UI, false)
+//        }
+//        if (intent.resolveActivity(requireActivity().packageManager) != null) {
+//            startActivity(intent)
+//        }
+        findNavController().navigate(
+            PresetsFragmentDirections.actionPresetsFragmentToTimerFragment(preset.id)
+        )
     }
 
     private fun createActionModeCallback() = object : ActionMode.Callback {

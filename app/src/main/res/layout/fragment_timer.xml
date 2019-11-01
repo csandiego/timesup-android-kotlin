@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".timer.TimerFragment">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.github.csandiego.timesup.timer.TimerViewModel" />
+    </data>
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:animateLayoutChanges="true">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/textViewName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="32dp"
+                android:gravity="center"
+                android:text="@{viewModel.preset.name}"
+                android:textAppearance="?attr/textAppearanceHeadline4"
+                app:layout_constraintBottom_toTopOf="@id/textViewTimeLeft"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:text="@tools:sample/lorem[5]" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/textViewTimeLeft"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:gravity="center"
+                android:text="@{viewModel.timeLeft}"
+                android:textAppearance="?attr/textAppearanceHeadline1"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="12:34:56" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonStart"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:enabled="@{viewModel.startButtonEnabled}"
+                android:onClick="@{() -> viewModel.start()}"
+                android:text="@string/button_start"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/textViewTimeLeft" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonPause"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="32dp"
+                android:enabled="@{viewModel.pauseButtonEnabled}"
+                android:onClick="@{() -> viewModel.pause()}"
+                android:text="@string/button_pause"
+                app:layout_constraintEnd_toStartOf="@+id/buttonStart"
+                app:layout_constraintTop_toBottomOf="@id/textViewTimeLeft" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonReset"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="32dp"
+                android:enabled="@{viewModel.resetButtonEnabled}"
+                android:onClick="@{() -> viewModel.reset()}"
+                android:text="@string/button_reset"
+                app:layout_constraintStart_toEndOf="@+id/buttonStart"
+                app:layout_constraintTop_toBottomOf="@id/textViewTimeLeft" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</layout>
