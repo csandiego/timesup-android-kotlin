@@ -18,7 +18,11 @@
             app:destination="@id/newPresetFragment" />
         <action
             android:id="@+id/action_presetsFragment_to_timerFragment"
-            app:destination="@id/timerFragment" />
+            app:destination="@id/timerFragment"
+            app:enterAnim="@anim/navigation_slide_from_right"
+            app:exitAnim="@anim/navigation_slide_to_left"
+            app:popEnterAnim="@anim/navigation_slide_from_left"
+            app:popExitAnim="@anim/navigation_slide_to_right" />
     </fragment>
     <dialog
         android:id="@+id/editPresetFragment"
