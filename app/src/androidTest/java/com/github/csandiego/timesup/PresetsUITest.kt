@@ -120,28 +120,6 @@ class PresetsUITest {
             .check(doesNotExist())
     }
 
-//    @Test
-//    fun givenEmptySelectionWhenUnselectedClickedThenSendIntent() {
-//        Intents.init()
-//        onView(withId(R.id.recyclerView))
-//            .perform(
-//                scrollToPosition<RecyclerView.ViewHolder>(0),
-//                actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click())
-//            )
-//        val s = presetsSortedByName[0].run {
-//            hours * 60 * 60 + minutes * 60 + seconds
-//        }
-//        intended(
-//            allOf(
-//                hasAction(AlarmClock.ACTION_SET_TIMER),
-//                hasExtra(AlarmClock.EXTRA_MESSAGE, presetsSortedByName[0].name),
-//                hasExtra(AlarmClock.EXTRA_LENGTH, s),
-//                hasExtra(AlarmClock.EXTRA_SKIP_UI, false)
-//            )
-//        )
-//        Intents.release()
-//    }
-
     @Test
     fun givenEmptySelectionWhenUnselectedLongClickedThenSelect() {
         onView(withId(R.id.recyclerView))
