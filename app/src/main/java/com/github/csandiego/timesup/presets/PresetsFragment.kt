@@ -22,16 +22,18 @@ import kotlinx.android.synthetic.main.fragment_presets.*
 import javax.inject.Inject
 import kotlin.math.absoluteValue
 
-class PresetsFragment @Inject constructor(viewModelFactory: ViewModelProvider.Factory)
-    : Fragment(R.layout.fragment_presets) {
+class PresetsFragment @Inject constructor(viewModelFactory: ViewModelProvider.Factory) :
+    Fragment(R.layout.fragment_presets) {
 
     private val viewModel by viewModels<PresetsViewModel> { viewModelFactory }
     private var actionMode: ActionMode? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val navController = findNavController()
-        val appBarConfiguration = AppBarConfiguration(navController.graph)
-        toolbar.setupWithNavController(navController, appBarConfiguration)
+        try {
+            val navController = findNavController()
+            toolbar.setupWithNavController(navController, AppBarConfiguration(navController.graph))
+        } catch (e: Exception) {
+        }
         val adapter = createRecyclerViewAdapter()
         with(recyclerView) {
             this.adapter = adapter
@@ -53,7 +55,8 @@ class PresetsFragment @Inject constructor(viewModelFactory: ViewModelProvider.Fa
                 if (it.isEmpty()) {
                     actionMode?.finish()
                 } else {
-                    val mode = actionMode ?: requireActivity().startActionMode(createActionModeCallback())
+                    val mode =
+                        actionMode ?: requireActivity().startActionMode(createActionModeCallback())
                     actionMode = mode.apply {
                         title = it.size.toString()
                         menu?.findItem(R.id.menuEdit)?.isVisible = it.size == 1
@@ -130,14 +133,20 @@ class PresetsFragment @Inject constructor(viewModelFactory: ViewModelProvider.Fa
 
             with(ShapeDrawable()) {
                 setTint(Color.RED)
-                setBounds(viewHolder.itemView.left, viewHolder.itemView.top, viewHolder.itemView.right, viewHolder.itemView.bottom)
+                setBounds(
+                    viewHolder.itemView.left,
+                    viewHolder.itemView.top,
+                    viewHolder.itemView.right,
+                    viewHolder.itemView.bottom
+                )
                 draw(c)
             }
 
             with(icon) {
                 setTint(Color.WHITE)
 
-                val top = viewHolder.itemView.top + viewHolder.itemView.height / 2 - intrinsicHeight / 2
+                val top =
+                    viewHolder.itemView.top + viewHolder.itemView.height / 2 - intrinsicHeight / 2
                 val bottom = top + intrinsicHeight
                 var left = viewHolder.itemView.left + margin
                 var right = left + intrinsicWidth
