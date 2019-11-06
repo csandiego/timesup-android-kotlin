@@ -6,6 +6,7 @@ import com.github.csandiego.timesup.MainActivity
 import com.github.csandiego.timesup.TimesUpApplication
 import com.github.csandiego.timesup.repository.DefaultPresetRepository
 import com.github.csandiego.timesup.repository.PresetRepository
+import com.github.csandiego.timesup.timer.TimerService
 import dagger.Binds
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
@@ -28,5 +29,9 @@ interface ApplicationModule {
 
     @ActivityScope
     @ContributesAndroidInjector(modules = [MainActivityModule::class])
-    fun contributeAndroidInjector(): MainActivity
+    fun contributeMainActivityAndroidInjector(): MainActivity
+
+    @ServiceScope
+    @ContributesAndroidInjector
+    fun contributeTimerServiceInjector(): TimerService
 }

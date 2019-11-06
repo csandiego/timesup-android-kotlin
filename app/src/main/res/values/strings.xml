@@ -11,4 +11,8 @@
     <string name="button_pause">Pause</string>
     <string name="button_reset">Reset</string>
     <string name="timer_title">Timer</string>
+    <string name="high_importance_notification_channel_name">High</string>
+    <string name="high_importance_notification_channel_description">High importance</string>
+    <string name="low_importance_notification_channel_name">Low</string>
+    <string name="low_importance_notification_channel_description">Low importance</string>
 </resources>
