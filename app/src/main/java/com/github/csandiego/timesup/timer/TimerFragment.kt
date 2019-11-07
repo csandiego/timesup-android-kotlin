@@ -1,11 +1,7 @@
 package com.github.csandiego.timesup.timer
 
-import android.content.ComponentName
-import android.content.Context.BIND_AUTO_CREATE
 import android.content.Intent
-import android.content.ServiceConnection
 import android.os.Bundle
-import android.os.IBinder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -47,104 +43,44 @@ class TimerFragment @Inject constructor(viewModelFactory: ViewModelProvider.Fact
             }
         }
         with(viewModel) {
-            startTimer.observe(viewLifecycleOwner) {
-                if (it) {
-                    startTimerHandled()
-                    timer!!.start()
+            timer.state.observe(viewLifecycleOwner) {
+                if (it == Timer.State.INITIAL) {
+                    timer.load(params.presetId)
                 }
             }
-            pauseTimer.observe(viewLifecycleOwner) {
+            timer.showNotification.observe(viewLifecycleOwner) {
                 if (it) {
-                    pauseTimerHandled()
-                    timer!!.pause()
-                }
-            }
-            resetTimer.observe(viewLifecycleOwner) {
-                if (it) {
-                    resetTimerHandled()
-                    timer!!.reset()
+                    timer.showNotificationHandled()
+                    val context = requireContext()
+                    val builder = NotificationCompat.Builder(context, "HIGH")
+                        .setSmallIcon(R.drawable.ic_launcher_foreground)
+                        .setContentTitle(timer.preset.value!!.name)
+                        .setContentText(timer.timeLeft.value!!)
+                        .setPriority(NotificationCompat.PRIORITY_HIGH)
+                    NotificationManagerCompat.from(context).notify(1, builder.build())
                 }
             }
         }
         return binding.root
     }
 
-    private var bound = false
-    private var timer: Timer? = null
-
-    private val serviceConnection = object : ServiceConnection {
-
-        override fun onServiceDisconnected(name: ComponentName?) {
-            with(timer!!) {
-                state.removeObservers(viewLifecycleOwner)
-                preset.removeObservers(viewLifecycleOwner)
-                timeLeft.removeObservers(viewLifecycleOwner)
-                showNotification.removeObservers(viewLifecycleOwner)
-            }
-            timer = null
-        }
-
-        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-            timer = (service as TimerService.Binder).timer.apply {
-                if (state.value == Timer.State.INITIAL) {
-                    load(params.presetId)
-                }
-                state.observe(viewLifecycleOwner) {
-                    viewModel.state.value = it
-                }
-                preset.observe(viewLifecycleOwner) {
-                    viewModel.preset.value = it
-                }
-                timeLeft.observe(viewLifecycleOwner) {
-                    viewModel.timeLeft.value = it
-                }
-                showNotification.observe(viewLifecycleOwner) {
-                    if (it) {
-                        showNotificationHandled()
-                        val context = requireContext()
-                        val builder = NotificationCompat.Builder(context, "HIGH")
-                            .setSmallIcon(R.drawable.ic_launcher_foreground)
-                            .setContentTitle(preset.value!!.name)
-                            .setContentText(timeLeft.value!!)
-                            .setPriority(NotificationCompat.PRIORITY_HIGH)
-                        NotificationManagerCompat.from(context).notify(1, builder.build())
-                    }
-                }
-            }
-        }
-    }
-
     override fun onStart() {
         super.onStart()
-        val context = requireContext()
-        bound = context.bindService(
-            Intent(context, TimerService::class.java),
-            serviceConnection,
-            BIND_AUTO_CREATE
-        )
+        if (setOf(Timer.State.STARTED, Timer.State.PAUSED, Timer.State.FINISHED).contains(viewModel.timer.state.value)) {
+            with(requireContext()) {
+                stopService(Intent(this, TimerService::class.java))
+            }
+        }
     }
 
     override fun onStop() {
         super.onStop()
-        val context = requireContext()
-        timer?.run {
-            if (!isRemoving &&
-                setOf(
-                    Timer.State.STARTED,
-                    Timer.State.PAUSED,
-                    Timer.State.FINISHED
-                ).contains(state.value)
-            ) {
-                context.startService(Intent(context, TimerService::class.java))
+        if (isRemoving) {
+            viewModel.timer.clear()
+        } else if (setOf(Timer.State.STARTED, Timer.State.PAUSED, Timer.State.FINISHED).contains(viewModel.timer.state.value)) {
+            with(requireContext()) {
+                startService(Intent(this, TimerService::class.java))
             }
-            state.removeObservers(viewLifecycleOwner)
-            preset.removeObservers(viewLifecycleOwner)
-            timeLeft.removeObservers(viewLifecycleOwner)
-            showNotification.removeObservers(viewLifecycleOwner)
-            timer = null
-        }
-        if (bound) {
-            context.unbindService(serviceConnection)
         }
     }
 }

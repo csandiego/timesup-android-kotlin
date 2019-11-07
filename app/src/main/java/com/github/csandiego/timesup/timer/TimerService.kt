@@ -2,7 +2,6 @@ package com.github.csandiego.timesup.timer
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.LifecycleService
@@ -52,35 +51,5 @@ class TimerService : LifecycleService() {
             }
         }
         return super.onStartCommand(intent, flags, startId)
-    }
-
-    inner class Binder : android.os.Binder() {
-
-        val timer: Timer get() = this@TimerService.timer
-    }
-
-    override fun onBind(intent: Intent): IBinder? {
-        super.onBind(intent)
-        return Binder()
-    }
-
-    override fun onUnbind(intent: Intent?): Boolean {
-        super.onUnbind(intent)
-        return true
-    }
-
-    override fun onRebind(intent: Intent?) {
-        super.onRebind(intent)
-        timer.timeLeft.removeObservers(this)
-        timer.showNotification.removeObservers(this)
-        stopForeground(true)
-        stopSelf()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        if (timer.state.value == Timer.State.STARTED) {
-            timer.pause()
-        }
     }
 }

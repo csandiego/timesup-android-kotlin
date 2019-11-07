@@ -5,13 +5,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.map
-import com.github.csandiego.timesup.dagger.ServiceScope
 import com.github.csandiego.timesup.data.Preset
 import com.github.csandiego.timesup.repository.PresetRepository
 import javax.inject.Inject
+import javax.inject.Singleton
 import kotlin.math.roundToLong
 
-@ServiceScope
+@Singleton
 class Timer @Inject constructor(private val repository: PresetRepository) {
 
     enum class State {
@@ -30,11 +30,13 @@ class Timer @Inject constructor(private val repository: PresetRepository) {
 
     private val _timeLeft = MutableLiveData<Long>()
     val timeLeft = _timeLeft.map {
-        val hours = it / (60L * 60L)
-        val rem = it % (60L * 60L)
-        val minutes = rem / 60L
-        val seconds = rem % 60L
-        String.format("%02d:%02d:%02d", hours, minutes, seconds)
+        it?.let {
+            val hours = it / (60L * 60L)
+            val rem = it % (60L * 60L)
+            val minutes = rem / 60L
+            val seconds = rem % 60L
+            String.format("%02d:%02d:%02d", hours, minutes, seconds)
+        }
     }
 
     fun load(presetId: Long) {
@@ -98,5 +100,14 @@ class Timer @Inject constructor(private val repository: PresetRepository) {
             hours * 60L * 60L + minutes * 60L + seconds
         }
         _state.value = State.LOADED
+    }
+
+    fun clear() {
+        timer?.cancel()
+        timer = null
+        _state.value = State.INITIAL
+        _preset.value = null
+        _timeLeft.value = null
+        _showNotification.value = false
     }
 }
