@@ -34,11 +34,10 @@ class TimerFragment @Inject constructor(viewModelFactory: ViewModelProvider.Fact
             viewModel = this@TimerFragment.viewModel
             lifecycleOwner = viewLifecycleOwner
             try {
-                val navController = findNavController()
-                toolbar.setupWithNavController(
-                    navController,
-                    AppBarConfiguration(navController.graph)
-                )
+                with(findNavController()) {
+                    toolbar.setupWithNavController(this, AppBarConfiguration(graph)
+                    )
+                }
             } catch (e: Exception) {
             }
         }
@@ -51,11 +50,21 @@ class TimerFragment @Inject constructor(viewModelFactory: ViewModelProvider.Fact
             timer.showNotification.observe(viewLifecycleOwner) {
                 if (it) {
                     timer.showNotificationHandled()
+                    val args = Bundle().apply {
+                        putLong("presetId", params.presetId)
+                    }
+                    val pendingIntent = findNavController()
+                        .createDeepLink()
+                        .setDestination(R.id.timerFragment)
+                        .setArguments(args)
+                        .createPendingIntent()
                     val context = requireContext()
                     val builder = NotificationCompat.Builder(context, "HIGH")
                         .setSmallIcon(R.drawable.ic_launcher_foreground)
                         .setContentTitle(timer.preset.value!!.name)
                         .setContentText(timer.timeLeft.value!!)
+                        .setContentIntent(pendingIntent)
+                        .setAutoCancel(true)
                         .setPriority(NotificationCompat.PRIORITY_HIGH)
                     NotificationManagerCompat.from(context).notify(1, builder.build())
                 }
@@ -66,10 +75,8 @@ class TimerFragment @Inject constructor(viewModelFactory: ViewModelProvider.Fact
 
     override fun onStart() {
         super.onStart()
-        if (setOf(Timer.State.STARTED, Timer.State.PAUSED, Timer.State.FINISHED).contains(viewModel.timer.state.value)) {
-            with(requireContext()) {
-                stopService(Intent(this, TimerService::class.java))
-            }
+        with(requireContext()) {
+            stopService(Intent(this, TimerService::class.java))
         }
     }
 
@@ -77,7 +84,8 @@ class TimerFragment @Inject constructor(viewModelFactory: ViewModelProvider.Fact
         super.onStop()
         if (isRemoving) {
             viewModel.timer.clear()
-        } else if (setOf(Timer.State.STARTED, Timer.State.PAUSED, Timer.State.FINISHED).contains(viewModel.timer.state.value)) {
+        } else if (requireActivity().run { !isChangingConfigurations && !isFinishing } &&
+            setOf(Timer.State.STARTED, Timer.State.PAUSED, Timer.State.FINISHED).contains(viewModel.timer.state.value)) {
             with(requireContext()) {
                 startService(Intent(this, TimerService::class.java))
             }

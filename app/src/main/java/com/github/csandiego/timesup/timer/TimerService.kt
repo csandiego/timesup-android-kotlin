@@ -16,6 +16,8 @@ class TimerService : LifecycleService() {
     @Inject
     lateinit var timer: Timer
 
+    private var clearTimer = false
+
     override fun onCreate() {
         AndroidInjection.inject(this)
         super.onCreate()
@@ -51,5 +53,19 @@ class TimerService : LifecycleService() {
             }
         }
         return super.onStartCommand(intent, flags, startId)
+    }
+
+    override fun onTaskRemoved(rootIntent: Intent?) {
+        super.onTaskRemoved(rootIntent)
+        clearTimer = true
+        stopForeground(true)
+        stopSelf()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (clearTimer) {
+            timer.clear()
+        }
     }
 }
