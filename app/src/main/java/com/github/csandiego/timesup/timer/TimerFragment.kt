@@ -82,12 +82,16 @@ class TimerFragment @Inject constructor(viewModelFactory: ViewModelProvider.Fact
 
     override fun onStop() {
         super.onStop()
-        if (isRemoving) {
-            viewModel.timer.clear()
-        } else if (requireActivity().run { !isChangingConfigurations && !isFinishing } &&
-            setOf(Timer.State.STARTED, Timer.State.PAUSED, Timer.State.FINISHED).contains(viewModel.timer.state.value)) {
-            with(requireContext()) {
-                startService(Intent(this, TimerService::class.java))
+        with(requireActivity()) {
+            if (isRemoving || isFinishing) {
+                viewModel.timer.clear()
+            } else if (!isRemoving && !isChangingConfigurations && !isFinishing &&
+                setOf(Timer.State.STARTED, Timer.State.PAUSED, Timer.State.FINISHED).contains(
+                    viewModel.timer.state.value
+                )) {
+                with(requireContext()) {
+                    startService(Intent(this, TimerService::class.java))
+                }
             }
         }
     }
