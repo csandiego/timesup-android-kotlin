@@ -43,9 +43,6 @@ android {
         }
         execution 'ANDROIDX_TEST_ORCHESTRATOR'
     }
-    jacoco {
-        version "$jacoco_version"
-    }
 }
 
 dependencies {
@@ -72,7 +69,6 @@ dependencies {
 
     debugImplementation "androidx.arch.core:core-testing:$arch_core_testing_version"
     debugImplementation "androidx.fragment:fragment-testing:$fragment_version"
-    debugImplementation "androidx.test:runner:$test_version"
     debugImplementation "androidx.test.ext:junit:$test_junit_version"
     debugImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutine_test_version"
     debugImplementation "org.mockito:mockito-core:$mockito_version"
@@ -90,5 +86,5 @@ dependencies {
     kaptAndroidTest "com.google.dagger:dagger-compiler:$dagger_version"
     kaptAndroidTest "com.google.dagger:dagger-android-processor:$dagger_version"
 
-    androidTestUtil 'androidx.test:orchestrator:1.2.0'
+    androidTestUtil "androidx.test:orchestrator:$orchestrator_version"
 }
