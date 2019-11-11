@@ -56,7 +56,7 @@ class PresetsFragment @Inject constructor(viewModelFactory: ViewModelProvider.Fa
                     actionMode?.finish()
                 } else {
                     val mode =
-                        actionMode ?: requireActivity().startActionMode(createActionModeCallback())
+                        actionMode ?: requireActivity().startActionMode(createActionModeCallback())!!
                     actionMode = mode.apply {
                         title = it.size.toString()
                         menu?.findItem(R.id.menuEdit)?.isVisible = it.size == 1
