@@ -1,12 +1,15 @@
 package com.github.csandiego.timesup.timer
 
-import android.os.CountDownTimer
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.map
 import com.github.csandiego.timesup.data.Preset
 import com.github.csandiego.timesup.repository.PresetRepository
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.math.roundToLong
@@ -21,6 +24,9 @@ class Timer @Inject constructor(private val repository: PresetRepository) {
         PAUSED,
         FINISHED
     }
+
+    var coroutineScope = CoroutineScope(Dispatchers.Default)
+    private var job: Job? = null
 
     private val _state = MutableLiveData(State.INITIAL)
     val state: LiveData<State> get() = _state
@@ -57,8 +63,6 @@ class Timer @Inject constructor(private val repository: PresetRepository) {
         _showNotification.value = false
     }
 
-    private var timer: CountDownTimer? = null
-
     fun start() {
         check(
             setOf(
@@ -66,26 +70,29 @@ class Timer @Inject constructor(private val repository: PresetRepository) {
                 State.PAUSED
             ).contains(_state.value)
         ) { "Starting outside of loaded state" }
-        timer = object : CountDownTimer(_timeLeft.value!! * 1000L, 1000L) {
-
-            override fun onFinish() {
-                _timeLeft.value = 0L
-                _showNotification.value = true
-                timer = null
-                _state.value = State.FINISHED
+        job = coroutineScope.launch {
+            val duration = _timeLeft.value!! * 1000L
+            launch {
+                timeFlow(duration, 1000L)
+                    .collect {
+                        _timeLeft.postValue((it.toDouble() / 1000.0).roundToLong())
+                    }
             }
-
-            override fun onTick(millisUntilFinished: Long) {
-                _timeLeft.value = (millisUntilFinished.toDouble() / 1000.0).roundToLong()
+            launch {
+                delay(duration)
+                _timeLeft.postValue(0L)
+                _showNotification.postValue(true)
+                _state.postValue(State.FINISHED)
             }
-        }.start()
+        }
+
         _state.value = State.STARTED
     }
 
     fun pause() {
         check(_state.value == State.STARTED) { "Pausing outside of started state" }
-        timer?.cancel()
-        timer = null
+        job!!.cancel()
+        job = null
         _state.value = State.PAUSED
     }
 
@@ -103,11 +110,21 @@ class Timer @Inject constructor(private val repository: PresetRepository) {
     }
 
     fun clear() {
-        timer?.cancel()
-        timer = null
+        job?.cancel()
+        job = null
         _state.value = State.INITIAL
         _preset.value = null
         _timeLeft.value = null
         _showNotification.value = false
+    }
+
+    fun timeFlow(duration: Long, interval: Long): Flow<Long> = flow {
+        val start = System.currentTimeMillis()
+        var next = start
+        while (System.currentTimeMillis() < start + duration) {
+            emit(start + duration - System.currentTimeMillis())
+            next += interval
+            delay(next - System.currentTimeMillis())
+        }
     }
 }
