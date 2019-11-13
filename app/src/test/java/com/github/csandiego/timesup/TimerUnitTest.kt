@@ -34,7 +34,7 @@ class TimerUnitTest {
         Dispatchers.setMain(dispatcher)
         val repository = mock(PresetRepository::class.java)
         val currentTimeProvider = mock(CurrentTimeProvider::class.java)
-        timer = Timer(repository, currentTimeProvider).apply {
+        timer = Timer(currentTimeProvider).apply {
             state.observeForever {}
             preset.observeForever {}
             timeLeft.observeForever {}
