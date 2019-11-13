@@ -5,7 +5,6 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.map
 import com.github.csandiego.timesup.data.Preset
-import com.github.csandiego.timesup.repository.PresetRepository
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
@@ -15,10 +14,7 @@ import javax.inject.Singleton
 import kotlin.math.roundToLong
 
 @Singleton
-class Timer @Inject constructor(
-    private val repository: PresetRepository,
-    private val currentTimeProvider: CurrentTimeProvider
-) {
+class Timer @Inject constructor(private val currentTimeProvider: CurrentTimeProvider) {
 
     enum class State {
         INITIAL,
@@ -28,7 +24,7 @@ class Timer @Inject constructor(
         FINISHED
     }
 
-    var coroutineScope = CoroutineScope(Dispatchers.Main)
+    private val coroutineScope = CoroutineScope(Dispatchers.Main)
     private var job: Job? = null
 
     private val _state = MutableLiveData(State.INITIAL)
@@ -48,15 +44,11 @@ class Timer @Inject constructor(
         }
     }
 
-    fun load(presetId: Long) {
+    fun load(preset: Preset) {
         check(_state.value == State.INITIAL) { "Loading outside of initial state" }
-        _preset.addSource(repository.getAsLiveData(presetId)) {
-            it?.let {
-                _preset.value = it
-                _timeLeft.value = it.hours * 60L * 60L + it.minutes * 60L + it.seconds
-                _state.value = State.LOADED
-            }
-        }
+        _preset.value = preset
+        _timeLeft.value = preset.run { hours * 60L * 60L + minutes * 60L + seconds }
+        _state.value = State.LOADED
     }
 
     private val _showNotification = MutableLiveData(false)
@@ -78,14 +70,14 @@ class Timer @Inject constructor(
             launch {
                 timeFlow(duration, 1000L)
                     .collect {
-                        _timeLeft.postValue((it.toDouble() / 1000.0).roundToLong())
+                        _timeLeft.value = ((it.toDouble() / 1000.0).roundToLong())
                     }
             }
             launch {
                 delay(duration)
-                _timeLeft.postValue(0L)
-                _showNotification.postValue(true)
-                _state.postValue(State.FINISHED)
+                _timeLeft.value = 0L
+                _showNotification.value = true
+                _state.value = State.FINISHED
             }
         }
 

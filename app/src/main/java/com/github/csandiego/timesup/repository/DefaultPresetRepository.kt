@@ -11,7 +11,7 @@ class DefaultPresetRepository @Inject constructor(
     private val coroutineScope: CoroutineScope
 ) : PresetRepository {
 
-    suspend fun get(presetId: Long) = dao.get(presetId)
+    override suspend fun get(presetId: Long) = dao.get(presetId)
 
     override fun getAsLiveData(presetId: Long) = dao.getAsLiveData(presetId)
 

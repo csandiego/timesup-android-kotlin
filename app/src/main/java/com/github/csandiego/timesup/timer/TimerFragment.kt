@@ -44,7 +44,7 @@ class TimerFragment @Inject constructor(viewModelFactory: ViewModelProvider.Fact
         with(viewModel) {
             timer.state.observe(viewLifecycleOwner) {
                 if (it == Timer.State.INITIAL) {
-                    timer.load(params.presetId)
+                    load(params.presetId)
                 }
             }
             timer.showNotification.observe(viewLifecycleOwner) {

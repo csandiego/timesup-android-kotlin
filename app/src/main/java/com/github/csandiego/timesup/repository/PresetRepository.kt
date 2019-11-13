@@ -5,6 +5,8 @@ import com.github.csandiego.timesup.data.Preset
 
 interface PresetRepository {
 
+    suspend fun get(presetId: Long): Preset?
+
     fun getAsLiveData(presetId: Long): LiveData<Preset?>
 
     fun getAllByNameAscendingAsLiveData(): LiveData<List<Preset>>
