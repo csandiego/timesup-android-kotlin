@@ -15,7 +15,10 @@ import javax.inject.Singleton
 import kotlin.math.roundToLong
 
 @Singleton
-class Timer @Inject constructor(private val repository: PresetRepository) {
+class Timer @Inject constructor(
+    private val repository: PresetRepository,
+    private val currentTimeProvider: CurrentTimeProvider
+) {
 
     enum class State {
         INITIAL,
@@ -25,7 +28,7 @@ class Timer @Inject constructor(private val repository: PresetRepository) {
         FINISHED
     }
 
-    var coroutineScope = CoroutineScope(Dispatchers.Default)
+    var coroutineScope = CoroutineScope(Dispatchers.Main)
     private var job: Job? = null
 
     private val _state = MutableLiveData(State.INITIAL)
@@ -118,13 +121,13 @@ class Timer @Inject constructor(private val repository: PresetRepository) {
         _showNotification.value = false
     }
 
-    fun timeFlow(duration: Long, interval: Long): Flow<Long> = flow {
-        val start = System.currentTimeMillis()
+    private fun timeFlow(duration: Long, interval: Long): Flow<Long> = flow {
+        val start = currentTimeProvider.currentTimeMillis()
         var next = start
-        while (System.currentTimeMillis() < start + duration) {
-            emit(start + duration - System.currentTimeMillis())
+        while (currentTimeProvider.currentTimeMillis() < start + duration) {
+            emit(start + duration - currentTimeProvider.currentTimeMillis())
             next += interval
-            delay(next - System.currentTimeMillis())
+            delay(next - currentTimeProvider.currentTimeMillis())
         }
     }
 }

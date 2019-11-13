@@ -4,10 +4,15 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.MutableLiveData
 import com.github.csandiego.timesup.data.Preset
 import com.github.csandiego.timesup.repository.PresetRepository
+import com.github.csandiego.timesup.timer.TestCurrentTimeProvider
 import com.github.csandiego.timesup.timer.Timer
 import com.google.common.truth.Truth.assertThat
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -15,10 +20,14 @@ import org.junit.Test
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
 
+@ExperimentalCoroutinesApi
 class TimerUnitTest {
+
+    private val dispatcher = TestCoroutineDispatcher()
 
     private val preset = Preset(id = 1L, name = "01 seconds", seconds = 1)
 
+    private lateinit var currentTimeProvider: TestCurrentTimeProvider
     private lateinit var timer: Timer
 
     @get:Rule
@@ -26,10 +35,12 @@ class TimerUnitTest {
 
     @Before
     fun setUp() {
+        Dispatchers.setMain(dispatcher)
         val repository = mock(PresetRepository::class.java).apply {
-            `when`(getAsLiveData(2)).thenReturn(MutableLiveData(preset))
+            `when`(getAsLiveData(preset.id)).thenReturn(MutableLiveData(preset))
         }
-        timer = Timer(repository).apply {
+        currentTimeProvider = TestCurrentTimeProvider()
+        timer = Timer(repository, currentTimeProvider).apply {
             state.observeForever {}
             preset.observeForever {}
             timeLeft.observeForever {}
@@ -40,6 +51,8 @@ class TimerUnitTest {
     @After
     fun tearDown() {
         timer.clear()
+        Dispatchers.resetMain()
+        dispatcher.cleanupTestCoroutines()
     }
 
     @Test
@@ -50,7 +63,7 @@ class TimerUnitTest {
     @Test
     fun givenIsInInitialStateWhenLoadedThenIsInLoadedState() {
         with(timer) {
-            load(2)
+            load(this@TimerUnitTest.preset.id)
             assertThat(state.value).isEqualTo(Timer.State.LOADED)
         }
     }
@@ -58,7 +71,7 @@ class TimerUnitTest {
     @Test
     fun givenIsInInitialStateWhenLoadedThenSetPreset() {
         with(timer) {
-            load(2)
+            load(this@TimerUnitTest.preset.id)
             assertThat(preset.value).isEqualTo(this@TimerUnitTest.preset)
         }
     }
@@ -66,7 +79,7 @@ class TimerUnitTest {
     @Test
     fun givenIsInInitialStateWhenLoadedThenSetTimeLeft() {
         with(timer) {
-            load(2)
+            load(this@TimerUnitTest.preset.id)
             assertThat(timeLeft.value).isEqualTo("00:00:01")
         }
     }
@@ -74,7 +87,7 @@ class TimerUnitTest {
     @Test
     fun givenIsInLoadedStateWhenStaredThenIsInStartedState() {
         with(timer) {
-            load(2)
+            load(this@TimerUnitTest.preset.id)
             start()
             assertThat(state.value).isEqualTo(Timer.State.STARTED)
         }
@@ -83,7 +96,7 @@ class TimerUnitTest {
     @Test
     fun givenIsInStartedStateWhenPausedThenIsInPausedState() {
         with(timer) {
-            load(2)
+            load(this@TimerUnitTest.preset.id)
             start()
             pause()
             assertThat(state.value).isEqualTo(Timer.State.PAUSED)
@@ -93,7 +106,7 @@ class TimerUnitTest {
     @Test
     fun givenIsInPausedStateWhenStartedThenIsInStartedState() {
         with(timer) {
-            load(2)
+            load(this@TimerUnitTest.preset.id)
             start()
             pause()
             start()
@@ -104,7 +117,7 @@ class TimerUnitTest {
     @Test
     fun givenIsInPausedStateWhenResetThenIsInLoadedState() {
         with(timer) {
-            load(2)
+            load(this@TimerUnitTest.preset.id)
             start()
             pause()
             reset()
@@ -113,52 +126,57 @@ class TimerUnitTest {
     }
 
     @Test
-    fun givenIsInStartedStateWhenFinishedThenIsInFinishedState() = runBlocking {
+    fun givenIsInStartedStateWhenFinishedThenIsInFinishedState() = dispatcher.runBlockingTest {
         with(timer) {
-            load(2)
+            load(this@TimerUnitTest.preset.id)
             start()
-            delay(1500L)
+            currentTimeProvider.currentTime = 1001L
+            advanceTimeBy(1000L)
             assertThat(state.value).isEqualTo(Timer.State.FINISHED)
         }
     }
 
     @Test
-    fun givenIsInStartedStateWhenFinishedThenUpdateTimeLeft() = runBlocking {
+    fun givenIsInStartedStateWhenFinishedThenUpdateTimeLeft() = dispatcher.runBlockingTest {
         with(timer) {
-            load(2)
+            load(this@TimerUnitTest.preset.id)
             start()
-            delay(1500L)
+            currentTimeProvider.currentTime = 1001L
+            advanceTimeBy(1000L)
             assertThat(timeLeft.value).isEqualTo("00:00:00")
         }
     }
 
     @Test
-    fun givenIsInStartedStateWhenFinishedThenShowNotification() = runBlocking {
+    fun givenIsInStartedStateWhenFinishedThenShowNotification() = dispatcher.runBlockingTest {
         with(timer) {
-            load(2)
+            load(this@TimerUnitTest.preset.id)
             start()
-            delay(1500L)
+            currentTimeProvider.currentTime = 1001L
+            advanceTimeBy(1000L)
             assertThat(showNotification.value).isTrue()
         }
     }
 
     @Test
-    fun givenIsInFinishedStateWhenResetThenIsInLoadedState() = runBlocking {
+    fun givenIsInFinishedStateWhenResetThenIsInLoadedState() = dispatcher.runBlockingTest {
         with(timer) {
-            load(2)
+            load(this@TimerUnitTest.preset.id)
             start()
-            delay(1500L)
+            currentTimeProvider.currentTime = 1001L
+            advanceTimeBy(1000L)
             reset()
             assertThat(state.value).isEqualTo(Timer.State.LOADED)
         }
     }
 
     @Test
-    fun givenIsInFinishedStateWhenResetThenResetTimeLeft() = runBlocking {
+    fun givenIsInFinishedStateWhenResetThenResetTimeLeft() = dispatcher.runBlockingTest {
         with(timer) {
-            load(2)
+            load(this@TimerUnitTest.preset.id)
             start()
-            delay(1500L)
+            currentTimeProvider.currentTime = 1001L
+            advanceTimeBy(1000L)
             reset()
             assertThat(timeLeft.value).isEqualTo("00:00:01")
         }
