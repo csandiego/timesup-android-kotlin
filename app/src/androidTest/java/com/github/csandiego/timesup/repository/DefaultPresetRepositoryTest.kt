@@ -22,6 +22,8 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class DefaultPresetRepositoryTest {
 
+    private val scope = TestCoroutineScope()
+
     private lateinit var dao: PresetDao
     private lateinit var repository: DefaultPresetRepository
 
@@ -35,30 +37,21 @@ class DefaultPresetRepositoryTest {
     )
 
     @Before
-    fun setUp() {
+    fun setUp() = scope.runBlockingTest {
         dao = roomDatabaseRule.database.presetDao().apply {
-            runBlockingTest {
-                insert(presets)
-            }
+            insert(presets)
         }
-        repository = DefaultPresetRepository(
-            dao,
-            TestCoroutineScope()
-        )
+        repository = DefaultPresetRepository(dao, this)
     }
 
     @Test
-    fun givenValidPresetIdWhenGetThenReturnPreset() {
-        runBlockingTest {
-            assertThat(repository.get(presets[0].id)).isNotNull()
-        }
+    fun givenValidPresetIdWhenGetThenReturnPreset() = runBlockingTest {
+        assertThat(repository.get(presets[0].id)).isNotNull()
     }
 
     @Test
-    fun givenInvalidPresetIdWhenGetThenReturnNull() {
-        runBlockingTest {
-            assertThat(repository.get(0)).isNull()
-        }
+    fun givenInvalidPresetIdWhenGetThenReturnNull() = runBlockingTest {
+        assertThat(repository.get(0)).isNull()
     }
 
     @Test
@@ -83,39 +76,31 @@ class DefaultPresetRepositoryTest {
     }
 
     @Test
-    fun givenNewPresetWhenSaveThenUpdateDao() {
+    fun givenNewPresetWhenSaveThenUpdateDao() = scope.runBlockingTest {
         val preset = Preset(presets.size.toLong(), "5 hours", 5, 0, 0)
         repository.save(preset)
-        runBlockingTest {
-            assertThat(dao.get(preset.id)).isEqualTo(preset)
-        }
+        assertThat(dao.get(preset.id)).isEqualTo(preset)
     }
 
     @Test
-    fun givenExistingPresetWhenSaveThenUpdateDao() {
+    fun givenExistingPresetWhenSaveThenUpdateDao() = scope.runBlockingTest {
         val preset = presets[0].copy(name = "Test")
         repository.save(preset)
-        runBlockingTest {
-            assertThat(dao.get(preset.id)).isEqualTo(preset)
-        }
+        assertThat(dao.get(preset.id)).isEqualTo(preset)
     }
 
     @Test
-    fun givenValidPresetIdWhenDeleteThenUpdateDao() {
+    fun givenValidPresetIdWhenDeleteThenUpdateDao() = scope.runBlockingTest {
         repository.delete(presets[0].id)
-        runBlockingTest {
-            assertThat(dao.get(presets[0].id)).isNull()
-        }
+        assertThat(dao.get(presets[0].id)).isNull()
     }
 
     @Test
-    fun giveValidPresetIdsWhenDeleteThenUpdateDao() {
+    fun giveValidPresetIdsWhenDeleteThenUpdateDao() = scope.runBlockingTest {
         val ids = presets.subList(0, 4).map { it.id }.toSet()
         repository.delete(ids)
-        runBlockingTest {
-            ids.forEach {
-                assertThat(dao.get(it)).isNull()
-            }
+        ids.forEach {
+            assertThat(dao.get(it)).isNull()
         }
     }
 }

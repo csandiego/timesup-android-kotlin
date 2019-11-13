@@ -30,26 +30,20 @@ class PresetDaoTest {
     )
 
     @Before
-    fun setUp() {
+    fun setUp() = runBlockingTest {
         dao = roomDatabaseRule.database.presetDao().apply {
-            runBlockingTest {
-                insert(presets)
-            }
+            insert(presets)
         }
     }
 
     @Test
-    fun givenValidPresetIdWhenGetThenReturnPreset() {
-        runBlockingTest {
-            assertThat(dao.get(presets[0].id)).isNotNull()
-        }
+    fun givenValidPresetIdWhenGetThenReturnPreset() = runBlockingTest {
+        assertThat(dao.get(presets[0].id)).isNotNull()
     }
 
     @Test
-    fun givenInvalidPresetIdWhenGetThenReturnNull() {
-        runBlockingTest {
-            assertThat(dao.get(0)).isNull()
-        }
+    fun givenInvalidPresetIdWhenGetThenReturnNull() = runBlockingTest {
+        assertThat(dao.get(0)).isNull()
     }
 
     @Test
@@ -74,24 +68,20 @@ class PresetDaoTest {
     }
 
     @Test
-    fun givenValidPresetIdWhenDeleteByIdThenDeleteFromDatabase() {
-        runBlockingTest {
-            with(dao) {
-                delete(presets[0].id)
-                assertThat(get(presets[0].id)).isNull()
-            }
+    fun givenValidPresetIdWhenDeleteByIdThenDeleteFromDatabase() = runBlockingTest {
+        with(dao) {
+            delete(presets[0].id)
+            assertThat(get(presets[0].id)).isNull()
         }
     }
 
     @Test
-    fun givenValidPresetIdsWhenDeleteAllByIdsThenDeleteFromDatabase() {
-        runBlockingTest {
-            with(dao) {
-                val ids = presets.subList(0, 4).map { it.id }.toSet()
-                delete(ids)
-                ids.forEach {
-                    assertThat(get(it)).isNull()
-                }
+    fun givenValidPresetIdsWhenDeleteAllByIdsThenDeleteFromDatabase() = runBlockingTest {
+        with(dao) {
+            val ids = presets.subList(0, 4).map { it.id }.toSet()
+            delete(ids)
+            ids.forEach {
+                assertThat(get(it)).isNull()
             }
         }
     }
