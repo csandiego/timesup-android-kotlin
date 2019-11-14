@@ -4,10 +4,8 @@ import com.github.csandiego.timesup.TestTimesUpApplication
 import com.github.csandiego.timesup.TimesUpApplication
 import dagger.Binds
 import dagger.Module
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import javax.inject.Singleton
 
-@ExperimentalCoroutinesApi
 @Module(includes = [ApplicationModule::class])
 interface TestApplicationModule {
 

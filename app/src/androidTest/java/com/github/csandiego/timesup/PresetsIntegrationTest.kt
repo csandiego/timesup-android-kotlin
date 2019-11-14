@@ -22,15 +22,12 @@ import com.github.csandiego.timesup.presets.PresetsViewModel
 import com.github.csandiego.timesup.repository.DefaultPresetRepository
 import com.github.csandiego.timesup.room.TimesUpDatabase
 import com.google.common.truth.Truth.assertThat
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.TestCoroutineScope
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
 class PresetsIntegrationTest {
 
@@ -48,7 +45,7 @@ class PresetsIntegrationTest {
         val dao = roomDatabaseRule.database.presetDao().apply {
             insert(presets)
         }
-        repository = DefaultPresetRepository(dao, TestCoroutineScope())
+        repository = DefaultPresetRepository(dao)
         val viewModel = PresetsViewModel(repository)
         val viewModelFactory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")

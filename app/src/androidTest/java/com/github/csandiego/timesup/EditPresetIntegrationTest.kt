@@ -3,7 +3,6 @@ package com.github.csandiego.timesup
 import android.content.Context
 import android.os.Bundle
 import android.widget.Button
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragment
 import androidx.lifecycle.ViewModel
@@ -22,8 +21,7 @@ import com.github.csandiego.timesup.junit.RoomDatabaseRule
 import com.github.csandiego.timesup.repository.DefaultPresetRepository
 import com.github.csandiego.timesup.room.TimesUpDatabase
 import com.google.common.truth.Truth.assertThat
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.runBlocking
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.endsWith
 import org.junit.Before
@@ -31,15 +29,11 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
 class EditPresetIntegrationTest {
 
     private lateinit var repository: DefaultPresetRepository
     private lateinit var scenario: FragmentScenario<EditPresetFragment>
-
-    @get:Rule
-    val instantTaskExecutorRule = InstantTaskExecutorRule()
 
     @get:Rule
     val roomDatabaseRule = RoomDatabaseRule(
@@ -48,16 +42,15 @@ class EditPresetIntegrationTest {
     )
 
     @Before
-    fun setUp() = runBlockingTest {
+    fun setUp() = runBlocking {
         val dao = roomDatabaseRule.database.presetDao().apply {
             insert(presets)
         }
-        repository = DefaultPresetRepository(dao, this)
-        val viewModel = PresetEditorViewModel(repository)
+        repository = DefaultPresetRepository(dao)
         val viewModelFactory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return viewModel as T
+                return PresetEditorViewModel(repository) as T
             }
         }
         scenario = launchFragment(
@@ -71,7 +64,7 @@ class EditPresetIntegrationTest {
     }
 
     @Test
-    fun givenNameNotEmptyAndDurationNotEmptyWhenPositiveButtonClickedThenUpdateRepository() = runBlockingTest {
+    fun givenNameNotEmptyAndDurationNotEmptyWhenPositiveButtonClickedThenUpdateRepository() = runBlocking {
         onView(withId(R.id.editTextName))
             .perform(
                 replaceText(updatedPreset.name),

@@ -11,7 +11,6 @@ import com.github.csandiego.timesup.room.PresetDao
 import com.github.csandiego.timesup.room.TimesUpDatabase
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.TestCoroutineScope
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Rule
@@ -21,8 +20,6 @@ import org.junit.runner.RunWith
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
 class DefaultPresetRepositoryTest {
-
-    private val scope = TestCoroutineScope()
 
     private lateinit var dao: PresetDao
     private lateinit var repository: DefaultPresetRepository
@@ -37,11 +34,11 @@ class DefaultPresetRepositoryTest {
     )
 
     @Before
-    fun setUp() = scope.runBlockingTest {
+    fun setUp() = runBlockingTest {
         dao = roomDatabaseRule.database.presetDao().apply {
             insert(presets)
         }
-        repository = DefaultPresetRepository(dao, this)
+        repository = DefaultPresetRepository(dao)
     }
 
     @Test
@@ -76,14 +73,14 @@ class DefaultPresetRepositoryTest {
     }
 
     @Test
-    fun givenNewPresetWhenSaveThenUpdateDao() = scope.runBlockingTest {
+    fun givenNewPresetWhenSaveThenUpdateDao() = runBlockingTest {
         val preset = Preset(presets.size.toLong(), "5 hours", 5, 0, 0)
         repository.save(preset)
         assertThat(dao.get(preset.id)).isEqualTo(preset)
     }
 
     @Test
-    fun givenExistingPresetWhenSaveThenUpdateDao() = scope.runBlockingTest {
+    fun givenExistingPresetWhenSaveThenUpdateDao() = runBlockingTest {
         val preset = presets[0].copy(name = "Test")
         repository.save(preset)
         assertThat(dao.get(preset.id)).isEqualTo(preset)

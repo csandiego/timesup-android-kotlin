@@ -1,7 +1,6 @@
 package com.github.csandiego.timesup
 
 import android.widget.Button
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
@@ -15,32 +14,23 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.csandiego.timesup.data.TestData.editPreset
 import com.github.csandiego.timesup.data.TestData.presets
 import com.github.csandiego.timesup.data.TestData.updatedPreset
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.runBlocking
 import org.hamcrest.Matchers.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
 class EditPresetUITest {
-
-    @get:Rule
-    val instantTaskExecutorRule = InstantTaskExecutorRule()
 
     @get:Rule
     val activityScenarioRule = ActivityScenarioRule(MainActivity::class.java)
 
     @Before
-    fun setUp() {
-        activityScenarioRule.scenario.onActivity {
-            runBlockingTest {
-                ApplicationProvider.getApplicationContext<TestTimesUpApplication>()
-                    .database.presetDao().insert(presets)
-            }
-        }
+    fun setUp() = runBlocking<Unit> {
+        ApplicationProvider.getApplicationContext<TestTimesUpApplication>()
+            .database.presetDao().insert(presets)
         onView(withId(R.id.recyclerView))
             .perform(
                 scrollToPosition<RecyclerView.ViewHolder>(0),

@@ -4,10 +4,8 @@ import com.github.csandiego.timesup.dagger.DaggerTestApplicationComponent
 import com.github.csandiego.timesup.room.TimesUpDatabase
 import dagger.android.AndroidInjector
 import dagger.android.DaggerApplication
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import javax.inject.Inject
 
-@ExperimentalCoroutinesApi
 class TestTimesUpApplication : TimesUpApplication() {
 
     @Inject

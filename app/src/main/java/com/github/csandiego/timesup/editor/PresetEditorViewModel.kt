@@ -1,11 +1,9 @@
 package com.github.csandiego.timesup.editor
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import com.github.csandiego.timesup.data.Preset
 import com.github.csandiego.timesup.repository.PresetRepository
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 open class PresetEditorViewModel @Inject constructor(private val repository: PresetRepository)
@@ -117,7 +115,9 @@ open class PresetEditorViewModel @Inject constructor(private val repository: Pre
     open fun save() {
         if (isValid.value == true) {
             preset.value?.let {
-                repository.save(it)
+                viewModelScope.launch {
+                    repository.save(it)
+                }
             }
         }
     }

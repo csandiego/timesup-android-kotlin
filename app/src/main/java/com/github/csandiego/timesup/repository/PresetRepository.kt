@@ -15,5 +15,5 @@ interface PresetRepository {
 
     suspend fun delete(presetIds: Set<Long>)
 
-    fun save(preset: Preset)
+    suspend fun save(preset: Preset)
 }
