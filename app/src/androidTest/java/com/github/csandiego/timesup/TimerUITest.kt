@@ -1,6 +1,5 @@
 package com.github.csandiego.timesup
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
@@ -16,7 +15,6 @@ import com.github.csandiego.timesup.data.TestData.presetsSortedByName
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.runBlockingTest
 import org.hamcrest.Matchers.not
 import org.junit.Before
 import org.junit.Rule
@@ -28,19 +26,12 @@ import org.junit.runner.RunWith
 class TimerUITest {
 
     @get:Rule
-    val instantTaskExecutorRule = InstantTaskExecutorRule()
-
-    @get:Rule
     val activityScenarioRule = ActivityScenarioRule(MainActivity::class.java)
 
     @Before
-    fun setUp() {
-        activityScenarioRule.scenario.onActivity {
-            runBlockingTest {
-                ApplicationProvider.getApplicationContext<TestTimesUpApplication>()
-                    .database.presetDao().insert(presets)
-            }
-        }
+    fun setUp() = runBlocking<Unit> {
+        ApplicationProvider.getApplicationContext<TestTimesUpApplication>()
+            .database.presetDao().insert(presets)
         onView(withId(R.id.recyclerView))
             .perform(
                 scrollToPosition<RecyclerView.ViewHolder>(2),
