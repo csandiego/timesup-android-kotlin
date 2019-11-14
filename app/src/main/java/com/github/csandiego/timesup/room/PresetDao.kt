@@ -13,9 +13,6 @@ interface PresetDao {
     @Query("SELECT * FROM Preset WHERE id = :presetId")
     suspend fun get(presetId: Long): Preset?
 
-    @Query("SELECT * FROM Preset WHERE id = :presetId")
-    fun getAsLiveData(presetId: Long): LiveData<Preset?>
-
     @Query("SELECT * FROM Preset ORDER BY name ASC")
     fun getAllByNameAscendingAsLiveData(): LiveData<List<Preset>>
 

@@ -91,8 +91,8 @@ open class PresetEditorViewModel @Inject constructor(private val repository: Pre
         with(preset) {
             value?.let {
                 if (it.id != presetId) {
-                    addSource(repository.getAsLiveData(presetId)) {
-                        value = it
+                    viewModelScope.launch {
+                        value = repository.get(presetId)
                     }
                 }
             }

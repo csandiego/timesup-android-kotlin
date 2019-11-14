@@ -7,8 +7,6 @@ interface PresetRepository {
 
     suspend fun get(presetId: Long): Preset?
 
-    fun getAsLiveData(presetId: Long): LiveData<Preset?>
-
     fun getAllByNameAscendingAsLiveData(): LiveData<List<Preset>>
 
     suspend fun delete(presetId: Long)
