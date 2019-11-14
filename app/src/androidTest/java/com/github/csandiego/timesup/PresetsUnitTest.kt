@@ -1,6 +1,5 @@
 package com.github.csandiego.timesup
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.lifecycle.MutableLiveData
@@ -23,7 +22,6 @@ import com.github.csandiego.timesup.presets.PresetsViewModel
 import com.github.csandiego.timesup.repository.PresetRepository
 import com.google.common.truth.Truth.assertThat
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.*
@@ -33,9 +31,6 @@ class PresetsUnitTest {
 
     private lateinit var viewModel: PresetsViewModel
     private lateinit var scenario: FragmentScenario<PresetsFragment>
-
-    @get:Rule
-    val instantTaskExecutorRule = InstantTaskExecutorRule()
 
     @Before
     fun setUp() {

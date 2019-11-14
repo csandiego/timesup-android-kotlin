@@ -1,8 +1,6 @@
 package com.github.csandiego.timesup
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.recyclerview.widget.RecyclerView
-import androidx.test.annotation.UiThreadTest
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
@@ -17,7 +15,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.csandiego.timesup.data.TestData.presets
 import com.github.csandiego.timesup.data.TestData.presetsSortedByName
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.runBlocking
 import org.hamcrest.Matchers.*
 import org.junit.Before
 import org.junit.Rule
@@ -29,14 +27,10 @@ import org.junit.runner.RunWith
 class PresetsUITest {
 
     @get:Rule
-    val instantTaskExecutorRule = InstantTaskExecutorRule()
-
-    @get:Rule
     val activityScenarioRule = ActivityScenarioRule(MainActivity::class.java)
 
-    @UiThreadTest
     @Before
-    fun setUp() = runBlockingTest {
+    fun setUp() = runBlocking {
         ApplicationProvider.getApplicationContext<TestTimesUpApplication>()
             .database.presetDao().insert(presets)
     }

@@ -17,17 +17,9 @@ class DefaultPresetRepository @Inject constructor(
 
     override fun getAllByNameAscendingAsLiveData() = dao.getAllByNameAscendingAsLiveData()
 
-    override fun delete(presetId: Long) {
-        coroutineScope.launch {
-            dao.delete(presetId)
-        }
-    }
+    override suspend fun delete(presetId: Long) = dao.delete(presetId)
 
-    override fun delete(presetIds: Set<Long>) {
-        coroutineScope.launch {
-            dao.delete(presetIds)
-        }
-    }
+    override suspend fun delete(presetIds: Set<Long>) = dao.delete(presetIds)
 
     override fun save(preset: Preset) {
         coroutineScope.launch {

@@ -3,8 +3,10 @@ package com.github.csandiego.timesup.presets
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.github.csandiego.timesup.data.Preset
 import com.github.csandiego.timesup.repository.PresetRepository
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class PresetsViewModel @Inject constructor(private val repository: PresetRepository)
@@ -39,7 +41,9 @@ class PresetsViewModel @Inject constructor(private val repository: PresetReposit
         if (_selection.value?.contains(preset.id) == true) {
             toggleSelect(preset.id)
         }
-        repository.delete(preset.id)
+        viewModelScope.launch {
+            repository.delete(preset.id)
+        }
     }
 
     fun deleteSelected() {
@@ -47,7 +51,9 @@ class PresetsViewModel @Inject constructor(private val repository: PresetReposit
             val selection = value
             if (selection?.isNotEmpty() == true) {
                 value = emptySet()
-                repository.delete(selection)
+                viewModelScope.launch {
+                    repository.delete(selection)
+                }
             }
         }
     }

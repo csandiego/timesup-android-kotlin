@@ -1,7 +1,6 @@
 package com.github.csandiego.timesup
 
 import android.content.Context
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.lifecycle.ViewModel
@@ -24,7 +23,8 @@ import com.github.csandiego.timesup.repository.DefaultPresetRepository
 import com.github.csandiego.timesup.room.TimesUpDatabase
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.TestCoroutineScope
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -38,20 +38,17 @@ class PresetsIntegrationTest {
     private lateinit var scenario: FragmentScenario<PresetsFragment>
 
     @get:Rule
-    val instantTaskExecutorRule = InstantTaskExecutorRule()
-
-    @get:Rule
     val roomDatabaseRule = RoomDatabaseRule(
         ApplicationProvider.getApplicationContext<Context>(),
         TimesUpDatabase::class
     )
 
     @Before
-    fun setUp() =  runBlockingTest {
+    fun setUp() = runBlocking {
         val dao = roomDatabaseRule.database.presetDao().apply {
             insert(presets)
         }
-        repository = DefaultPresetRepository(dao, this)
+        repository = DefaultPresetRepository(dao, TestCoroutineScope())
         val viewModel = PresetsViewModel(repository)
         val viewModelFactory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
@@ -65,7 +62,7 @@ class PresetsIntegrationTest {
     }
 
     @Test
-    fun givenDataWhenPresetSwipeLeftThenDeleteFromRepository() = runBlockingTest {
+    fun givenDataWhenPresetSwipeLeftThenDeleteFromRepository() = runBlocking {
         onView(withId(R.id.recyclerView))
             .perform(
                 scrollToPosition<RecyclerView.ViewHolder>(0),
@@ -75,7 +72,7 @@ class PresetsIntegrationTest {
     }
 
     @Test
-    fun givenDataWhenPresetSwipeRightThenDeleteFromRepository() = runBlockingTest {
+    fun givenDataWhenPresetSwipeRightThenDeleteFromRepository() = runBlocking {
         onView(withId(R.id.recyclerView))
             .perform(
                 scrollToPosition<RecyclerView.ViewHolder>(0),
@@ -85,7 +82,7 @@ class PresetsIntegrationTest {
     }
 
     @Test
-    fun givenSelectionWhenDeleteMenuClickedThenDeleteFromRepository() = runBlockingTest {
+    fun givenSelectionWhenDeleteMenuClickedThenDeleteFromRepository() = runBlocking {
         onView(withId(R.id.recyclerView))
             .perform(
                 scrollToPosition<RecyclerView.ViewHolder>(0),

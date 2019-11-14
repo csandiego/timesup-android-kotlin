@@ -90,13 +90,13 @@ class DefaultPresetRepositoryTest {
     }
 
     @Test
-    fun givenValidPresetIdWhenDeleteThenUpdateDao() = scope.runBlockingTest {
+    fun givenValidPresetIdWhenDeleteThenUpdateDao() = runBlockingTest {
         repository.delete(presets[0].id)
         assertThat(dao.get(presets[0].id)).isNull()
     }
 
     @Test
-    fun giveValidPresetIdsWhenDeleteThenUpdateDao() = scope.runBlockingTest {
+    fun giveValidPresetIdsWhenDeleteThenUpdateDao() = runBlockingTest {
         val ids = presets.subList(0, 4).map { it.id }.toSet()
         repository.delete(ids)
         ids.forEach {
