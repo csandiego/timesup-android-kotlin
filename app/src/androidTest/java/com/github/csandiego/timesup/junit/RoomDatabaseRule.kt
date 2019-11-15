@@ -9,7 +9,8 @@ import kotlin.reflect.KClass
 
 class RoomDatabaseRule<T : RoomDatabase>(
     private val context: Context,
-    private val clazz: Class<T>
+    private val clazz: Class<T>,
+    private val allowMainThreadQueries: Boolean = false
 ) : TestWatcher() {
 
     constructor(context: Context, klass: KClass<T>) : this(context, klass.java)
@@ -23,8 +24,10 @@ class RoomDatabaseRule<T : RoomDatabase>(
 
     override fun starting(description: Description?) {
         super.starting(description)
-        database = Room.inMemoryDatabaseBuilder(context, clazz)
-            .allowMainThreadQueries()
-            .build()
+        database = Room.inMemoryDatabaseBuilder(context, clazz).apply {
+            if (allowMainThreadQueries) {
+                allowMainThreadQueries()
+            }
+        }.build()
     }
 }
