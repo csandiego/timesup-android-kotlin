@@ -3,7 +3,6 @@ package com.github.csandiego.timesup.timer
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.map
 import com.github.csandiego.timesup.data.Preset
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
@@ -34,15 +33,7 @@ class Timer @Inject constructor(private val currentTimeProvider: CurrentTimeProv
     val preset: LiveData<Preset> get() = _preset
 
     private val _timeLeft = MutableLiveData<Long>()
-    val timeLeft = _timeLeft.map {
-        it?.let {
-            val hours = it / (60L * 60L)
-            val rem = it % (60L * 60L)
-            val minutes = rem / 60L
-            val seconds = rem % 60L
-            String.format("%02d:%02d:%02d", hours, minutes, seconds)
-        }
-    }
+    val timeLeft: LiveData<Long> get() = _timeLeft
 
     fun load(preset: Preset) {
         check(_state.value == State.INITIAL) { "Loading outside of initial state" }
@@ -70,7 +61,7 @@ class Timer @Inject constructor(private val currentTimeProvider: CurrentTimeProv
             launch {
                 timeFlow(duration, 1000L)
                     .collect {
-                        _timeLeft.value = ((it.toDouble() / 1000.0).roundToLong())
+                        _timeLeft.value = ((it / 1000.0).roundToLong())
                     }
             }
             launch {

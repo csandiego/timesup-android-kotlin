@@ -62,7 +62,7 @@ class TimerFragment @Inject constructor(viewModelFactory: ViewModelProvider.Fact
                     val builder = NotificationCompat.Builder(context, "HIGH")
                         .setSmallIcon(R.drawable.ic_launcher_foreground)
                         .setContentTitle(timer.preset.value!!.name)
-                        .setContentText(timer.timeLeft.value!!)
+                        .setContentText(DurationFormatter.format(timer.timeLeft.value!!))
                         .setContentIntent(pendingIntent)
                         .setAutoCancel(true)
                         .setPriority(NotificationCompat.PRIORITY_HIGH)

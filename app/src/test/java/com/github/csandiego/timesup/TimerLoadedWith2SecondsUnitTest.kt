@@ -19,12 +19,12 @@ class Timer2SecondUnitTest : TimerUnitTest() {
     }
 
     @Test
-    fun givenIsInLoadedStateWhenStaredThenUpdateTimeLeft() = dispatcher.runBlockingTest {
+    fun givenIsInLoadedStateWhenStartedThenUpdateTimeLeft() = dispatcher.runBlockingTest {
         with(timer) {
             start()
             currentTimeProvider.currentTime = 1001L
             advanceTimeBy(1000L)
-            assertThat(timeLeft.value).isEqualTo("00:00:01")
+            assertThat(timeLeft.value).isEqualTo(testPreset.duration - 1L)
         }
         currentTimeProvider.currentTime = 2001L
     }
@@ -38,7 +38,7 @@ class Timer2SecondUnitTest : TimerUnitTest() {
             pause()
             currentTimeProvider.currentTime = 2001L
             advanceTimeBy(1000L)
-            assertThat(timeLeft.value).isEqualTo("00:00:01")
+            assertThat(timeLeft.value).isEqualTo(testPreset.duration - 1L)
         }
     }
 
@@ -52,7 +52,7 @@ class Timer2SecondUnitTest : TimerUnitTest() {
             start()
             currentTimeProvider.currentTime = 2001L
             advanceTimeBy(1000L)
-            assertThat(timeLeft.value).isEqualTo("00:00:01")
+            assertThat(timeLeft.value).isEqualTo(testPreset.duration - 1L)
         }
         currentTimeProvider.currentTime = 3001L
     }
@@ -65,7 +65,7 @@ class Timer2SecondUnitTest : TimerUnitTest() {
             advanceTimeBy(1000L)
             pause()
             reset()
-            assertThat(timeLeft.value).isEqualTo("00:00:02")
+            assertThat(timeLeft.value).isEqualTo(testPreset.duration)
         }
     }
 }

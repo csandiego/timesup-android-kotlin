@@ -72,7 +72,7 @@ class TimerLoadedWith1SecondUnitTest : TimerUnitTest() {
             start()
             currentTimeProvider.currentTime = 1001L
             advanceTimeBy(1000L)
-            assertThat(timeLeft.value).isEqualTo("00:00:00")
+            assertThat(timeLeft.value).isEqualTo(0L)
         }
     }
 
@@ -104,7 +104,7 @@ class TimerLoadedWith1SecondUnitTest : TimerUnitTest() {
             currentTimeProvider.currentTime = 1001L
             advanceTimeBy(1000L)
             reset()
-            assertThat(timeLeft.value).isEqualTo("00:00:01")
+            assertThat(timeLeft.value).isEqualTo(testPreset.duration)
         }
     }
 }

@@ -6,12 +6,11 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
-import androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.csandiego.timesup.data.TestData.presets
-import com.github.csandiego.timesup.data.TestData.presetsSortedByName
+import com.github.csandiego.timesup.data.Preset
+import com.github.csandiego.timesup.timer.DurationFormatter
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.Matchers.not
@@ -22,6 +21,8 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class TimerUITest {
+    
+    private val preset = Preset(name = "2 seconds", seconds = 2)
 
     @get:Rule
     val activityScenarioRule = ActivityScenarioRule(MainActivity::class.java)
@@ -29,30 +30,16 @@ class TimerUITest {
     @Before
     fun setUp() = runBlocking<Unit> {
         ApplicationProvider.getApplicationContext<TestTimesUpApplication>()
-            .database.presetDao().insert(presets)
+            .database.presetDao().insert(preset)
         onView(withId(R.id.recyclerView))
-            .perform(
-                scrollToPosition<RecyclerView.ViewHolder>(2),
-                actionOnItemAtPosition<RecyclerView.ViewHolder>(2, click())
-            )
+            .perform(actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click()))
     }
 
     @Test
     fun whenLoadedThenDisplayNameAndTimeLeft() {
-        onView(withId(R.id.textViewName)).check(matches(withText(presetsSortedByName[2].name)))
+        onView(withId(R.id.textViewName)).check(matches(withText(preset.name)))
         onView(withId(R.id.textViewTimeLeft))
-            .check(
-                matches(
-                    withText(
-                        String.format(
-                            "%02d:%02d:%02d",
-                            presetsSortedByName[2].hours,
-                            presetsSortedByName[2].minutes,
-                            presetsSortedByName[2].seconds
-                        )
-                    )
-                )
-            )
+            .check(matches(withText(DurationFormatter.format(preset.duration))))
     }
 
     @Test
@@ -63,7 +50,7 @@ class TimerUITest {
     }
 
     @Test
-    fun whenStartedThenOnlyEnablePauseButton() {
+    fun givenLoadedwhenStartedThenOnlyEnablePauseButton() {
         onView(withId(R.id.buttonStart)).perform(click())
         onView(withId(R.id.buttonStart)).check(matches(not(isEnabled())))
         onView(withId(R.id.buttonPause)).check(matches(isEnabled()))
@@ -94,7 +81,7 @@ class TimerUITest {
         onView(withId(R.id.buttonStart)).perform(click())
         delay(1000L)
         onView(withId(R.id.textViewTimeLeft))
-            .check(matches(withText("00:00:01")))
+            .check(matches(withText(DurationFormatter.format(preset.duration - 1L))))
     }
 
     @Test
@@ -105,7 +92,7 @@ class TimerUITest {
         onView(withId(R.id.buttonStart)).perform(click())
         delay(1000L)
         onView(withId(R.id.textViewTimeLeft))
-            .check(matches(withText("00:00:01")))
+            .check(matches(withText(DurationFormatter.format(preset.duration - 1L))))
     }
 
     @Test
@@ -115,18 +102,7 @@ class TimerUITest {
         onView(withId(R.id.buttonPause)).perform(click())
         onView(withId(R.id.buttonReset)).perform(click())
         onView(withId(R.id.textViewTimeLeft))
-            .check(
-                matches(
-                    withText(
-                        String.format(
-                            "%02d:%02d:%02d",
-                            presetsSortedByName[2].hours,
-                            presetsSortedByName[2].minutes,
-                            presetsSortedByName[2].seconds
-                        )
-                    )
-                )
-            )
+            .check(matches(withText(DurationFormatter.format(preset.duration))))
     }
 
     @Test
@@ -142,6 +118,7 @@ class TimerUITest {
     fun givenStartedWhenExpiredThenUpdateTimeLeft() = runBlocking<Unit> {
         onView(withId(R.id.buttonStart)).perform(click())
         delay(2000L)
-        onView(withId(R.id.textViewTimeLeft)).check(matches(withText("00:00:00")))
+        onView(withId(R.id.textViewTimeLeft))
+            .check(matches(withText(DurationFormatter.format(0L))))
     }
 }

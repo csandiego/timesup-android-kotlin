@@ -35,13 +35,13 @@ class TimerService : LifecycleService() {
         val builder = NotificationCompat.Builder(this, "LOW")
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle(timer.preset.value!!.name)
-            .setContentText(timer.timeLeft.value!!)
+            .setContentText(DurationFormatter.format(timer.timeLeft.value!!))
             .setContentIntent(pendingIntent)
             .setPriority(NotificationCompat.PRIORITY_LOW)
         startForeground(1, builder.build())
         timer.timeLeft.observe(this) {
             NotificationManagerCompat.from(this)
-                .notify(1, builder.setContentText(it).build())
+                .notify(1, builder.setContentText(DurationFormatter.format(it)).build())
         }
         timer.showNotification.observe(this) {
             if (it) {

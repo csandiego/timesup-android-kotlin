@@ -36,7 +36,7 @@ class TimerInitialStateUnitTest : TimerUnitTest() {
     fun givenIsInInitialStateWhenLoadedThenSetTimeLeft() {
         with(timer) {
             load(testPreset)
-            assertThat(timeLeft.value).isEqualTo("00:00:01")
+            assertThat(timeLeft.value).isEqualTo(testPreset.duration)
         }
     }
 }
