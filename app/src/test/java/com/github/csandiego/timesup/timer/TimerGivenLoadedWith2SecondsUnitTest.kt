@@ -13,13 +13,12 @@ class TimerGivenLoadedWith2SecondsUnitTest : TimerUnitTest() {
     private val testPreset = Preset(id = 1L, name = "02 seconds", seconds = 2)
 
     @Before
-    override fun setUp() {
-        super.setUp()
+    fun load() {
         timer.load(testPreset)
     }
 
     @Test
-    fun whenStartedThenUpdateTimeLeft() = dispatcher.runBlockingTest {
+    fun whenStartedThenUpdateTimeLeft() = mainDispatcherRule.dispatcher.runBlockingTest {
         with(timer) {
             start()
             currentTimeProvider.currentTime = 1001L
@@ -30,7 +29,7 @@ class TimerGivenLoadedWith2SecondsUnitTest : TimerUnitTest() {
     }
 
     @Test
-    fun givenIsInStartedStateWhenPausedThenPauseTimeLeft() = dispatcher.runBlockingTest {
+    fun givenIsInStartedStateWhenPausedThenPauseTimeLeft() = mainDispatcherRule.dispatcher.runBlockingTest {
         with(timer) {
             start()
             currentTimeProvider.currentTime = 1001L
@@ -43,7 +42,7 @@ class TimerGivenLoadedWith2SecondsUnitTest : TimerUnitTest() {
     }
 
     @Test
-    fun givenIsInPausedStateWhenStartedThenUpdateTimeLeft() = dispatcher.runBlockingTest {
+    fun givenIsInPausedStateWhenStartedThenUpdateTimeLeft() = mainDispatcherRule.dispatcher.runBlockingTest {
         with(timer) {
             start()
             pause()
@@ -58,7 +57,7 @@ class TimerGivenLoadedWith2SecondsUnitTest : TimerUnitTest() {
     }
 
     @Test
-    fun givenIsInPausedStateWhenResetThenResetTimeLeft() = dispatcher.runBlockingTest {
+    fun givenIsInPausedStateWhenResetThenResetTimeLeft() = mainDispatcherRule.dispatcher.runBlockingTest {
         with(timer) {
             start()
             currentTimeProvider.currentTime = 1001L

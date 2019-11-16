@@ -13,8 +13,7 @@ class TimerGivenLoadedWith1SecondUnitTest : TimerUnitTest() {
     private val testPreset = Preset(id = 1L, name = "01 second", seconds = 1)
 
     @Before
-    override fun setUp() {
-        super.setUp()
+    fun load() {
         timer.load(testPreset)
     }
 
@@ -36,7 +35,7 @@ class TimerGivenLoadedWith1SecondUnitTest : TimerUnitTest() {
     }
 
     @Test
-    fun givenIsInStartedStateWhenFinishedThenIsInFinishedState() = dispatcher.runBlockingTest {
+    fun givenIsInStartedStateWhenFinishedThenIsInFinishedState() = mainDispatcherRule.dispatcher.runBlockingTest {
         with(timer) {
             start()
             currentTimeProvider.currentTime = 1001L
@@ -46,7 +45,7 @@ class TimerGivenLoadedWith1SecondUnitTest : TimerUnitTest() {
     }
 
     @Test
-    fun givenIsInStartedStateWhenFinishedThenUpdateTimeLeft() = dispatcher.runBlockingTest {
+    fun givenIsInStartedStateWhenFinishedThenUpdateTimeLeft() = mainDispatcherRule.dispatcher.runBlockingTest {
         with(timer) {
             start()
             currentTimeProvider.currentTime = 1001L
@@ -56,7 +55,7 @@ class TimerGivenLoadedWith1SecondUnitTest : TimerUnitTest() {
     }
 
     @Test
-    fun givenIsInStartedStateWhenFinishedThenShowNotification() = dispatcher.runBlockingTest {
+    fun givenIsInStartedStateWhenFinishedThenShowNotification() = mainDispatcherRule.dispatcher.runBlockingTest {
         with(timer) {
             start()
             currentTimeProvider.currentTime = 1001L
@@ -86,7 +85,7 @@ class TimerGivenLoadedWith1SecondUnitTest : TimerUnitTest() {
     }
 
     @Test
-    fun givenIsInFinishedStateWhenResetThenIsInLoadedState() = dispatcher.runBlockingTest {
+    fun givenIsInFinishedStateWhenResetThenIsInLoadedState() = mainDispatcherRule.dispatcher.runBlockingTest {
         with(timer) {
             start()
             currentTimeProvider.currentTime = 1001L
@@ -97,7 +96,7 @@ class TimerGivenLoadedWith1SecondUnitTest : TimerUnitTest() {
     }
 
     @Test
-    fun givenIsInFinishedStateWhenResetThenResetTimeLeft() = dispatcher.runBlockingTest {
+    fun givenIsInFinishedStateWhenResetThenResetTimeLeft() = mainDispatcherRule.dispatcher.runBlockingTest {
         with(timer) {
             start()
             currentTimeProvider.currentTime = 1001L
