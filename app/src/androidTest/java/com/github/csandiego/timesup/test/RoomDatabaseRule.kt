@@ -1,4 +1,4 @@
-package com.github.csandiego.timesup.junit
+package com.github.csandiego.timesup.test
 
 import android.content.Context
 import androidx.room.Room
@@ -13,7 +13,11 @@ class RoomDatabaseRule<T : RoomDatabase>(
     private val allowMainThreadQueries: Boolean = false
 ) : TestWatcher() {
 
-    constructor(context: Context, klass: KClass<T>) : this(context, klass.java)
+    constructor(context: Context, klass: KClass<T>, allowMainThreadQueries: Boolean = false) : this(
+        context,
+        klass.java,
+        allowMainThreadQueries
+    )
 
     lateinit var database: T
 

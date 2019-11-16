@@ -16,10 +16,10 @@ import androidx.test.espresso.matcher.ViewMatchers.withResourceName
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.csandiego.timesup.R
 import com.github.csandiego.timesup.data.Preset
-import com.github.csandiego.timesup.junit.RoomDatabaseRule
 import com.github.csandiego.timesup.repository.DefaultPresetRepository
 import com.github.csandiego.timesup.repository.PresetRepository
 import com.github.csandiego.timesup.room.TimesUpDatabase
+import com.github.csandiego.timesup.test.RoomDatabaseRule
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.runBlocking
 import org.junit.Before

@@ -15,9 +15,9 @@ import com.github.csandiego.timesup.data.TestData.newPreset
 import com.github.csandiego.timesup.data.TestData.presets
 import com.github.csandiego.timesup.editor.NewPresetFragment
 import com.github.csandiego.timesup.editor.PresetEditorViewModel
-import com.github.csandiego.timesup.junit.RoomDatabaseRule
 import com.github.csandiego.timesup.repository.DefaultPresetRepository
 import com.github.csandiego.timesup.room.TimesUpDatabase
+import com.github.csandiego.timesup.test.RoomDatabaseRule
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.Matchers.allOf
