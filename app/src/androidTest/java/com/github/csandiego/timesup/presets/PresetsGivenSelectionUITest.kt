@@ -20,8 +20,7 @@ import org.junit.runner.RunWith
 class PresetsGivenSelectionUITest : PresetsGivenDataUITest() {
 
     @Before
-    override fun setUp() {
-        super.setUp()
+    fun select() {
         onView(withId(R.id.recyclerView))
             .perform(
                 scrollToPosition<RecyclerView.ViewHolder>(0),

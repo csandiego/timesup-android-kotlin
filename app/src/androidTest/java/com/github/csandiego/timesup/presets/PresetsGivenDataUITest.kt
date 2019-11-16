@@ -32,7 +32,7 @@ abstract class PresetsGivenDataUITest {
     }
 
     @Before
-    open fun setUp() = runBlocking {
+    fun setUp() = runBlocking {
         presets = insertPresetsAndGetIds(_presets) {
             ApplicationProvider.getApplicationContext<TestTimesUpApplication>()
                 .database.presetDao().insert(it)
