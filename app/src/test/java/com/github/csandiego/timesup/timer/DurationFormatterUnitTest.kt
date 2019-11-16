@@ -1,13 +1,12 @@
-package com.github.csandiego.timesup
+package com.github.csandiego.timesup.timer
 
-import com.github.csandiego.timesup.timer.DurationFormatter
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 
 class DurationFormatterUnitTest {
 
     @Test
-    fun givenDurationWhenFormatThenProduceFormattedString() {
+    fun givenDurationWhenFormatThenReturnFormattedString() {
         val hours = 12
         val minutes = 34
         val seconds = 56

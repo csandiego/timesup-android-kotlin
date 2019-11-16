@@ -1,4 +1,4 @@
-package com.github.csandiego.timesup
+package com.github.csandiego.timesup.timer
 
 import com.github.csandiego.timesup.data.Preset
 import com.google.common.truth.Truth.assertThat
@@ -8,7 +8,7 @@ import org.junit.Before
 import org.junit.Test
 
 @ExperimentalCoroutinesApi
-class Timer2SecondUnitTest : TimerUnitTest() {
+class TimerGivenLoadedWith2SecondsUnitTest : TimerUnitTest() {
 
     private val testPreset = Preset(id = 1L, name = "02 seconds", seconds = 2)
 
@@ -19,7 +19,7 @@ class Timer2SecondUnitTest : TimerUnitTest() {
     }
 
     @Test
-    fun givenIsInLoadedStateWhenStartedThenUpdateTimeLeft() = dispatcher.runBlockingTest {
+    fun whenStartedThenUpdateTimeLeft() = dispatcher.runBlockingTest {
         with(timer) {
             start()
             currentTimeProvider.currentTime = 1001L

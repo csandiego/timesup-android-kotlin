@@ -1,7 +1,6 @@
-package com.github.csandiego.timesup
+package com.github.csandiego.timesup.timer
 
 import com.github.csandiego.timesup.data.Preset
-import com.github.csandiego.timesup.timer.Timer
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
@@ -9,7 +8,7 @@ import org.junit.Before
 import org.junit.Test
 
 @ExperimentalCoroutinesApi
-class TimerLoadedWith1SecondUnitTest : TimerUnitTest() {
+class TimerGivenLoadedWith1SecondUnitTest : TimerUnitTest() {
 
     private val testPreset = Preset(id = 1L, name = "01 second", seconds = 1)
 
@@ -20,7 +19,7 @@ class TimerLoadedWith1SecondUnitTest : TimerUnitTest() {
     }
 
     @Test
-    fun givenIsInLoadedStateWhenStaredThenIsInStartedState() {
+    fun whenStaredThenIsInStartedState() {
         with(timer) {
             start()
             assertThat(state.value).isEqualTo(Timer.State.STARTED)
@@ -33,26 +32,6 @@ class TimerLoadedWith1SecondUnitTest : TimerUnitTest() {
             start()
             pause()
             assertThat(state.value).isEqualTo(Timer.State.PAUSED)
-        }
-    }
-
-    @Test
-    fun givenIsInPausedStateWhenStartedThenIsInStartedState() {
-        with(timer) {
-            start()
-            pause()
-            start()
-            assertThat(state.value).isEqualTo(Timer.State.STARTED)
-        }
-    }
-
-    @Test
-    fun givenIsInPausedStateWhenResetThenIsInLoadedState() {
-        with(timer) {
-            start()
-            pause()
-            reset()
-            assertThat(state.value).isEqualTo(Timer.State.LOADED)
         }
     }
 
@@ -83,6 +62,26 @@ class TimerLoadedWith1SecondUnitTest : TimerUnitTest() {
             currentTimeProvider.currentTime = 1001L
             advanceTimeBy(1000L)
             assertThat(showNotification.value).isTrue()
+        }
+    }
+
+    @Test
+    fun givenIsInPausedStateWhenStartedThenIsInStartedState() {
+        with(timer) {
+            start()
+            pause()
+            start()
+            assertThat(state.value).isEqualTo(Timer.State.STARTED)
+        }
+    }
+
+    @Test
+    fun givenIsInPausedStateWhenResetThenIsInLoadedState() {
+        with(timer) {
+            start()
+            pause()
+            reset()
+            assertThat(state.value).isEqualTo(Timer.State.LOADED)
         }
     }
 

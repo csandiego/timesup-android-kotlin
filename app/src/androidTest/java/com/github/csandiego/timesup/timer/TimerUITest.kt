@@ -1,4 +1,4 @@
-package com.github.csandiego.timesup
+package com.github.csandiego.timesup.timer
 
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ApplicationProvider
@@ -6,11 +6,14 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
+import androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.csandiego.timesup.MainActivity
+import com.github.csandiego.timesup.R
+import com.github.csandiego.timesup.TestTimesUpApplication
 import com.github.csandiego.timesup.data.Preset
-import com.github.csandiego.timesup.timer.DurationFormatter
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.Matchers.not
@@ -32,7 +35,10 @@ class TimerUITest {
         ApplicationProvider.getApplicationContext<TestTimesUpApplication>()
             .database.presetDao().insert(preset)
         onView(withId(R.id.recyclerView))
-            .perform(actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click()))
+            .perform(
+                scrollToPosition<RecyclerView.ViewHolder>(0),
+                actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click())
+            )
     }
 
     @Test
@@ -67,42 +73,11 @@ class TimerUITest {
     }
 
     @Test
-    fun givenPausedWhenResetThenOnlyEnableStartButton() {
-        onView(withId(R.id.buttonStart)).perform(click())
-        onView(withId(R.id.buttonPause)).perform(click())
-        onView(withId(R.id.buttonReset)).perform(click())
-        onView(withId(R.id.buttonStart)).check(matches(isEnabled()))
-        onView(withId(R.id.buttonPause)).check(matches(not(isEnabled())))
-        onView(withId(R.id.buttonReset)).check(matches(not(isEnabled())))
-    }
-
-    @Test
     fun givenStartedWhenOneSecondPassedThenUpdateTimeLeft() = runBlocking<Unit> {
         onView(withId(R.id.buttonStart)).perform(click())
         delay(1000L)
         onView(withId(R.id.textViewTimeLeft))
             .check(matches(withText(DurationFormatter.format(preset.duration - 1L))))
-    }
-
-    @Test
-    fun givenPausedWhenResumedThenUpdateTimeLeft() = runBlocking<Unit> {
-        onView(withId(R.id.buttonStart)).perform(click())
-        onView(withId(R.id.buttonPause)).perform(click())
-        delay(1000L)
-        onView(withId(R.id.buttonStart)).perform(click())
-        delay(1000L)
-        onView(withId(R.id.textViewTimeLeft))
-            .check(matches(withText(DurationFormatter.format(preset.duration - 1L))))
-    }
-
-    @Test
-    fun givenStartedWhenResetThenUpdateTimeLeft() = runBlocking<Unit> {
-        onView(withId(R.id.buttonStart)).perform(click())
-        delay(1000L)
-        onView(withId(R.id.buttonPause)).perform(click())
-        onView(withId(R.id.buttonReset)).perform(click())
-        onView(withId(R.id.textViewTimeLeft))
-            .check(matches(withText(DurationFormatter.format(preset.duration))))
     }
 
     @Test
@@ -120,5 +95,36 @@ class TimerUITest {
         delay(2000L)
         onView(withId(R.id.textViewTimeLeft))
             .check(matches(withText(DurationFormatter.format(0L))))
+    }
+
+    @Test
+    fun givenPausedWhenResetThenOnlyEnableStartButton() {
+        onView(withId(R.id.buttonStart)).perform(click())
+        onView(withId(R.id.buttonPause)).perform(click())
+        onView(withId(R.id.buttonReset)).perform(click())
+        onView(withId(R.id.buttonStart)).check(matches(isEnabled()))
+        onView(withId(R.id.buttonPause)).check(matches(not(isEnabled())))
+        onView(withId(R.id.buttonReset)).check(matches(not(isEnabled())))
+    }
+
+    @Test
+    fun givenPausedWhenStartedThenUpdateTimeLeft() = runBlocking<Unit> {
+        onView(withId(R.id.buttonStart)).perform(click())
+        onView(withId(R.id.buttonPause)).perform(click())
+        delay(1000L)
+        onView(withId(R.id.buttonStart)).perform(click())
+        delay(1000L)
+        onView(withId(R.id.textViewTimeLeft))
+            .check(matches(withText(DurationFormatter.format(preset.duration - 1L))))
+    }
+
+    @Test
+    fun givenPausedWhenResetThenUpdateTimeLeft() = runBlocking<Unit> {
+        onView(withId(R.id.buttonStart)).perform(click())
+        delay(1000L)
+        onView(withId(R.id.buttonPause)).perform(click())
+        onView(withId(R.id.buttonReset)).perform(click())
+        onView(withId(R.id.textViewTimeLeft))
+            .check(matches(withText(DurationFormatter.format(preset.duration))))
     }
 }

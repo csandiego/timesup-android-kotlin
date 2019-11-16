@@ -1,8 +1,6 @@
-package com.github.csandiego.timesup
+package com.github.csandiego.timesup.timer
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.github.csandiego.timesup.timer.TestCurrentTimeProvider
-import com.github.csandiego.timesup.timer.Timer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineDispatcher
