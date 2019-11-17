@@ -3,22 +3,25 @@ package com.github.csandiego.timesup.room
 import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.csandiego.timesup.data.Preset
 import com.github.csandiego.timesup.test.RoomDatabaseRule
+import com.github.csandiego.timesup.test.insertAndReturnWithId
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
 @ExperimentalCoroutinesApi
-@RunWith(AndroidJUnit4::class)
 class PresetDaoUnitTest {
 
     private lateinit var dao: PresetDao
+    private val _presets = listOf(
+        Preset(name = "2 seconds", seconds = 2),
+        Preset(name = "3 seconds", seconds = 3),
+        Preset(name = "1 second", seconds = 1)
+    )
     private lateinit var presets: List<Preset>
     private val invalidId = -1L
 
@@ -33,17 +36,9 @@ class PresetDaoUnitTest {
 
     @Before
     fun setUp() = runBlockingTest {
-        dao = roomDatabaseRule.database.presetDao()
-        val input = listOf(
-            Preset(name = "2 seconds", seconds = 2),
-            Preset(name = "3 seconds", seconds = 3),
-            Preset(name = "1 second", seconds = 1)
-        )
-        val output = mutableListOf<Preset>()
-        dao.insert(input).forEachIndexed { index, id ->
-            output.add(index, input[index].copy(id = id))
+        dao = roomDatabaseRule.database.presetDao().apply {
+            presets = insertAndReturnWithId(_presets)
         }
-        presets = output
     }
 
     @Test
@@ -51,12 +46,14 @@ class PresetDaoUnitTest {
         val fetched = dao.getAllByNameAscendingAsLiveData().apply {
             observeForever {}
         }
-        assertThat(fetched.value).containsExactlyElementsIn(presets.sortedBy { it.name })
+        assertThat(fetched.value).containsExactlyElementsIn(presets.sortedBy { it.name }).inOrder()
     }
 
     @Test
     fun givenValidPresetIdWhenGetThenReturnPreset() = runBlockingTest {
-        assertThat(dao.get(presets[0].id)).isEqualTo(presets[0])
+        with(presets.first()) {
+            assertThat(dao.get(id)).isEqualTo(this)
+        }
     }
 
     @Test
@@ -65,13 +62,14 @@ class PresetDaoUnitTest {
     }
 
     @Test
-    fun givenValidPresetIdWhenDeleteByIdThenDeleteFromDatabase() = runBlockingTest {
-        assertThat(dao.delete(presets[0].id)).isEqualTo(1)
+    fun givenValidPresetIdWhenDeleteThenDeleteSingleItem() = runBlockingTest {
+        assertThat(dao.delete(presets.first().id)).isEqualTo(1)
     }
 
     @Test
-    fun givenValidPresetIdsWhenDeleteAllByIdsThenDeleteFromDatabase() = runBlockingTest {
-        val ids = presets.subList(0, 2).map { it.id }.toSet()
-        assertThat(dao.delete(ids)).isEqualTo(ids.size)
+    fun givenValidPresetIdsWhenDeleteThenDeleteSameAmount() = runBlockingTest {
+        with(presets.subList(0, 2).map { it.id }.toSet()) {
+            assertThat(dao.delete(this)).isEqualTo(size)
+        }
     }
 }

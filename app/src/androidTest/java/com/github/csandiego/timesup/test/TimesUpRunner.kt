@@ -4,7 +4,6 @@ import android.app.Application
 import android.content.Context
 import androidx.test.runner.AndroidJUnitRunner
 import com.github.csandiego.timesup.TestTimesUpApplication
-import com.github.csandiego.timesup.TimesUpApplication
 
 class TimesUpRunner : AndroidJUnitRunner() {
 
@@ -12,12 +11,5 @@ class TimesUpRunner : AndroidJUnitRunner() {
         cl: ClassLoader?,
         className: String?,
         context: Context?
-    ): Application {
-        val name = if (className == TimesUpApplication::class.java.name) {
-            TestTimesUpApplication::class.java.name
-        } else {
-            className
-        }
-        return super.newApplication(cl, name, context)
-    }
+    ): Application = super.newApplication(cl, TestTimesUpApplication::class.java.name, context)
 }

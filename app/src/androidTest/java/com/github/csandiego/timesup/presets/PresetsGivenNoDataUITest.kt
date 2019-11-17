@@ -17,6 +17,7 @@ import org.junit.Test
 
 class PresetsGivenNoDataUITest {
 
+    private val dao get() = ApplicationProvider.getApplicationContext<TestTimesUpApplication>().database.presetDao()
     private val preset = Preset(name = "1 second", seconds = 1)
 
     @get:Rule
@@ -36,16 +37,14 @@ class PresetsGivenNoDataUITest {
 
     @Test
     fun whenPresetAddedThenHideEmptyView() = runBlocking<Unit> {
-        ApplicationProvider.getApplicationContext<TestTimesUpApplication>()
-            .database.presetDao().insert(preset)
+        dao.insert(preset)
         onView(withId(R.id.emptyView))
             .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)))
     }
 
     @Test
     fun whenPresetAddedThenShowRecyclerView() = runBlocking<Unit> {
-        ApplicationProvider.getApplicationContext<TestTimesUpApplication>()
-            .database.presetDao().insert(preset)
+        dao.insert(preset)
         onView(withId(R.id.recyclerView))
             .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
     }

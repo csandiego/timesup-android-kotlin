@@ -6,10 +6,8 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
-import androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.csandiego.timesup.MainActivity
 import com.github.csandiego.timesup.R
 import com.github.csandiego.timesup.TestTimesUpApplication
@@ -20,9 +18,7 @@ import org.hamcrest.Matchers.not
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
 class TimerUITest {
     
     private val preset = Preset(name = "2 seconds", seconds = 2)
@@ -35,10 +31,7 @@ class TimerUITest {
         ApplicationProvider.getApplicationContext<TestTimesUpApplication>()
             .database.presetDao().insert(preset)
         onView(withId(R.id.recyclerView))
-            .perform(
-                scrollToPosition<RecyclerView.ViewHolder>(0),
-                actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click())
-            )
+            .perform(actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click()))
     }
 
     @Test
