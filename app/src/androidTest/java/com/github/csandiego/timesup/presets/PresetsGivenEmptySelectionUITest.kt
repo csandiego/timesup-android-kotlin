@@ -9,28 +9,10 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition
 import androidx.test.espresso.matcher.ViewMatchers.*
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.csandiego.timesup.R
-import com.github.csandiego.timesup.data.Preset
-import com.github.csandiego.timesup.timer.DurationFormatter
-import org.hamcrest.Matchers.allOf
-import org.hamcrest.Matchers.equalTo
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
 class PresetsGivenEmptySelectionUITest : PresetsGivenDataUITest() {
-
-    private fun withChildViewFor(preset: Preset) = allOf(
-        withParent(withId(R.id.recyclerView)),
-        hasDescendant(allOf(withId(R.id.textViewName), withText(preset.name))),
-        hasDescendant(
-            allOf(
-                withId(R.id.textViewDuration),
-                withText(DurationFormatter.format(preset.duration))
-            )
-        )
-    )
 
     @Test
     fun whenLoadedThenDisplayByNameAscending() {
@@ -48,7 +30,7 @@ class PresetsGivenEmptySelectionUITest : PresetsGivenDataUITest() {
                 scrollToPosition<RecyclerView.ViewHolder>(0),
                 actionOnItemAtPosition<RecyclerView.ViewHolder>(0, swipeLeft())
             )
-        onView(withTagValue(equalTo(presets[0].hashCode()))).check(doesNotExist())
+        onView(withChildViewFor(presets[0])).check(doesNotExist())
     }
 
     @Test
@@ -58,7 +40,7 @@ class PresetsGivenEmptySelectionUITest : PresetsGivenDataUITest() {
                 scrollToPosition<RecyclerView.ViewHolder>(0),
                 actionOnItemAtPosition<RecyclerView.ViewHolder>(0, swipeRight())
             )
-        onView(withTagValue(equalTo(presets[0].hashCode()))).check(doesNotExist())
+        onView(withChildViewFor(presets[0])).check(doesNotExist())
     }
 
     @Test
@@ -68,7 +50,7 @@ class PresetsGivenEmptySelectionUITest : PresetsGivenDataUITest() {
                 scrollToPosition<RecyclerView.ViewHolder>(0),
                 actionOnItemAtPosition<RecyclerView.ViewHolder>(0, longClick())
             )
-        onView(withTagValue(equalTo(presets[0].hashCode()))).check(matches(isChecked()))
+        onView(withChildViewFor(presets[0])).check(matches(isChecked()))
     }
 
     @Test

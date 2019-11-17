@@ -8,15 +8,11 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition
 import androidx.test.espresso.matcher.ViewMatchers.*
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.csandiego.timesup.R
-import org.hamcrest.Matchers.equalTo
 import org.hamcrest.Matchers.not
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
 class PresetsGivenSelectionUITest : PresetsGivenDataUITest() {
 
     @Before
@@ -38,14 +34,14 @@ class PresetsGivenSelectionUITest : PresetsGivenDataUITest() {
                 scrollToPosition<RecyclerView.ViewHolder>(2),
                 actionOnItemAtPosition<RecyclerView.ViewHolder>(2, click())
             )
-        onView(withTagValue(equalTo(presets[2].hashCode()))).check(matches(isChecked()))
+        onView(withChildViewFor(presets[2])).check(matches(isChecked()))
     }
 
     @Test
     fun whenSelectedClickedThenDeselect() {
         onView(withId(R.id.recyclerView))
             .perform(actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click()))
-        onView(withTagValue(equalTo(presets[0].hashCode()))).check(matches(isNotChecked()))
+        onView(withChildViewFor(presets[0])).check(matches(isNotChecked()))
     }
 
     @Test
@@ -62,16 +58,16 @@ class PresetsGivenSelectionUITest : PresetsGivenDataUITest() {
     @Test
     fun whenActionModeClosedThenDeselectAll() {
         onView(withResourceName("action_mode_close_button")).perform(click())
-        repeat(2) {
-            onView(withTagValue(equalTo(presets[it].hashCode()))).check(matches(isNotChecked()))
+        presets.subList(0, 2).forEach {
+            onView(withChildViewFor(it)).check(matches(isNotChecked()))
         }
     }
 
     @Test
     fun whenDeleteMenuClickedThenRemoveFromList() {
         onView(withResourceName("menuDelete")).perform(click())
-        repeat(2) {
-            onView(withTagValue(equalTo(presets[it].hashCode()))).check(doesNotExist())
+        presets.subList(0, 2).forEach {
+            onView(withChildViewFor(it)).check(doesNotExist())
         }
     }
 

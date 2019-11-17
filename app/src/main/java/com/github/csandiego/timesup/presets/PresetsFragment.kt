@@ -209,10 +209,7 @@ class PresetsFragment @Inject constructor(viewModelFactory: ViewModelProvider.Fa
         }
 
         fun bind(preset: Preset) {
-            with(binding) {
-                this.preset = preset
-                root.tag = preset.hashCode()
-            }
+            binding.preset = preset
         }
     }
 }

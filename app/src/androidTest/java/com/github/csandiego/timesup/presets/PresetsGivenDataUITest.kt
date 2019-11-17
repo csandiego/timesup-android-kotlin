@@ -1,11 +1,17 @@
 package com.github.csandiego.timesup.presets
 
+import android.view.View
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.github.csandiego.timesup.MainActivity
+import com.github.csandiego.timesup.R
 import com.github.csandiego.timesup.TestTimesUpApplication
 import com.github.csandiego.timesup.data.Preset
+import com.github.csandiego.timesup.timer.DurationFormatter
 import kotlinx.coroutines.runBlocking
+import org.hamcrest.Matcher
+import org.hamcrest.Matchers.allOf
 import org.junit.Before
 import org.junit.Rule
 
@@ -38,4 +44,21 @@ abstract class PresetsGivenDataUITest {
                 .database.presetDao().insert(it)
         }
     }
+
+
+    protected fun withChildViewFor(preset: Preset): Matcher<View> = allOf(
+        withParent(withId(R.id.recyclerView)),
+        hasDescendant(
+            allOf(
+                withId(R.id.textViewName),
+                withText(preset.name)
+            )
+        ),
+        hasDescendant(
+            allOf(
+                withId(R.id.textViewDuration),
+                withText(DurationFormatter.format(preset.duration))
+            )
+        )
+    )
 }
