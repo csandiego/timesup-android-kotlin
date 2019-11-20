@@ -25,7 +25,6 @@ class TimerGivenLoadedWith2SecondsUnitTest : TimerUnitTest() {
             advanceTimeBy(1000L)
             assertThat(timeLeft.value).isEqualTo(testPreset.duration - 1L)
         }
-        currentTimeProvider.currentTime = 2001L
     }
 
     @Test
@@ -53,7 +52,6 @@ class TimerGivenLoadedWith2SecondsUnitTest : TimerUnitTest() {
             advanceTimeBy(1000L)
             assertThat(timeLeft.value).isEqualTo(testPreset.duration - 1L)
         }
-        currentTimeProvider.currentTime = 3001L
     }
 
     @Test
