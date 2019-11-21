@@ -1,8 +1,6 @@
-package com.github.csandiego.timesup.timer
+package com.github.csandiego.timesup.presets
 
 import android.content.Context
-import android.os.Bundle
-import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -12,19 +10,18 @@ import com.github.csandiego.timesup.data.Preset
 import com.github.csandiego.timesup.repository.DefaultPresetRepository
 import com.github.csandiego.timesup.room.TimesUpDatabase
 import com.github.csandiego.timesup.test.RoomDatabaseRule
-import com.github.csandiego.timesup.test.insertAndReturnWithId
-import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Rule
-import org.junit.Test
 
-class TimerFragmentDefaultPresetRepositoryIntegrationTest {
+abstract class PresetsFragmentGivenDataUITest {
 
-    private lateinit var scenario: FragmentScenario<TimerFragment>
-    private lateinit var timer: ManualTimer
-    private val _preset = Preset(name = "2 seconds", seconds = 2)
-    private lateinit var preset: Preset
+    private val _presets = listOf(
+        Preset(name = "2 seconds", seconds = 2),
+        Preset(name = "3 seconds", seconds = 3),
+        Preset(name = "1 second", seconds = 1)
+    )
+    protected val presets = _presets.sortedBy { it.name }
 
     @get:Rule
     val roomDatabaseRule = RoomDatabaseRule(
@@ -33,30 +30,19 @@ class TimerFragmentDefaultPresetRepositoryIntegrationTest {
     )
 
     @Before
-    fun setUp() = runBlocking {
+    fun setUp() = runBlocking<Unit> {
         val dao = roomDatabaseRule.database.presetDao().apply {
-            preset = insertAndReturnWithId(_preset)
+            insert(_presets)
         }
         val repository = DefaultPresetRepository(dao)
-        timer = ManualTimer()
         val viewModelFactory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                return TimerViewModel(repository, timer) as T
+                return PresetsViewModel(repository) as T
             }
         }
-        val args = Bundle().apply {
-            putLong("presetId", preset.id)
-        }
-        scenario = launchFragmentInContainer(args, R.style.Theme_TimesUp) {
-            TimerFragment(viewModelFactory)
-        }
-    }
-
-    @Test
-    fun givenValidPresetIdWhenLoadedThenLoadTimer() {
-        scenario.onFragment {
-            assertThat(timer.preset.value).isEqualTo(preset)
+        launchFragmentInContainer(themeResId = R.style.Theme_TimesUp) {
+            PresetsFragment(viewModelFactory)
         }
     }
 }

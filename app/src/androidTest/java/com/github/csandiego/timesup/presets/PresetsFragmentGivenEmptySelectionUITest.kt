@@ -12,7 +12,7 @@ import com.github.csandiego.timesup.R
 import com.github.csandiego.timesup.test.isTheRowFor
 import org.junit.Test
 
-class PresetsGivenEmptySelectionUITest : PresetsGivenDataUITest() {
+class PresetsFragmentGivenEmptySelectionUITest : PresetsFragmentGivenDataUITest() {
 
     @Test
     fun whenLoadedThenDisplayByNameAscending() {

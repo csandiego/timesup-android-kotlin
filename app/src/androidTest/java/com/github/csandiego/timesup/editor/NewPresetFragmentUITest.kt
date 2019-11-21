@@ -1,32 +1,39 @@
 package com.github.csandiego.timesup.editor
 
+import androidx.fragment.app.testing.launchFragment
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.*
-import androidx.test.ext.junit.rules.ActivityScenarioRule
-import com.github.csandiego.timesup.MainActivity
+import androidx.test.espresso.matcher.ViewMatchers.isEnabled
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import com.github.csandiego.timesup.R
 import com.github.csandiego.timesup.data.Preset
+import com.github.csandiego.timesup.repository.PresetRepository
 import com.github.csandiego.timesup.test.assertBound
 import com.github.csandiego.timesup.test.fillUpUsing
-import com.github.csandiego.timesup.test.isTheRowFor
 import org.hamcrest.Matchers.not
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
+import org.mockito.Mockito.mock
 
-class NewPresetUITest {
+class NewPresetFragmentUITest {
     
     private val emptyPreset = Preset()
     private val preset = Preset(name = "1 second", seconds = 1)
 
-    @get:Rule
-    val activityScenarioRule = ActivityScenarioRule(MainActivity::class.java)
-
     @Before
     fun setUp() {
-        onView(withId(R.id.buttonNew)).perform(click())
+        val repository = mock(PresetRepository::class.java)
+        val viewModelFactory = object : ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+                return PresetEditorViewModel(repository) as T
+            }
+        }
+        launchFragment(themeResId = R.style.Theme_TimesUp) {
+            NewPresetFragment(viewModelFactory)
+        }
     }
 
     @Test
@@ -58,12 +65,12 @@ class NewPresetUITest {
         onView(withText(R.string.button_save)).check(matches(isEnabled()))
     }
 
-    @Test
-    fun givenNameNotEmptyAndDurationNotEmptyWhenPositiveButtonClickedThenAddToList() {
-        with(preset) {
-            fillUpUsing(this)
-            onView(withText(R.string.button_save)).perform(click())
-            onView(isTheRowFor(this)).check(matches(isDisplayed()))
-        }
-    }
+//    @Test
+//    fun givenNameNotEmptyAndDurationNotEmptyWhenPositiveButtonClickedThenAddToList() {
+//        with(preset) {
+//            fillUpUsing(this)
+//            onView(withText(R.string.button_save)).perform(click())
+//            onView(isTheRowFor(this)).check(matches(isDisplayed()))
+//        }
+//    }
 }

@@ -13,7 +13,7 @@ import org.hamcrest.Matchers.not
 import org.junit.Before
 import org.junit.Test
 
-class PresetsGivenSelectionUITest : PresetsGivenDataUITest() {
+class PresetsFragmentGivenSelectionUITest : PresetsFragmentGivenDataUITest() {
 
     @Before
     fun select() {

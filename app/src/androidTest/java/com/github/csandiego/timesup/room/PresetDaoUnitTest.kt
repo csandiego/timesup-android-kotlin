@@ -7,13 +7,11 @@ import com.github.csandiego.timesup.data.Preset
 import com.github.csandiego.timesup.test.RoomDatabaseRule
 import com.github.csandiego.timesup.test.insertAndReturnWithId
 import com.google.common.truth.Truth.assertThat
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
-@ExperimentalCoroutinesApi
 class PresetDaoUnitTest {
 
     private lateinit var dao: PresetDao
@@ -35,7 +33,7 @@ class PresetDaoUnitTest {
     )
 
     @Before
-    fun setUp() = runBlockingTest {
+    fun setUp() = runBlocking {
         dao = roomDatabaseRule.database.presetDao().apply {
             presets = insertAndReturnWithId(_presets)
         }
@@ -50,24 +48,25 @@ class PresetDaoUnitTest {
     }
 
     @Test
-    fun givenValidPresetIdWhenGetThenReturnPreset() = runBlockingTest {
+    fun givenValidPresetIdWhenGetThenReturnPreset() = runBlocking<Unit> {
         with(presets.first()) {
             assertThat(dao.get(id)).isEqualTo(this)
         }
     }
 
+
     @Test
-    fun givenInvalidPresetIdWhenGetThenReturnNull() = runBlockingTest {
+    fun givenInvalidPresetIdWhenGetThenReturnNull() = runBlocking {
         assertThat(dao.get(invalidId)).isNull()
     }
 
     @Test
-    fun givenValidPresetIdWhenDeleteThenDeleteSingleItem() = runBlockingTest {
+    fun givenValidPresetIdWhenDeleteThenDeleteSingleItem() = runBlocking {
         assertThat(dao.delete(presets.first().id)).isEqualTo(1)
     }
 
     @Test
-    fun givenValidPresetIdsWhenDeleteThenDeleteSameAmount() = runBlockingTest {
+    fun givenValidPresetIdsWhenDeleteThenDeleteSameAmount() = runBlocking<Unit> {
         with(presets.subList(0, 2).map { it.id }.toSet()) {
             assertThat(dao.delete(this)).isEqualTo(size)
         }

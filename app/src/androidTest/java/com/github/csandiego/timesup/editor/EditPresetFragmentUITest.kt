@@ -1,43 +1,47 @@
 package com.github.csandiego.timesup.editor
 
-import androidx.recyclerview.widget.RecyclerView
-import androidx.test.core.app.ApplicationProvider
+import android.os.Bundle
+import androidx.fragment.app.testing.launchFragment
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.longClick
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
-import androidx.test.espresso.matcher.ViewMatchers.*
-import androidx.test.ext.junit.rules.ActivityScenarioRule
-import com.github.csandiego.timesup.MainActivity
+import androidx.test.espresso.matcher.ViewMatchers.isEnabled
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import com.github.csandiego.timesup.R
-import com.github.csandiego.timesup.TestTimesUpApplication
 import com.github.csandiego.timesup.data.Preset
+import com.github.csandiego.timesup.repository.PresetRepository
 import com.github.csandiego.timesup.test.assertBound
 import com.github.csandiego.timesup.test.fillUpUsing
-import com.github.csandiego.timesup.test.isTheRowFor
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.Matchers.not
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
+import org.mockito.Mockito.`when`
+import org.mockito.Mockito.mock
 
-class EditPresetUITest {
+class EditPresetFragmentUITest {
 
     private val emptyPreset = Preset()
-    private val preset = Preset(name = "1 second", seconds = 1)
+    private val preset = Preset(id = 1L, name = "1 second", seconds = 1)
     private val editedName = "Edited Name"
-
-    @get:Rule
-    val activityScenarioRule = ActivityScenarioRule(MainActivity::class.java)
 
     @Before
     fun setUp() = runBlocking<Unit> {
-        ApplicationProvider.getApplicationContext<TestTimesUpApplication>().database.presetDao()
-            .insert(preset)
-        onView(withId(R.id.recyclerView))
-            .perform(actionOnItemAtPosition<RecyclerView.ViewHolder>(0, longClick()))
-        onView(withResourceName("menuEdit")).perform(click())
+        val repository = mock(PresetRepository::class.java)
+        `when`(repository.get(preset.id)).thenReturn(preset)
+        val viewModelFactory = object : ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+                return PresetEditorViewModel(repository) as T
+            }
+        }
+        val args = Bundle().apply {
+            putLong("presetId", preset.id)
+        }
+        launchFragment(args, R.style.Theme_TimesUp) {
+            EditPresetFragment(viewModelFactory)
+        }
     }
 
     @Test
@@ -69,12 +73,12 @@ class EditPresetUITest {
         onView(withText(R.string.button_save)).check(matches(isEnabled()))
     }
 
-    @Test
-    fun givenNameNotEmptyAndDurationNotEmptyWhenPositiveButtonClickedThenUpdateList() {
-        with(preset.copy(name = editedName)) {
-            fillUpUsing(this)
-            onView(withText(R.string.button_save)).perform(click())
-            onView(isTheRowFor(this)).check(matches(isDisplayed()))
-        }
-    }
+//    @Test
+//    fun givenNameNotEmptyAndDurationNotEmptyWhenPositiveButtonClickedThenUpdateList() {
+//        with(preset.copy(name = editedName)) {
+//            fillUpUsing(this)
+//            onView(withText(R.string.button_save)).perform(click())
+//            onView(isTheRowFor(this)).check(matches(isDisplayed()))
+//        }
+//    }
 }
