@@ -5,31 +5,30 @@ import androidx.fragment.app.testing.launchFragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.isEnabled
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import com.github.csandiego.timesup.R
 import com.github.csandiego.timesup.data.Preset
-import com.github.csandiego.timesup.repository.PresetRepository
+import com.github.csandiego.timesup.repository.TestPresetRepository
 import com.github.csandiego.timesup.test.assertBound
 import com.github.csandiego.timesup.test.fillUpUsing
-import kotlinx.coroutines.runBlocking
+import com.google.common.truth.Truth.assertThat
 import org.hamcrest.Matchers.not
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mockito.`when`
-import org.mockito.Mockito.mock
 
 class EditPresetFragmentUITest {
 
+    private lateinit var repository: TestPresetRepository
     private val emptyPreset = Preset()
     private val preset = Preset(id = 1L, name = "1 second", seconds = 1)
     private val editedName = "Edited Name"
 
     @Before
-    fun setUp() = runBlocking<Unit> {
-        val repository = mock(PresetRepository::class.java)
-        `when`(repository.get(preset.id)).thenReturn(preset)
+    fun setUp() {
+        repository = TestPresetRepository(preset)
         val viewModelFactory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
@@ -73,12 +72,11 @@ class EditPresetFragmentUITest {
         onView(withText(R.string.button_save)).check(matches(isEnabled()))
     }
 
-//    @Test
-//    fun givenNameNotEmptyAndDurationNotEmptyWhenPositiveButtonClickedThenUpdateList() {
-//        with(preset.copy(name = editedName)) {
-//            fillUpUsing(this)
-//            onView(withText(R.string.button_save)).perform(click())
-//            onView(isTheRowFor(this)).check(matches(isDisplayed()))
-//        }
-//    }
+    @Test
+    fun givenNameNotEmptyAndDurationNotEmptyWhenPositiveButtonClickedThenSaveInRepository() {
+        val editedPreset = preset.copy(name = editedName)
+        fillUpUsing(editedPreset)
+        onView(withText(R.string.button_save)).perform(click())
+        assertThat(repository.getBlocking(editedPreset.id)).isEqualTo(editedPreset)
+    }
 }

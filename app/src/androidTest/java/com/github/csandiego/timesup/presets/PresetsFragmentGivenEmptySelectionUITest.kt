@@ -10,6 +10,7 @@ import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.ViewMatchers.*
 import com.github.csandiego.timesup.R
 import com.github.csandiego.timesup.test.isTheRowFor
+import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 
 class PresetsFragmentGivenEmptySelectionUITest : PresetsFragmentGivenDataUITest() {
@@ -30,10 +31,24 @@ class PresetsFragmentGivenEmptySelectionUITest : PresetsFragmentGivenDataUITest(
     }
 
     @Test
+    fun whenSwipeLeftThenDeleteFromRepository() {
+        onView(withId(R.id.recyclerView))
+            .perform(actionOnItemAtPosition<RecyclerView.ViewHolder>(0, swipeLeft()))
+        assertThat(repository.getBlocking(presets[0].id)).isNull()
+    }
+
+    @Test
     fun whenSwipeRightThenRemoveFromList() {
         onView(withId(R.id.recyclerView))
             .perform(actionOnItemAtPosition<RecyclerView.ViewHolder>(0, swipeRight()))
         onView(isTheRowFor(presets[0])).check(doesNotExist())
+    }
+
+    @Test
+    fun whenSwipeRightThenDeleteFromRepository() {
+        onView(withId(R.id.recyclerView))
+            .perform(actionOnItemAtPosition<RecyclerView.ViewHolder>(0, swipeRight()))
+        assertThat(repository.getBlocking(presets[0].id)).isNull()
     }
 
     @Test

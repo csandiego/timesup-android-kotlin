@@ -13,13 +13,11 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import com.github.csandiego.timesup.R
 import com.github.csandiego.timesup.data.Preset
-import com.github.csandiego.timesup.repository.PresetRepository
+import com.github.csandiego.timesup.repository.TestPresetRepository
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.Matchers.not
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mockito.`when`
-import org.mockito.Mockito.mock
 
 class TimerFragmentUITest {
 
@@ -29,8 +27,7 @@ class TimerFragmentUITest {
 
     @Before
     fun setUp() = runBlocking {
-        val repository = mock(PresetRepository::class.java)
-        `when`(repository.get(preset.id)).thenReturn(preset)
+        val repository = TestPresetRepository(preset)
         timer = ManualTimer()
         val viewModelFactory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")

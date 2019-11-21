@@ -9,6 +9,7 @@ import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.ViewMatchers.*
 import com.github.csandiego.timesup.R
 import com.github.csandiego.timesup.test.isTheRowFor
+import com.google.common.truth.Truth.assertThat
 import org.hamcrest.Matchers.not
 import org.junit.Before
 import org.junit.Test
@@ -61,6 +62,14 @@ class PresetsFragmentGivenSelectionUITest : PresetsFragmentGivenDataUITest() {
         onView(withResourceName("menuDelete")).perform(click())
         presets.subList(0, 2).forEach {
             onView(isTheRowFor(it)).check(doesNotExist())
+        }
+    }
+
+    @Test
+    fun whenDeleteMenuClickedThenDeleteFromRepository() {
+        onView(withResourceName("menuDelete")).perform(click())
+        presets.subList(0, 2).forEach {
+            assertThat(repository.getBlocking(it.id)).isNull()
         }
     }
 
