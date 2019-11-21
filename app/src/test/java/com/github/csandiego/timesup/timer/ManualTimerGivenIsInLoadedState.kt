@@ -1,16 +1,10 @@
 package com.github.csandiego.timesup.timer
 
-import com.github.csandiego.timesup.data.Preset
 import com.google.common.truth.Truth.assertThat
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Test
 
-@ExperimentalCoroutinesApi
-class TimerGivenLoadedWith1SecondUnitTest : TimerUnitTest() {
-
-    private val testPreset = Preset(id = 1L, name = "01 second", seconds = 1)
+class ManualTimerGivenIsInLoadedState : ManualTimerUnitTest() {
 
     @Before
     fun load() {
@@ -18,10 +12,20 @@ class TimerGivenLoadedWith1SecondUnitTest : TimerUnitTest() {
     }
 
     @Test
-    fun whenStaredThenIsInStartedState() {
+    fun whenStartedThenIsInStartedState() {
         with(timer) {
             start()
             assertThat(state.value).isEqualTo(Timer.State.STARTED)
+        }
+    }
+
+    @Test
+    fun whenStartedThenUpdateTimeLeft() {
+        with(timer) {
+            val advance = 1L
+            start()
+            advanceBy(advance)
+            assertThat(timeLeft.value).isEqualTo(testPreset.duration - advance)
         }
     }
 
@@ -35,31 +39,28 @@ class TimerGivenLoadedWith1SecondUnitTest : TimerUnitTest() {
     }
 
     @Test
-    fun givenIsInStartedStateWhenFinishedThenIsInFinishedState() = mainDispatcherRule.dispatcher.runBlockingTest {
+    fun givenIsInStartedStateWhenFinishedThenIsInFinishedState() {
         with(timer) {
             start()
-            currentTimeProvider.currentTime = 1001L
-            advanceTimeBy(1000L)
+            advanceBy(testPreset.duration)
             assertThat(state.value).isEqualTo(Timer.State.FINISHED)
         }
     }
 
     @Test
-    fun givenIsInStartedStateWhenFinishedThenUpdateTimeLeft() = mainDispatcherRule.dispatcher.runBlockingTest {
+    fun givenIsInStartedStateWhenFinishedThenUpdateTimeLeft() {
         with(timer) {
             start()
-            currentTimeProvider.currentTime = 1001L
-            advanceTimeBy(1000L)
+            advanceBy(testPreset.duration)
             assertThat(timeLeft.value).isEqualTo(0L)
         }
     }
 
     @Test
-    fun givenIsInStartedStateWhenFinishedThenShowNotification() = mainDispatcherRule.dispatcher.runBlockingTest {
+    fun givenIsInStartedStateWhenFinishedThenShowNotification() {
         with(timer) {
             start()
-            currentTimeProvider.currentTime = 1001L
-            advanceTimeBy(1000L)
+            advanceBy(testPreset.duration)
             assertThat(showNotification.value).isTrue()
         }
     }
@@ -85,22 +86,31 @@ class TimerGivenLoadedWith1SecondUnitTest : TimerUnitTest() {
     }
 
     @Test
-    fun givenIsInFinishedStateWhenResetThenIsInLoadedState() = mainDispatcherRule.dispatcher.runBlockingTest {
+    fun givenIsInPausedStateWhenResetThenResetTimeLeft() {
         with(timer) {
             start()
-            currentTimeProvider.currentTime = 1001L
-            advanceTimeBy(1000L)
+            advanceBy(1L)
+            pause()
+            reset()
+            assertThat(timeLeft.value).isEqualTo(testPreset.duration)
+        }
+    }
+
+    @Test
+    fun givenIsInFinishedStateWhenResetThenIsInLoadedState() {
+        with(timer) {
+            start()
+            advanceBy(testPreset.duration)
             reset()
             assertThat(state.value).isEqualTo(Timer.State.LOADED)
         }
     }
 
     @Test
-    fun givenIsInFinishedStateWhenResetThenResetTimeLeft() = mainDispatcherRule.dispatcher.runBlockingTest {
+    fun givenIsInFinishedStateWhenResetThenResetTimeLeft() {
         with(timer) {
             start()
-            currentTimeProvider.currentTime = 1001L
-            advanceTimeBy(1000L)
+            advanceBy(testPreset.duration)
             reset()
             assertThat(timeLeft.value).isEqualTo(testPreset.duration)
         }

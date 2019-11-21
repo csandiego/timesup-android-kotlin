@@ -1,14 +1,9 @@
 package com.github.csandiego.timesup.timer
 
-import com.github.csandiego.timesup.data.Preset
 import com.google.common.truth.Truth.assertThat
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Test
 
-@ExperimentalCoroutinesApi
-class TimerGivenIsInInitialStateUnitTest : TimerUnitTest() {
-
-    private val testPreset = Preset(id = 1L, name = "01 second", seconds = 1)
+class ManualTimerGivenIsInInitialStateUnitTest : ManualTimerUnitTest() {
 
     @Test
     fun whenLoadedThenIsInLoadedState() {

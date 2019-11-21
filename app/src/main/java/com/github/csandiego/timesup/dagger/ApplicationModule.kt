@@ -6,9 +6,7 @@ import com.github.csandiego.timesup.MainActivity
 import com.github.csandiego.timesup.TimesUpApplication
 import com.github.csandiego.timesup.repository.DefaultPresetRepository
 import com.github.csandiego.timesup.repository.PresetRepository
-import com.github.csandiego.timesup.timer.CurrentTimeProvider
-import com.github.csandiego.timesup.timer.DefaultCurrentTimeProvider
-import com.github.csandiego.timesup.timer.TimerService
+import com.github.csandiego.timesup.timer.*
 import dagger.Binds
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
@@ -32,6 +30,10 @@ interface ApplicationModule {
     @Singleton
     @Binds
     fun provideCurrentTimeProvider(currentTimeProvider: DefaultCurrentTimeProvider): CurrentTimeProvider
+
+    @Singleton
+    @Binds
+    fun provideTimer(timer: DefaultTimer): Timer
 
     @ActivityScope
     @ContributesAndroidInjector(modules = [MainActivityModule::class])

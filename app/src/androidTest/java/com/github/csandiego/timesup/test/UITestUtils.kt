@@ -13,6 +13,8 @@ import org.hamcrest.Matcher
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.endsWith
 
+suspend fun PresetDao.insertAndReturnWithId(preset: Preset) = preset.copy(id = insert(preset))
+
 suspend fun PresetDao.insertAndReturnWithId(presets: List<Preset>): List<Preset> =
     mutableListOf<Preset>().apply {
         insert(presets).forEachIndexed { index, id ->
