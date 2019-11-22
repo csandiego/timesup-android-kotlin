@@ -9,14 +9,15 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.ViewMatchers.*
 import com.github.csandiego.timesup.R
+import com.github.csandiego.timesup.data.Preset
 import com.github.csandiego.timesup.test.isTheRowFor
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 
-class PresetsFragmentGivenEmptySelectionUITest : PresetsFragmentGivenDataUITest() {
+class PresetsFragmentGivenEmptySelectionUITest : PresetsFragmentGivenLoadedRepositoryUITest() {
 
     @Test
-    fun whenLoadedThenDisplayByNameAscending() {
+    fun whenViewDisplayedThenOrderByNameAscending() {
         repeat(presets.size - 1) {
             onView(isTheRowFor(presets[it]))
                 .check(isCompletelyAbove(isTheRowFor(presets[it + 1])))
@@ -24,9 +25,23 @@ class PresetsFragmentGivenEmptySelectionUITest : PresetsFragmentGivenDataUITest(
     }
 
     @Test
-    fun whenSwipeLeftThenRemoveFromList() {
-        onView(withId(R.id.recyclerView))
-            .perform(actionOnItemAtPosition<RecyclerView.ViewHolder>(0, swipeLeft()))
+    fun whenPresetAddedThenAddToList() {
+        val preset = Preset(name = "1 minute", minutes = 1)
+        repository.saveBlocking(preset)
+        onView(isTheRowFor(preset)).check(matches(isDisplayed()))
+    }
+
+    @Test
+    fun whenPresetUpdatedThenUpdateList() {
+        val preset = presets[0].copy(name = "Edited Name")
+        repository.saveBlocking(preset)
+        onView(isTheRowFor(presets[0])).check(doesNotExist())
+        onView(isTheRowFor(preset)).check(matches(isDisplayed()))
+    }
+
+    @Test
+    fun whenPresetDeletedThenRemoveFromList() {
+        repository.deleteBlocking(presets[0].id)
         onView(isTheRowFor(presets[0])).check(doesNotExist())
     }
 
@@ -35,13 +50,6 @@ class PresetsFragmentGivenEmptySelectionUITest : PresetsFragmentGivenDataUITest(
         onView(withId(R.id.recyclerView))
             .perform(actionOnItemAtPosition<RecyclerView.ViewHolder>(0, swipeLeft()))
         assertThat(repository.getBlocking(presets[0].id)).isNull()
-    }
-
-    @Test
-    fun whenSwipeRightThenRemoveFromList() {
-        onView(withId(R.id.recyclerView))
-            .perform(actionOnItemAtPosition<RecyclerView.ViewHolder>(0, swipeRight()))
-        onView(isTheRowFor(presets[0])).check(doesNotExist())
     }
 
     @Test

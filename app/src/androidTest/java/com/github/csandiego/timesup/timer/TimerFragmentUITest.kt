@@ -3,6 +3,7 @@ package com.github.csandiego.timesup.timer
 import android.os.Bundle
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.lifecycle.ViewModel
@@ -14,6 +15,7 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import com.github.csandiego.timesup.R
 import com.github.csandiego.timesup.data.Preset
 import com.github.csandiego.timesup.repository.TestPresetRepository
+import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.Matchers.not
 import org.junit.Before
@@ -42,55 +44,97 @@ class TimerFragmentUITest {
             TimerFragment(viewModelFactory)
         }
     }
+    
+    private fun executePendingBindings(fragment: Fragment) {
+        DataBindingUtil.getBinding<ViewDataBinding>(fragment.requireView())!!.executePendingBindings()
+    }
 
     @Test
-    fun givenValidPresetIdWhenLoadedThenOnlyEnableStartButton() {
+    fun givenTimerIsInInitialStateWhenFragmentCreatedThenLoadTimer() {
+        scenario.onFragment {
+            assertThat(timer.state.value).isEqualTo(Timer.State.LOADED)
+        }
+    }
+
+    @Test
+    fun givenTimerIsInInitialStateWhenTimerLoadedThenOnlyEnableStartButton() {
         onView(withId(R.id.buttonStart)).check(matches(isEnabled()))
         onView(withId(R.id.buttonPause)).check(matches(not(isEnabled())))
         onView(withId(R.id.buttonReset)).check(matches(not(isEnabled())))
     }
 
     @Test
-    fun givenValidPresetIdWhenLoadedThenDisplayNameAndTimeLeft() {
+    fun givenTimerIsInInitialStateWhenTimerLoadedThenDisplayNameAndTimeLeft() {
         onView(withId(R.id.textViewName)).check(matches(withText(preset.name)))
         onView(withId(R.id.textViewTimeLeft))
             .check(matches(withText(DurationFormatter.format(preset.duration))))
     }
 
     @Test
-    fun givenLoadedWhenStartedThenOnlyEnablePauseButton() {
+    fun givenTimerIsInLoadedStateWhenStartButtonClickedThenStartTimer() {
         onView(withId(R.id.buttonStart)).perform(click())
+        assertThat(timer.state.value).isEqualTo(Timer.State.STARTED)
+    }
+
+    @Test
+    fun givenTimerIsInLoadedStateWhenTimerStartedThenOnlyEnablePauseButton() {
+        scenario.onFragment {
+            timer.start()
+            executePendingBindings(it)
+        }
         onView(withId(R.id.buttonStart)).check(matches(not(isEnabled())))
         onView(withId(R.id.buttonPause)).check(matches(isEnabled()))
         onView(withId(R.id.buttonReset)).check(matches(not(isEnabled())))
     }
 
     @Test
-    fun givenStartedWhenPausedThenOnlyDisablePauseButton() {
-        onView(withId(R.id.buttonStart)).perform(click())
+    fun givenTimerIsInStartedStateWhenPauseButtonClickedThenPauseTimer() {
+        scenario.onFragment {
+            with(timer) {
+                start()
+                advanceBy(1L)
+            }
+            executePendingBindings(it)
+        }
         onView(withId(R.id.buttonPause)).perform(click())
+        assertThat(timer.state.value).isEqualTo(Timer.State.PAUSED)
+    }
+
+    @Test
+    fun givenTimerIsInStartedStateWhenTimerPausedThenOnlyDisablePauseButton() {
+        scenario.onFragment {
+            with(timer) {
+                start()
+                pause()
+            }
+            executePendingBindings(it)
+        }
         onView(withId(R.id.buttonStart)).check(matches(isEnabled()))
         onView(withId(R.id.buttonPause)).check(matches(not(isEnabled())))
         onView(withId(R.id.buttonReset)).check(matches(isEnabled()))
     }
 
     @Test
-    fun givenStartedWhenOneSecondPassedThenUpdateTimeLeft() {
-        onView(withId(R.id.buttonStart)).perform(click())
+    fun givenTimerIsInStartedStateWhenOneSecondPassedThenUpdateTimeLeft() {
         scenario.onFragment {
-            timer.advanceBy(1L)
-            DataBindingUtil.getBinding<ViewDataBinding>(it.requireView())!!.executePendingBindings()
+            with(timer) {
+                start()
+                advanceBy(1L)
+            }
+            executePendingBindings(it)
         }
         onView(withId(R.id.textViewTimeLeft))
             .check(matches(withText(DurationFormatter.format(preset.duration - 1L))))
     }
 
     @Test
-    fun givenStartedWhenExpiredThenOnlyEnableResetButton() {
-        onView(withId(R.id.buttonStart)).perform(click())
+    fun givenTimerIsInStartedStateWhenExpiredThenOnlyEnableResetButton() {
         scenario.onFragment {
-            timer.advanceBy(preset.duration)
-            DataBindingUtil.getBinding<ViewDataBinding>(it.requireView())!!.executePendingBindings()
+            with(timer) {
+                start()
+                advanceBy(this@TimerFragmentUITest.preset.duration)
+            }
+            executePendingBindings(it)
         }
         onView(withId(R.id.buttonStart)).check(matches(not(isEnabled())))
         onView(withId(R.id.buttonPause)).check(matches(not(isEnabled())))
@@ -98,35 +142,89 @@ class TimerFragmentUITest {
     }
 
     @Test
-    fun givenStartedWhenExpiredThenUpdateTimeLeft() {
-        onView(withId(R.id.buttonStart)).perform(click())
+    fun givenTimerIsInStartedStateWhenExpiredThenUpdateTimeLeft() {
         scenario.onFragment {
-            timer.advanceBy(preset.duration)
-            DataBindingUtil.getBinding<ViewDataBinding>(it.requireView())!!.executePendingBindings()
+            with(timer) {
+                start()
+                advanceBy(this@TimerFragmentUITest.preset.duration)
+            }
+            executePendingBindings(it)
         }
         onView(withId(R.id.textViewTimeLeft))
             .check(matches(withText(DurationFormatter.format(0L))))
     }
 
     @Test
-    fun givenPausedWhenResetThenOnlyEnableStartButton() {
+    fun givenTimerIsInPausedStateWhenStartButtonClickedThenStartTimer() {
+        scenario.onFragment {
+            with(timer) {
+                start()
+                advanceBy(1L)
+                pause()
+            }
+            executePendingBindings(it)
+        }
         onView(withId(R.id.buttonStart)).perform(click())
-        onView(withId(R.id.buttonPause)).perform(click())
+        assertThat(timer.state.value).isEqualTo(Timer.State.STARTED)
+    }
+
+    @Test
+    fun givenTimerIsInPausedStateWhenTimerStartedThenOnlyEnablePauseButton() {
+        scenario.onFragment {
+            with(timer) {
+                start()
+                advanceBy(1L)
+                pause()
+                start()
+            }
+            executePendingBindings(it)
+        }
+        onView(withId(R.id.buttonStart)).check(matches(not(isEnabled())))
+        onView(withId(R.id.buttonPause)).check(matches(isEnabled()))
+        onView(withId(R.id.buttonReset)).check(matches(not(isEnabled())))
+    }
+
+    @Test
+    fun givenTimerIsInPausedStateWhenResetButtonClickedThenResetTimer() {
+        scenario.onFragment {
+            with(timer) {
+                start()
+                advanceBy(1L)
+                pause()
+            }
+            executePendingBindings(it)
+        }
         onView(withId(R.id.buttonReset)).perform(click())
+        assertThat(timer.state.value).isEqualTo(Timer.State.LOADED)
+    }
+
+    @Test
+    fun givenTimerIsInPausedStateWhenTimerResetThenOnlyEnableStartButton() {
+        scenario.onFragment {
+            with(timer) {
+                start()
+                advanceBy(1L)
+                pause()
+                reset()
+            }
+            executePendingBindings(it)
+        }
         onView(withId(R.id.buttonStart)).check(matches(isEnabled()))
         onView(withId(R.id.buttonPause)).check(matches(not(isEnabled())))
         onView(withId(R.id.buttonReset)).check(matches(not(isEnabled())))
     }
 
     @Test
-    fun givenPausedWhenResetThenUpdateTimeLeft() {
-        onView(withId(R.id.buttonStart)).perform(click())
+    fun givenTimerIsInPausedStateWhenTimerResetThenUpdateTimeLeft() {
         scenario.onFragment {
-            timer.advanceBy(1L)
-            DataBindingUtil.getBinding<ViewDataBinding>(it.requireView())!!.executePendingBindings()
+            with(timer) {
+                start()
+                advanceBy(1L)
+                pause()
+                reset()
+            }
+            executePendingBindings(it)
         }
-        onView(withId(R.id.buttonPause)).perform(click())
-        onView(withId(R.id.buttonReset)).perform(click())
         onView(withId(R.id.textViewTimeLeft))
             .check(matches(withText(DurationFormatter.format(preset.duration))))
     }

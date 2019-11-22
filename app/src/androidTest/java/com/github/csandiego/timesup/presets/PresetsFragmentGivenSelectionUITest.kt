@@ -3,7 +3,6 @@ package com.github.csandiego.timesup.presets
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
-import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.ViewMatchers.*
@@ -14,7 +13,7 @@ import org.hamcrest.Matchers.not
 import org.junit.Before
 import org.junit.Test
 
-class PresetsFragmentGivenSelectionUITest : PresetsFragmentGivenDataUITest() {
+class PresetsFragmentGivenSelectionUITest : PresetsFragmentGivenLoadedRepositoryUITest() {
 
     @Before
     fun select() {
@@ -54,14 +53,6 @@ class PresetsFragmentGivenSelectionUITest : PresetsFragmentGivenDataUITest() {
         onView(withResourceName("action_mode_close_button")).perform(click())
         presets.subList(0, 2).forEach {
             onView(isTheRowFor(it)).check(matches(isNotChecked()))
-        }
-    }
-
-    @Test
-    fun whenDeleteMenuClickedThenRemoveFromList() {
-        onView(withResourceName("menuDelete")).perform(click())
-        presets.subList(0, 2).forEach {
-            onView(isTheRowFor(it)).check(doesNotExist())
         }
     }
 
