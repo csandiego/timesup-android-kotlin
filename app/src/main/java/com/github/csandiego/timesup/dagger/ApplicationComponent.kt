@@ -10,7 +10,8 @@ import javax.inject.Singleton
 @Component(modules = [
     AndroidInjectionModule::class,
     ApplicationModule::class,
-    RoomModule::class
+    RoomModule::class,
+    TimerModule::class
 ])
 interface ApplicationComponent : AndroidInjector<TimesUpApplication> {
 

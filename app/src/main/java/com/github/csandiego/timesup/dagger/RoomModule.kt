@@ -16,8 +16,4 @@ class RoomModule {
         return Room.databaseBuilder(context, TimesUpDatabase::class.java, "TimesUp")
             .build()
     }
-
-    @Singleton
-    @Provides
-    fun providePresetDao(database: TimesUpDatabase) = database.presetDao()
 }

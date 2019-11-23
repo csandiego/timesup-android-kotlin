@@ -4,8 +4,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import com.github.csandiego.timesup.data.Preset
+import javax.inject.Inject
+import javax.inject.Singleton
 
-open class ManualTimer : Timer {
+@Singleton
+open class ManualTimer @Inject constructor() : Timer {
 
     private val _state = MutableLiveData(Timer.State.INITIAL)
     override val state: LiveData<Timer.State> = _state

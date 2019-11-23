@@ -17,8 +17,4 @@ class TestRoomModule {
             .allowMainThreadQueries()
             .build()
     }
-
-    @Singleton
-    @Provides
-    fun providePresetDao(database: TimesUpDatabase) = database.presetDao()
 }
