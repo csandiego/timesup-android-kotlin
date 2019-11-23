@@ -24,7 +24,7 @@ import org.junit.Test
 
 class TimerUITest {
 
-    private lateinit var timer: ManualTimer
+    private lateinit var timer: TestTimer
     private val preset = Preset(id = 1L, name = "3 seconds", seconds = 3)
     private lateinit var device: UiDevice
     private lateinit var app: TestTimesUpApplication

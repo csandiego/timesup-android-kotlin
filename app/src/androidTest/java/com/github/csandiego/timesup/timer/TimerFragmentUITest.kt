@@ -24,13 +24,13 @@ import org.junit.Test
 class TimerFragmentUITest {
 
     private lateinit var scenario: FragmentScenario<TimerFragment>
-    private lateinit var timer: ManualTimer
+    private lateinit var timer: TestTimer
     private val preset = Preset(id = 1L, name = "2 seconds", seconds = 2)
 
     @Before
     fun setUp() = runBlocking {
         val repository = TestPresetRepository(preset)
-        timer = ManualTimer()
+        timer = TestTimer()
         val viewModelFactory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {

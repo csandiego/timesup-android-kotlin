@@ -16,12 +16,10 @@ interface Timer {
     val state: LiveData<State>
     val preset: LiveData<Preset>
     val timeLeft: LiveData<Long>
-
-    fun load(preset: Preset)
-
     val showNotification: LiveData<Boolean>
     fun showNotificationHandled()
 
+    fun load(preset: Preset)
     fun start()
     fun pause()
     fun reset()
