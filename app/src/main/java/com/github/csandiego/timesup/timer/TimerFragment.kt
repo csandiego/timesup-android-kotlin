@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
+import androidx.navigation.NavDeepLinkBuilder
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.ui.AppBarConfiguration
@@ -33,12 +34,11 @@ class TimerFragment @Inject constructor(viewModelFactory: ViewModelProvider.Fact
         val binding = FragmentTimerBinding.inflate(inflater, container, false).apply {
             viewModel = this@TimerFragment.viewModel
             lifecycleOwner = viewLifecycleOwner
-            try {
+            runCatching {
                 with(findNavController()) {
                     toolbar.setupWithNavController(this, AppBarConfiguration(graph)
                     )
                 }
-            } catch (e: Exception) {
             }
         }
         with(viewModel) {
@@ -50,25 +50,23 @@ class TimerFragment @Inject constructor(viewModelFactory: ViewModelProvider.Fact
             timer.showNotification.observe(viewLifecycleOwner) {
                 if (it) {
                     timer.showNotificationHandled()
-                    runCatching {
-                        val args = Bundle().apply {
-                            putLong("presetId", params.presetId)
-                        }
-                        val pendingIntent = findNavController()
-                            .createDeepLink()
-                            .setDestination(R.id.timerFragment)
-                            .setArguments(args)
-                            .createPendingIntent()
-                        val context = requireContext()
-                        val builder = NotificationCompat.Builder(context, "HIGH")
-                            .setSmallIcon(R.drawable.ic_launcher_foreground)
-                            .setContentTitle(timer.preset.value!!.name)
-                            .setContentText(DurationFormatter.format(timer.timeLeft.value!!))
-                            .setContentIntent(pendingIntent)
-                            .setAutoCancel(true)
-                            .setPriority(NotificationCompat.PRIORITY_HIGH)
-                        NotificationManagerCompat.from(context).notify(1, builder.build())
+                    val context = requireContext()
+                    val args = Bundle().apply {
+                        putLong("presetId", params.presetId)
                     }
+                    val pendingIntent = NavDeepLinkBuilder(context)
+                        .setGraph(R.navigation.main)
+                        .setDestination(R.id.timerFragment)
+                        .setArguments(args)
+                        .createPendingIntent()
+                    val builder = NotificationCompat.Builder(context, "HIGH")
+                        .setSmallIcon(R.drawable.ic_launcher_foreground)
+                        .setContentTitle(timer.preset.value!!.name)
+                        .setContentText(DurationFormatter.format(timer.timeLeft.value!!))
+                        .setContentIntent(pendingIntent)
+                        .setAutoCancel(true)
+                        .setPriority(NotificationCompat.PRIORITY_HIGH)
+                    NotificationManagerCompat.from(context).notify(1, builder.build())
                 }
             }
         }

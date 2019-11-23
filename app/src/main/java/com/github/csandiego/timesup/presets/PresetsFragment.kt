@@ -29,10 +29,10 @@ class PresetsFragment @Inject constructor(viewModelFactory: ViewModelProvider.Fa
     private var actionMode: ActionMode? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        try {
-            val navController = findNavController()
-            toolbar.setupWithNavController(navController, AppBarConfiguration(navController.graph))
-        } catch (e: Exception) {
+        runCatching {
+            with(findNavController()) {
+                toolbar.setupWithNavController(this, AppBarConfiguration(graph))
+            }
         }
         val adapter = createRecyclerViewAdapter()
         with(recyclerView) {

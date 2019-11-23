@@ -45,33 +45,33 @@ class TimerServiceTest {
         device.pressBack()
     }
 
+    private fun findNotification() = device.findObject(
+        By.hasChild(
+            By.res("android:id/notification_header").hasChild(
+                By.res("android:id/app_name_text").text(app.getString(R.string.app_name))
+            )
+        )
+    )
+
+    private fun assertThatNotificationTitle() = assertThat(
+        findNotification()?.findObject(By.res("android:id/title"))?.text
+    )
+
+    private fun assertThatNotificationText() = assertThat(
+        findNotification()?.findObject(By.res("android:id/text"))?.text
+    )
+
     @Test
     fun givenTimerIsInStartedStateWhenServiceStartedThenShowNotification() {
-        val notification = device.findObject(
-            By.hasChild(
-                By.res("android:id/notification_header").hasChild(
-                    By.res("android:id/app_name_text").text(app.getString(R.string.app_name))
-                )
-            ))
-        assertThat(notification?.findObject(By.res("android:id/title"))?.text)
-            .isEqualTo(preset.name)
-        assertThat(notification?.findObject(By.res("android:id/text"))?.text)
-            .isEqualTo(DurationFormatter.format(preset.duration))
+        assertThatNotificationTitle().isEqualTo(preset.name)
+        assertThatNotificationText().isEqualTo(DurationFormatter.format(preset.duration))
     }
 
     @Test
     fun givenServiceStartedWhenOneSecondPassedThenUpdateNotification() {
         val advance = 1L
         timer.advanceInBackgroundBy(advance)
-        val notification = device.findObject(
-            By.hasChild(
-                By.res("android:id/notification_header").hasChild(
-                    By.res("android:id/app_name_text").text(app.getString(R.string.app_name))
-                )
-            ))
-        assertThat(notification?.findObject(By.res("android:id/title"))?.text)
-            .isEqualTo(preset.name)
-        assertThat(notification?.findObject(By.res("android:id/text"))?.text)
+        assertThatNotificationText()
             .isEqualTo(DurationFormatter.format(preset.duration - advance))
     }
 }

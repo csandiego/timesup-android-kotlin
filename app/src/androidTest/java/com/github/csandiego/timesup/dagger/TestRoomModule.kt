@@ -13,8 +13,6 @@ class TestRoomModule {
     @Singleton
     @Provides
     fun provideDatabase(context: Context): TimesUpDatabase {
-        return Room.inMemoryDatabaseBuilder(context, TimesUpDatabase::class.java)
-            .allowMainThreadQueries()
-            .build()
+        return Room.inMemoryDatabaseBuilder(context, TimesUpDatabase::class.java).build()
     }
 }
