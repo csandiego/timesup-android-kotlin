@@ -6,43 +6,38 @@ import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
 import com.github.csandiego.timesup.R
-import com.github.csandiego.timesup.TestTimesUpApplication
 import com.github.csandiego.timesup.data.Preset
 import com.github.csandiego.timesup.repository.TestPresetRepository
+import com.github.csandiego.timesup.test.assertThatNotificationText
+import com.github.csandiego.timesup.test.assertThatNotificationTitle
+import com.github.csandiego.timesup.test.findNotificationPanel
 import com.google.common.truth.Truth.assertThat
 import org.hamcrest.Matchers.not
 import org.junit.After
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 
 class TimerFragmentUITest {
 
     private lateinit var device: UiDevice
-    private lateinit var app: TestTimesUpApplication
     private lateinit var scenario: FragmentScenario<TimerFragment>
     private lateinit var timer: TestTimer
-    private val preset = Preset(id = 1L, name = "2 seconds", seconds = 2)
+    private val testPreset = Preset(id = 1L, name = "2 seconds", seconds = 2)
 
     @Before
     fun setUp() {
         device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
-        app = ApplicationProvider.getApplicationContext<TestTimesUpApplication>().apply {
-            timer = dagger.timer()
-        }
-        val repository = TestPresetRepository(preset)
+        val repository = TestPresetRepository(testPreset)
+        timer = TestTimer()
         val viewModelFactory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
@@ -50,7 +45,7 @@ class TimerFragmentUITest {
             }
         }
         val args = Bundle().apply {
-            putLong("presetId", preset.id)
+            putLong("presetId", testPreset.id)
         }
         scenario = launchFragmentInContainer(args, R.style.Theme_TimesUp) {
             TimerFragment(viewModelFactory)
@@ -59,7 +54,7 @@ class TimerFragmentUITest {
 
     @After
     fun tearDown() {
-        if (device.findObject(By.res("com.android.systemui:id/notification_panel")) != null) {
+        if (findNotificationPanel() != null) {
             device.pressBack()
         }
     }
@@ -67,22 +62,6 @@ class TimerFragmentUITest {
     private fun executePendingBindings(fragment: Fragment) {
         DataBindingUtil.getBinding<ViewDataBinding>(fragment.requireView())!!.executePendingBindings()
     }
-
-    private fun findNotification() = device.findObject(
-        By.hasChild(
-            By.res("android:id/notification_header").hasChild(
-                By.res("android:id/app_name_text").text(app.getString(R.string.app_name))
-            )
-        )
-    )
-
-    private fun assertThatNotificationTitle() = assertThat(
-        findNotification()?.findObject(By.res("android:id/title"))?.text
-    )
-
-    private fun assertThatNotificationText() = assertThat(
-        findNotification()?.findObject(By.res("android:id/text"))?.text
-    )
 
     @Test
     fun givenTimerIsInInitialStateWhenFragmentCreatedThenLoadTimer() {
@@ -100,9 +79,9 @@ class TimerFragmentUITest {
 
     @Test
     fun givenTimerIsInInitialStateWhenTimerLoadedThenDisplayNameAndTimeLeft() {
-        onView(withId(R.id.textViewName)).check(matches(withText(preset.name)))
+        onView(withId(R.id.textViewName)).check(matches(withText(testPreset.name)))
         onView(withId(R.id.textViewTimeLeft))
-            .check(matches(withText(DurationFormatter.format(preset.duration))))
+            .check(matches(withText(DurationFormatter.format(testPreset.duration))))
     }
 
     @Test
@@ -120,6 +99,19 @@ class TimerFragmentUITest {
         onView(withId(R.id.buttonStart)).check(matches(not(isEnabled())))
         onView(withId(R.id.buttonPause)).check(matches(isEnabled()))
         onView(withId(R.id.buttonReset)).check(matches(not(isEnabled())))
+    }
+
+    @Test
+    fun givenTimerIsInStartedStateWhenOneSecondPassedThenUpdateTimeLeft() {
+        scenario.onFragment {
+            with(timer) {
+                start()
+                advanceBy(1L)
+            }
+            executePendingBindings(it)
+        }
+        onView(withId(R.id.textViewTimeLeft))
+            .check(matches(withText(DurationFormatter.format(testPreset.duration - 1L))))
     }
 
     @Test
@@ -151,24 +143,11 @@ class TimerFragmentUITest {
     }
 
     @Test
-    fun givenTimerIsInStartedStateWhenOneSecondPassedThenUpdateTimeLeft() {
-        scenario.onFragment {
-            with(timer) {
-                start()
-                advanceBy(1L)
-            }
-            executePendingBindings(it)
-        }
-        onView(withId(R.id.textViewTimeLeft))
-            .check(matches(withText(DurationFormatter.format(preset.duration - 1L))))
-    }
-
-    @Test
     fun givenTimerIsInStartedStateWhenExpiredThenOnlyEnableResetButton() {
         scenario.onFragment {
             with(timer) {
                 start()
-                advanceBy(this@TimerFragmentUITest.preset.duration)
+                advanceBy(testPreset.duration)
             }
             executePendingBindings(it)
         }
@@ -182,7 +161,7 @@ class TimerFragmentUITest {
         scenario.onFragment {
             with(timer) {
                 start()
-                advanceBy(this@TimerFragmentUITest.preset.duration)
+                advanceBy(testPreset.duration)
             }
             executePendingBindings(it)
         }
@@ -195,31 +174,12 @@ class TimerFragmentUITest {
         scenario.onFragment {
             with(timer) {
                 start()
-                advanceBy(this@TimerFragmentUITest.preset.duration)
+                advanceBy(testPreset.duration)
             }
         }
         device.openNotification()
-        assertThatNotificationTitle().isEqualTo(preset.name)
+        assertThatNotificationTitle().isEqualTo(testPreset.name)
         assertThatNotificationText().isEqualTo(DurationFormatter.format(0L))
-    }
-
-    @Test
-    fun givenTimerIsInStartedStateWhenFragmentStoppedThenStartForegroundService() {
-        scenario.onFragment {
-            timer.start()
-        }.moveToState(Lifecycle.State.CREATED)
-        device.openNotification()
-        assertThatNotificationTitle().isEqualTo(preset.name)
-        assertThatNotificationText().isEqualTo(DurationFormatter.format(preset.duration))
-    }
-
-    @Test
-    fun givenTimerIsInStartedStateWhenFragmentStartedThenStopForegroundService() {
-        scenario.onFragment {
-            timer.start()
-        }.moveToState(Lifecycle.State.CREATED).moveToState(Lifecycle.State.RESUMED)
-        device.openNotification()
-        assertThat(findNotification()).isNull()
     }
 
     @Test
@@ -294,35 +254,7 @@ class TimerFragmentUITest {
             executePendingBindings(it)
         }
         onView(withId(R.id.textViewTimeLeft))
-            .check(matches(withText(DurationFormatter.format(preset.duration))))
-    }
-
-    @Test
-    fun givenTimerIsInPausedStateWhenFragmentStoppedThenStartForegroundService() {
-        val advance = 1L
-        scenario.onFragment {
-            with(timer) {
-                start()
-                advanceBy(advance)
-                pause()
-            }
-        }.moveToState(Lifecycle.State.CREATED)
-        device.openNotification()
-        assertThatNotificationTitle().isEqualTo(preset.name)
-        assertThatNotificationText().isEqualTo(DurationFormatter.format(preset.duration - advance))
-    }
-
-    @Test
-    fun givenTimerIsInPausedStateWhenFragmentStartedThenStopForegroundService() {
-        scenario.onFragment {
-            with(timer) {
-                start()
-                advanceBy(1L)
-                pause()
-            }
-        }.moveToState(Lifecycle.State.CREATED).moveToState(Lifecycle.State.RESUMED)
-        device.openNotification()
-        assertThat(findNotification()).isNull()
+            .check(matches(withText(DurationFormatter.format(testPreset.duration))))
     }
 
     @Test
@@ -330,7 +262,7 @@ class TimerFragmentUITest {
         scenario.onFragment {
             with(timer) {
                 start()
-                advanceBy(this@TimerFragmentUITest.preset.duration)
+                advanceBy(testPreset.duration)
             }
             executePendingBindings(it)
         }
@@ -343,7 +275,7 @@ class TimerFragmentUITest {
         scenario.onFragment {
             with(timer) {
                 start()
-                advanceBy(this@TimerFragmentUITest.preset.duration)
+                advanceBy(testPreset.duration)
                 reset()
             }
             executePendingBindings(it)
@@ -358,38 +290,12 @@ class TimerFragmentUITest {
         scenario.onFragment {
             with(timer) {
                 start()
-                advanceBy(this@TimerFragmentUITest.preset.duration)
+                advanceBy(testPreset.duration)
                 reset()
             }
             executePendingBindings(it)
         }
         onView(withId(R.id.textViewTimeLeft))
-            .check(matches(withText(DurationFormatter.format(preset.duration))))
-    }
-
-    @Test
-    fun givenTimerIsInFinishedStateWhenFragmentStoppedThenStartForegroundService() {
-        scenario.onFragment {
-            with(timer) {
-                start()
-                advanceBy(this@TimerFragmentUITest.preset.duration)
-            }
-        }.moveToState(Lifecycle.State.CREATED)
-        device.openNotification()
-        assertThatNotificationTitle().isEqualTo(preset.name)
-        assertThatNotificationText().isEqualTo(DurationFormatter.format(0L))
-    }
-
-    @Ignore
-    @Test
-    fun givenTimerIsInFinishedStateWhenFragmentStartedThenStopForegroundService() {
-        scenario.onFragment {
-            with(timer) {
-                start()
-                advanceBy(this@TimerFragmentUITest.preset.duration)
-            }
-        }.moveToState(Lifecycle.State.CREATED).moveToState(Lifecycle.State.RESUMED)
-        device.openNotification()
-        assertThat(findNotification()).isNull()
+            .check(matches(withText(DurationFormatter.format(testPreset.duration))))
     }
 }

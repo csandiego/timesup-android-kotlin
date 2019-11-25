@@ -86,7 +86,7 @@ class TimerFragment @Inject constructor(viewModelFactory: ViewModelProvider.Fact
             if (isRemoving || isFinishing) {
                 viewModel.timer.clear()
             } else if (!isRemoving && !isChangingConfigurations && !isFinishing &&
-                setOf(Timer.State.STARTED, Timer.State.PAUSED, Timer.State.FINISHED).contains(
+                setOf(Timer.State.STARTED, Timer.State.PAUSED).contains(
                     viewModel.timer.state.value
                 )) {
                 with(requireContext()) {

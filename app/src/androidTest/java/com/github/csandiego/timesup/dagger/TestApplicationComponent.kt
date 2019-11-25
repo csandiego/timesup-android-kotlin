@@ -1,7 +1,8 @@
 package com.github.csandiego.timesup.dagger
 
 import com.github.csandiego.timesup.TestTimesUpApplication
-import com.github.csandiego.timesup.room.TimesUpDatabase
+import com.github.csandiego.timesup.repository.PresetRepository
+import com.github.csandiego.timesup.room.PresetDao
 import com.github.csandiego.timesup.timer.TestTimer
 import dagger.Component
 import dagger.android.AndroidInjectionModule
@@ -17,7 +18,9 @@ import javax.inject.Singleton
 ])
 interface TestApplicationComponent : AndroidInjector<TestTimesUpApplication> {
 
-    fun database(): TimesUpDatabase
+    fun dao(): PresetDao
+
+    fun repository(): PresetRepository
 
     fun timer(): TestTimer
 
