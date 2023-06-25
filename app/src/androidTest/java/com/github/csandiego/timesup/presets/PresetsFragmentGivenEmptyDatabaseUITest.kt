@@ -5,6 +5,7 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import com.github.csandiego.timesup.R
 import com.github.csandiego.timesup.data.Preset
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
 
@@ -34,6 +35,7 @@ class PresetsFragmentGivenEmptyDatabaseUITest : PresetsFragmentUITest2() {
     @Test
     fun whenPresetAddedThenShowRecyclerView() = runBlocking<Unit> {
         dao.save(preset)
+        delay(500L)
         onView(withId(R.id.recyclerView))
             .check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
     }
