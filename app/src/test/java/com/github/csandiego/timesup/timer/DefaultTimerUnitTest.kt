@@ -5,6 +5,7 @@ import com.github.csandiego.timesup.data.Preset
 import com.github.csandiego.timesup.test.MainDispatcherRule
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.After
 import org.junit.Before

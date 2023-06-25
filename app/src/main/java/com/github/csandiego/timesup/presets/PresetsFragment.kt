@@ -9,16 +9,15 @@ import android.view.animation.DecelerateInterpolator
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.*
 import com.github.csandiego.timesup.R
 import com.github.csandiego.timesup.data.Preset
+import com.github.csandiego.timesup.databinding.FragmentPresetsBinding
 import com.github.csandiego.timesup.databinding.ListItemPresetsBinding
 import com.google.android.material.card.MaterialCardView
-import kotlinx.android.synthetic.main.fragment_presets.*
 import javax.inject.Inject
 import kotlin.math.absoluteValue
 
@@ -28,19 +27,24 @@ class PresetsFragment @Inject constructor(viewModelFactory: ViewModelProvider.Fa
     private val viewModel by viewModels<PresetsViewModel> { viewModelFactory }
     private var actionMode: ActionMode? = null
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        val binding = FragmentPresetsBinding.inflate(inflater, container, false)
         runCatching {
             with(findNavController()) {
-                toolbar.setupWithNavController(this, AppBarConfiguration(graph))
+                binding.toolbar.setupWithNavController(this, AppBarConfiguration(graph))
             }
         }
         val adapter = createRecyclerViewAdapter()
-        with(recyclerView) {
+        with(binding.recyclerView) {
             this.adapter = adapter
             layoutManager = LinearLayoutManager(context)
             ItemTouchHelper(createItemTouchHelperCallback()).attachToRecyclerView(this)
         }
-        buttonNew.setOnClickListener {
+        binding.buttonNew.setOnClickListener {
             findNavController().navigate(
                 PresetsFragmentDirections.actionPresetsFragmentToNewPresetFragment()
             )
@@ -48,8 +52,8 @@ class PresetsFragment @Inject constructor(viewModelFactory: ViewModelProvider.Fa
         with(viewModel) {
             presets.observe(viewLifecycleOwner) {
                 adapter.submitList(it)
-                recyclerView.visibility = if (it.isEmpty()) View.GONE else View.VISIBLE
-                emptyView.visibility = if (it.isEmpty()) View.VISIBLE else View.GONE
+                binding.recyclerView.visibility = if (it.isEmpty()) View.GONE else View.VISIBLE
+                binding.emptyView.visibility = if (it.isEmpty()) View.VISIBLE else View.GONE
             }
             selection.observe(viewLifecycleOwner) {
                 if (it.isEmpty()) {
@@ -70,7 +74,52 @@ class PresetsFragment @Inject constructor(viewModelFactory: ViewModelProvider.Fa
                 }
             }
         }
+        return binding.root
     }
+
+//    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+//        runCatching {
+//            with(findNavController()) {
+//                toolbar.setupWithNavController(this, AppBarConfiguration(graph))
+//            }
+//        }
+//        val adapter = createRecyclerViewAdapter()
+//        with(recyclerView) {
+//            this.adapter = adapter
+//            layoutManager = LinearLayoutManager(context)
+//            ItemTouchHelper(createItemTouchHelperCallback()).attachToRecyclerView(this)
+//        }
+//        buttonNew.setOnClickListener {
+//            findNavController().navigate(
+//                PresetsFragmentDirections.actionPresetsFragmentToNewPresetFragment()
+//            )
+//        }
+//        with(viewModel) {
+//            presets.observe(viewLifecycleOwner) {
+//                adapter.submitList(it)
+//                recyclerView.visibility = if (it.isEmpty()) View.GONE else View.VISIBLE
+//                emptyView.visibility = if (it.isEmpty()) View.VISIBLE else View.GONE
+//            }
+//            selection.observe(viewLifecycleOwner) {
+//                if (it.isEmpty()) {
+//                    actionMode?.finish()
+//                } else {
+//                    val mode =
+//                        actionMode ?: requireActivity().startActionMode(createActionModeCallback())!!
+//                    actionMode = mode.apply {
+//                        title = it.size.toString()
+//                        menu?.findItem(R.id.menuEdit)?.isVisible = it.size == 1
+//                    }
+//                }
+//            }
+//            startTimerForPreset.observe(viewLifecycleOwner) {
+//                it?.let {
+//                    viewModel.startTimerForPresetHandled()
+//                    startTimer(it)
+//                }
+//            }
+//        }
+//    }
 
     private fun startTimer(preset: Preset) {
         findNavController().navigate(

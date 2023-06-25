@@ -28,7 +28,7 @@ class NewPresetFragmentUITest2 {
         dao = dagger.dao()
         val viewModelFactory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 return PresetEditorViewModel(dagger.repository()) as T
             }
         }

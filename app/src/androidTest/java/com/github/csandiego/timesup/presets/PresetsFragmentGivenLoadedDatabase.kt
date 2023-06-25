@@ -12,6 +12,7 @@ import com.github.csandiego.timesup.R
 import com.github.csandiego.timesup.data.Preset
 import com.github.csandiego.timesup.test.isTheRowFor
 import com.google.common.truth.Truth.assertThat
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Test
@@ -49,6 +50,7 @@ class PresetsFragmentGivenLoadedDatabase : PresetsFragmentUITest2() {
     fun whenPresetUpdatedThenUpdateList() = runBlocking<Unit> {
         val preset = presets[0].copy(name = "Edited Name")
         dao.save(preset)
+        delay(500L)
         onView(isTheRowFor(presets[0])).check(doesNotExist())
         onView(isTheRowFor(preset)).check(matches(isDisplayed()))
     }
@@ -56,6 +58,7 @@ class PresetsFragmentGivenLoadedDatabase : PresetsFragmentUITest2() {
     @Test
     fun whenPresetDeletedThenRemoveFromList() = runBlocking<Unit> {
         dao.delete(presets[0].id)
+        delay(500L)
         onView(isTheRowFor(presets[0])).check(doesNotExist())
     }
 

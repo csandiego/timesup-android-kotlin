@@ -7,7 +7,6 @@ import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.LifecycleService
-import androidx.lifecycle.observe
 import androidx.navigation.NavDeepLinkBuilder
 import com.github.csandiego.timesup.R
 import dagger.android.AndroidInjection
@@ -25,7 +24,7 @@ class TimerService : LifecycleService() {
         super.onCreate()
     }
 
-    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val args = Bundle().apply {
             putLong("presetId", timer.preset.value!!.id)
         }
@@ -71,7 +70,7 @@ class TimerService : LifecycleService() {
         }
     }
 
-    override fun onBind(intent: Intent): IBinder? {
+    override fun onBind(intent: Intent): IBinder {
         super.onBind(intent)
         return Binder()
     }

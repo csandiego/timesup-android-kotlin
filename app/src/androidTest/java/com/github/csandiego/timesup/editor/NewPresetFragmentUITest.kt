@@ -29,7 +29,7 @@ class NewPresetFragmentUITest {
         repository = TestPresetRepository()
         val viewModelFactory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 return PresetEditorViewModel(repository) as T
             }
         }
