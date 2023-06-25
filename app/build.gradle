@@ -50,6 +50,7 @@ android {
         }
         execution 'ANDROIDX_TEST_ORCHESTRATOR'
     }
+    namespace 'com.github.csandiego.timesup'
 }
 
 dependencies {
